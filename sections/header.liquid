@@ -1,0 +1,210 @@
+{%- comment -%}
+Header Template
+
+Version:
+1.0.0 2021/04/08
+{%- endcomment -%}
+
+{%- liquid
+
+  assign ss = section.settings
+  assign mainMenu = linklists[ss.mainMenu]
+  assign communityMenu = linklists[ss.communityMenu]
+  assign additionalDesktop = linklists[ss.additionalDesktop]
+  assign additionalCommunityMenu = linklists[ss.additionalCommunityMenu]
+  assign autoplay = ss.autoplayEnabled
+  assign speed = ss.autoplaySpeed
+  assign logoAlt = 'general.header.logo_title' | t
+  assign mobileImage = ss.backgroundImgMobile
+  assign desktopImage = ss.backgroundImgDesktop
+
+  assign cartCount = 0
+  for item in cart.items
+    if item.properties.isChildVariant
+      continue
+    else
+      assign cartCount = cartCount | plus: item.quantity
+    endif
+  endfor
+
+-%}
+
+{%- capture customerLevel -%}
+  {%- render 'tool.skin-customer-level' -%}
+{%- endcapture -%}
+
+{% assign customerLevel = customerLevel | plus: 0 %}
+
+<header class="c-header" data-header>
+
+  <div class="c-header__inner" data-header-inner>
+
+    <div class="c-header__left">
+
+      {%- comment -%} Mobile Nav Trigger {%- endcomment -%}
+      <button class="c-header__link is-mobile-menu" data-menu-toggle>
+        {%- render 'svg.hamburger' -%}
+      </button>
+
+      {%- comment -%} Main site navigation, mobile & desktop {%- endcomment -%}
+      {%- if customerLevel > 0 -%}
+        {%- render 'main-menu', with {
+          menu: communityMenu,
+          additionalMenu: additionalCommunityMenu,
+          mobileImage: mobileImage,
+          desktopImage: desktopImage
+        -%}
+
+      {%- else -%}
+
+        {%- render 'main-menu',
+          menu: mainMenu,
+          additionalMenu: additionalDesktop,
+          mobileImage: mobileImage,
+          desktopImage: desktopImage
+        -%}
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Site Logo {%- endcomment -%}
+    <a class="c-header__logo" href="{{ routes.root_url }}" title="{{ 'general.header.logo_title' | t }}">
+      {%- render 'object.icon' with {
+        icon: 'logo',
+        class: 'c-header__logo-icon',
+        alt: logoAlt,
+        width: 103,
+        height: 87
+      } -%}
+    </a>
+
+    {%- comment -%} Right Icons {%- endcomment -%}
+    <div class="c-header__right">
+			
+      {%- if customerLevel > 0 -%}
+
+        {%- comment -%} Additional Desktop Menu for Community {%- endcomment -%}
+        {%- render 'main-menu--additional', menu: additionalCommunityMenu -%}
+
+      {%- else -%}
+
+        {%- comment -%} Additional Desktop Menu {%- endcomment -%}
+        {%- render 'main-menu--additional', menu: additionalDesktop -%}
+
+      {%- endif -%}
+
+			{%- comment -%} Acccount icon for Desktop {%- endcomment -%}
+
+			<a class="c-header__link user-link" href="{{ routes.account_url }}"" title="{{ 'general.header.user_title' | t }}">
+        {%- render 'svg.user' with {
+          class: 'c-main-menu__header-account-icon'
+        } -%}
+      </a>
+
+      <a class="c-header__link cart-link" href="{{ routes.cart_url }}" title="{{ 'general.header.cart_title' | t }}" data-cart-drawer-toggle>
+        {%- render 'object.icon' with {
+          icon: 'cart',
+          class: 'cart-link__icon',
+          width: 17,
+          height: 16
+        } -%}
+        <div class="cart-link__count o-heading--7 {% if cart.item_count > 0 %}has-items{% endif %}" data-header-cart-counter>
+          {{- cartCount -}}
+        </div>
+      </a>
+
+    </div>
+
+  </div>
+
+</header>
+
+{% schema %}
+{
+	"name": "Header",
+	"class": "c-section c-section__header",
+	"settings": [{
+			"type": "header",
+			"content": "Menu Settings"
+		},
+		{
+			"id": "mainMenu",
+			"type": "link_list",
+			"label": "Main Navigation Menu",
+			"info": "Please select the navigation menu / linklist for all devices."
+		},
+		{
+			"id": "additionalDesktop",
+			"type": "link_list",
+			"label": "Additional Desktop Menu",
+			"info": "Additional link/s to show on desktop devices. Check that elements don't overlap on smaller screens if you're adding more than one link."
+		},
+		{
+			"id": "communityMenu",
+			"type": "link_list",
+			"label": "Community Menu",
+			"info": "Please select the navigation menu / linklist for all devices."
+		},
+		{
+			"id": "additionalCommunityMenu",
+			"type": "link_list",
+			"label": "Community Header Menu",
+			"info": "Please select the navigation menu / linklist for all devices."
+		},
+		{
+			"type": "header",
+			"content": "Promobar Settings"
+		},
+		{
+			"id": "autoplayEnabled",
+			"type": "checkbox",
+			"label": "Autoplay",
+			"default": false
+		},
+		{
+			"id": "autoplaySpeed",
+			"type": "range",
+			"min": 1,
+			"max": 20,
+			"label": "Autoplay Speed",
+			"default": 3
+		},
+		{
+			"id": "backgroundImgMobile",
+			"type": "image_picker",
+			"label": "Product Background Image Mobile",
+			"info": "Please upload in .jpg format. Recommended, at least 184/154px."
+		},
+		{
+			"id": "backgroundImgDesktop",
+			"type": "image_picker",
+			"label": "Product Background Image Desktop",
+			"info": "Please upload in .png format. Recommended, at least 618/546px."
+		}
+	],
+	"blocks": [{
+		"type": "additionalLink",
+		"name": "Additional Mobile Links",
+		"settings": [{
+				"type": "paragraph",
+				"content": "Additional mobile links, added to the bottom of the first level of the mobile menu."
+			},
+			{
+				"id": "title",
+				"type": "text",
+				"label": "Link Title"
+			},
+			{
+				"id": "url",
+				"type": "url",
+				"label": "Link"
+			},
+			{
+				"id": "icon",
+				"type": "textarea",
+				"label": "Link Icon",
+				"info": "Please paste SVG code here. Icon displays on the left hand side of the link."
+			}
+		]
+	}]
+}
+{% endschema %}

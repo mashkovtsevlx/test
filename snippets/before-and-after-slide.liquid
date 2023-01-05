@@ -1,0 +1,129 @@
+<div class="c-before-and-after-slider__slide">
+  {%- if subtitle != blank -%}
+  {%- capture infoBlock -%}
+  <div class="c-before-and-after-slider__info">
+    <p class="c-before-and-after-slider__info-text o-heading--7">
+      {{ subtitle | escape }}
+    </p>
+  </div>
+  {%- endcapture -%}
+  {%- endif -%}
+
+  {{- infoBlock -}}
+
+  {%- comment -%} Before and After Images {%- endcomment -%}
+  <div class="c-before-and-after-slider__images">
+    {%- if beforeImage != blank -%}
+    <div class="c-before-and-after-slider__image-group is-before">
+      <div class="c-before-and-after-slider__image-container">
+        {%- render 'tool.image' width {
+          image: beforeImage,
+          class: 'c-before-and-after-slider__image',
+          srcsetSizes: '115,140,165,200,255,356',
+          sizes: '(max-width: 480px) calc((100vw - 80px - 18px) / 2),(max-width: 1099px) 191px,calc((86vw * 0.4244 - 18px) / 2)',
+          lazy: true,
+          width: 450
+        } -%}
+      </div>
+
+      {%- if beforeSubtitle != blank -%}
+      <div class="c-before-and-after-slider__image-caption o-heading--7">
+        {{ beforeSubtitle | escape}}
+      </div>
+      {%- endif -%}
+    </div>
+    {%- endif -%}
+
+    {%- if afterImage != blank -%}
+    <div class="c-before-and-after-slider__image-group is-after">
+      <div class="c-before-and-after-slider__image-container">
+        {%- render 'tool.image' with {
+          image: afterImage,
+          class: 'c-before-and-after-slider__image',
+          srcsetSizes: '115,140,165,200,255,356',
+          sizes: '(max-width: 480px) calc((100vw - 80px - 18px) / 2),(max-width: 1099px) 191px,calc((86vw * 0.4244 - 18px) / 2)',
+          lazy: true,
+          width: 450
+        } -%}
+      </div>
+
+      {%- if afterSubtitle != blank -%}
+      <div class="c-before-and-after-slider__image-caption o-heading--7">
+        {{ afterSubtitle | escape}}
+      </div>
+      {%- endif -%}
+    </div>
+  </div>
+  {%- endif -%}
+
+  <div class="c-before-and-after-slider__right-container">
+
+    <div class="c-before-and-after-slider__arrows">
+      <div class="c-before-and-after-slider__arrow is-left" data-prev-arrow></div>
+      <div class="c-before-and-after-slider__arrow is-right" data-next-arrow></div>
+    </div>
+
+    <div class="c-before-and-after-slider__slide-title">
+      {{ title | escape}}
+    </div>
+
+    {{- infoBlock -}}
+
+    <div class="c-before-and-after-slider__slide-text">
+      {{ text | escape | newline_to_br }}
+    </div>
+
+    {%- comment -%} Related Products {%- endcomment -%}
+    <div class="c-before-and-after-slider__related-products">
+      {%- for i in (0..1) -%}
+      {%- liquid
+      if i == 0
+      assign product = productLeft
+      else
+      assign product = productRight
+      endif
+
+      assign variant = product.first_available_variant
+
+      if variant == blank
+      continue
+      endif
+      -%}
+      <div class="c-before-and-after-slider__related-product o-related-product" data-related-product
+        data-variant-id="{{variant.id}}" data-variant-quantity="{{100}}">
+        <div class="o-related-product__image-container">
+          {%- render 'tool.picture' with {
+          image: product.featured_image,
+          class: 'o-related-product__image',
+          width: 2000,
+          sizes: '750,1100,1600',
+          imageSizes: '354,1100,1600',
+          lazy: true
+          } -%}
+          
+          {%- assign productType = product.type | downcase -%}
+          {%- if productType contains 'bundle' -%}
+          <a class="o-related-product__image-icon" href="{{variant.url}}">
+            {%- render 'svg.plus' -%}
+          </a>
+          {%- else -%}
+          <button data-related-add-button title='add to cart ' class="o-related-product__image-icon">
+            {%- render 'svg.plus' -%}
+          </button>
+          {%- endif -%}
+        </div>
+
+
+        <div class="o-related-product__details">
+          <a href="{{ variant.url }}" title="product page" class="o-related-product__title">
+            {{ product.title | escape }}
+          </a>
+          <div class="o-related-product__price" data-currency data-money="{{ variant.price }}">
+            {{ variant.price | money }}
+          </div>
+        </div>
+      </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>

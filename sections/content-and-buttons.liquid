@@ -1,0 +1,94 @@
+{%- comment -%}
+   Content and Buttons Section
+   - title
+   - buttons
+
+  Version:
+    1.0.0 - 2022/01/11
+
+{%- endcomment -%}
+
+{%- liquid
+
+  assign ss = section.settings
+
+-%}
+
+
+{% unless customer %}
+
+  {{ 'sections.content-and-buttons.css' | asset_url | stylesheet_tag }}
+
+  <section class="c-content-buttons">
+    <div class="c-content-buttons__inner">
+      
+      {%- if ss.title != blank -%}
+        <h5 class="c-content-buttons__title">
+          {{- ss.title | escape }}
+        </h5>
+      {%- endif -%}
+
+      <div class="c-content-buttons__btn-wrapper">
+        {%- if ss.button-label1 != blank and ss.button-url1 != blank -%}
+          <div class="c-content-buttons__btn-container">
+            <a href="{{ss.button-url1}}" class="c-content-buttons__btn o-btn is-primary">
+              {{- ss.button-label1 -}}
+            </a>
+          </div>
+        {%- endif -%}
+        
+        {%- if ss.button-label2 != blank and ss.button-url2 != blank -%}
+          <div class="c-content-buttons__btn-container">
+            <a href="{{ss.button-url2}}" class="c-content-buttons__btn o-btn is-quaternary">
+              {{- ss.button-label2 -}}
+            </a>
+          </div>
+        {%- endif -%}
+
+      </div>
+
+    </div>
+  </section>
+
+{% endunless %}
+    
+
+{% schema %}
+{
+  "name": "Content and Buttons",
+  "class": "c-section c-section__content-buttons",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "type": "text",
+      "id": "button-label1",
+      "label": "Button Label 1"
+    },
+    {
+      "type": "url",
+      "id": "button-url1",
+      "label": "Button Url 1"
+    },
+    {
+      "type": "text",
+      "id": "button-label2",
+      "label": "Button Label 2"
+    },
+    {
+      "type": "url",
+      "id": "button-url2",
+      "label": "Button Url 2"
+    }
+  ],
+  "presets": [
+      {
+        "name": "Content and Buttons",
+        "category": "Content"
+      }
+    ]
+}
+{% endschema %}

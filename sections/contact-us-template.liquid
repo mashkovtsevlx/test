@@ -1,0 +1,292 @@
+{%- liquid
+assign ss = section.settings
+-%}
+
+{{ 'sections.contact-us-template.css' | asset_url | stylesheet_tag }}
+
+{%- capture doubleImage -%}
+  {%- render 'tool.picture' with {
+    image: ss.bgImage,
+    class: 'c-contact__double-image-background',
+    width: 565,
+    sizes: '375,1100',
+    imageSizes: '375,400'
+} -%}
+
+  <div class="c-contact__double-image-overlay-container">
+    {%- render 'tool.picture' with {
+      image: ss.overlayImage,
+      class: 'c-contact__double-image-overlay',
+      width: 711,
+      sizes: '375,1100',
+      imageSizes: '295,500'
+    } -%}
+  </div>
+{%- endcapture -%}
+
+<section class="c-contact">
+  <div class="c-contact__top-container">
+    <div class="c-contact__top-container-inner">
+      <p class="c-contact__pre-title o-heading--7">
+        {{ss.preTitle | escape}}
+      </p>
+      <h1 class="c-contact__title">
+        {{ss.title | escape}}
+      </h1>
+
+      <p class="c-contact__text is-desktop">
+        {{- ss.text | escape | newline_to_br -}}
+      </p>
+    </div>
+
+    <div class="c-contact__double-image is-mobile">
+      {{doubleImage}}
+    </div>
+
+  </div>
+
+
+  <div class="c-contact__bottom-container">
+
+    <div class="c-contact__main-container">
+      <p class="c-contact__text is-mobile">
+        {{- ss.text | escape | newline_to_br -}}
+      </p>
+
+      <div class="c-contact__info">
+
+        <div class="c-contact__info-row">
+          <button class="c-contact__open-form-button o-heading--7" data-open-drawer-button>
+            {{ss.openFormText | escape}}
+          </button>
+        </div>
+
+        {% if ss.emailLabel != blank  and ss.emailValue != blank %}
+          <div class="c-contact__info-row">
+            <p class="c-contact__info-label o-heading--7">
+              {{ss.emailLabel | escape}}
+            </p>
+
+            {% if ss.emailLink %}
+              <a href="{{ss.emailLink}}" class="c-contact__info-value o-heading--7">
+                {{ss.emailValue | escape}}
+              </a>
+            {% else %}
+              <p class="c-contact__info-value o-heading--7">
+                {{ss.emailValue | escape}}
+              </p>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if ss.phoneLabel != blank and ss.phoneValue != blank %}
+          <div class="c-contact__info-row">
+            <p class="c-contact__info-label o-heading--7">
+              {{ss.phoneLabel | escape}}
+            </p>
+
+            {% if ss.phoneLink %}
+              <a href="{{ss.phoneLink}}" class="c-contact__info-value o-heading--7">
+                {{ss.phoneValue | escape}}
+              </a>
+            {% else %}
+              <p class="c-contact__info-value o-heading--7">
+                {{ss.phoneValue | escape}}
+              </p>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if ss.message1Label != blank and ss.message1Value != blank %}
+          <div class="c-contact__info-row">
+            <p class="c-contact__info-label o-heading--7">
+              {{ss.message1Label | escape}}
+            </p>
+            {% if ss.message1Link %}
+              <a href="{{ss.message1Link}}" class="c-contact__info-value o-heading--7">
+                {{ss.message1Value | escape}}
+              </a>
+            {% else %}
+              <p class="c-contact__info-value o-heading--7">
+                {{ss.message1Value | escape}}
+              </p>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if ss.message2Label != blank and ss.message2Value != blank %}
+          <div class="c-contact__info-row">
+            <p class="c-contact__info-label o-heading--7">
+              {{ss.message2Label | escape}}
+            </p>
+
+            {% if ss.message2Link %}
+              <a href="{{ss.message2Link}}" class="c-contact__info-value o-heading--7">
+                {{ss.message2Value | escape}}
+              </a>
+            {% else %}
+              <p class="c-contact__info-value o-heading--7">
+                {{ss.message2Value | escape}}
+              </p>
+            {% endif %}
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+
+  <div class="c-contact__double-image is-desktop">
+    {{doubleImage}}
+  </div>
+  <div class="c-contact__drawer " data-drawer>
+
+    {%- render 'tool.picture' with {
+      image: ss.drawerBackground,
+      class: 'c-contact__drawer-background',
+      width: 865,
+      sizes: '375,1100',
+      imageSizes: '375,600'
+    } -%}
+
+    <div class="c-contact__drawer-inner">
+      <div class="c-contact__drawer-close" data-drawer-close-button>
+        {% render 'svg.close' %}
+      </div>
+      <p class="c-contact__drawer-pre-title o-heading--7">
+        {{ss.formPreTitle | escape}}
+      </p>
+      <h5 class="c-contact__drawer-title">
+        {{ss.formTitle | escape}}
+      </h5>
+      {% render 'form.contact', submitText: ss.submitText %}
+    </div>
+  </div>
+
+</section>
+{{ 'sections.contact-us-template.js' | asset_url | script_tag }}
+
+{% schema %}
+{
+	"name": "Contact Us",
+	"class": "c-section c-section__contact-us",
+	"settings": [{
+			"id": "preTitle",
+			"type": "text",
+			"label": "Pre Title"
+		},
+		{
+			"id": "title",
+			"type": "text",
+			"label": "Title"
+		},
+		{
+			"id": "text",
+			"type": "textarea",
+			"label": "Text"
+		},
+		{
+			"id": "bgImage",
+			"type": "image_picker",
+			"label": "Background Image",
+			"info": "Please upload in .jpg format. Recommended ratio approx. 1/1, at least 1700/1700."
+		},
+		{
+			"id": "overlayImage",
+			"type": "image_picker",
+			"label": "Overlay Image",
+			"info": "Please upload in .jpg format. Recommended ratio approx. 0.94/1, at least 1142/1216px."
+		},
+		{
+			"id": "openFormText",
+			"type": "text",
+			"label": "Open Form Button Text",
+			"default": "Contact Form"
+		},
+		{
+			"type": "header",
+			"content": "Contact Info"
+		},
+		{
+			"id": "emailLabel",
+			"type": "text",
+			"label": "Email Label"
+		},
+		{
+			"id": "emailValue",
+			"type": "text",
+			"label": "Email Value"
+		},
+		{
+			"id": "emailLink",
+			"type": "url",
+			"label": "Email Link"
+		},
+		{
+			"id": "phoneLabel",
+			"type": "text",
+			"label": "Phone Label"
+		},
+		{
+			"id": "phoneValue",
+			"type": "text",
+			"label": "Phone Value"
+		},
+		{
+			"id": "phoneLink",
+			"type": "url",
+			"label": "Phone Link"
+		},
+		{
+			"id": "message1Label",
+			"type": "text",
+			"label": "Message1 Label"
+		},
+		{
+			"id": "message1Value",
+			"type": "text",
+			"label": "Message1 Value"
+		},
+		{
+			"id": "message1Link",
+			"type": "url",
+			"label": "Message1 Link"
+		},
+		{
+			"id": "message2Label",
+			"type": "text",
+			"label": "Message2 Label"
+		},
+		{
+			"id": "message2Value",
+			"type": "text",
+			"label": "Message2 Value"
+		},
+		{
+			"id": "message2Link",
+			"type": "url",
+			"label": "Message2 Link"
+		},
+		{
+			"type": "header",
+			"content": "Form Drawer"
+		},
+		{
+			"id": "formPreTitle",
+			"type": "text",
+			"label": "Pre Title"
+		},
+		{
+			"id": "formTitle",
+			"type": "text",
+			"label": "Title"
+		},
+		{
+			"id": "drawerBackground",
+			"type": "image_picker",
+			"label": "Drawer Background Image",
+			"info": "Please upload in .jpg format. Recommended ratio approx. 0.964/1, at least 1730/1794px."
+		}
+	]
+}
+{% endschema %}

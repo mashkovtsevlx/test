@@ -1,0 +1,77 @@
+
+{{ 'sections.cart-upsell-page.css' | asset_url | stylesheet_tag }}
+
+{%- liquid 
+  
+  assign ss = section.settings
+  capture upsellData
+    render 'upsell-data'
+  endcapture
+  assign upsellDataArray = upsellData | split: ';;'
+  assign percentageDiscount = upsellDataArray[0]
+  assign bundleImage = upsellDataArray[1]
+  assign thumbnailText = upsellDataArray[2]
+  assign discountAmount = upsellDataArray[3]
+  assign bundlePrice = upsellDataArray[4]
+  assign bundleComparePrice = upsellDataArray[5]
+  assign bundleChildVariants = upsellDataArray[6]
+  assign bundleTitle = upsellDataArray[7]
+  assign bundleVariantId = upsellDataArray[8]
+  assign bundleUnvailable = upsellDataArray[9]
+-%}
+
+<div class="o-cart-upsell-page__container">
+  <div 
+    class="o-cart-upsell-page is-hidden" 
+    data-cart-page-upsell-block
+  >
+
+    <div class="o-cart-upsell-page__inner">
+
+      <div class="o-cart-upsell-page__left-image-wrapper">
+        <div class="o-cart-upsell-page__left-image-container">
+          {%- render 'tool.picture' with {
+            image: ss.imageLeft,
+            width: 280,
+            class: 'o-cart-upsell-page__left-image'
+          } -%}
+        </div>
+      </div>
+
+      <div class="o-cart-upsell-page__right-image-wrapper">
+        <div class="o-cart-upsell-page__right-image-container">
+          {%- render 'tool.picture' with {
+            image: ss.imageRight,
+            width: 280,
+            class: 'o-cart-upsell-page__right-image'
+          } -%}
+        </div>
+      </div>
+
+      <div class="o-cart-upsell-page__main-container" data-cart-upsell-container>
+      </div>
+
+    </div>
+  </div>
+</div> 
+{{ 'sections.cart-upsell-page.js' | asset_url | script_tag }}
+
+
+{% schema %}
+{
+  "name": "Cart Upsell",
+  "class": "c-section c-section__cart-upsell-page",
+  "settings": [
+    {
+      "id": "imageLeft",
+      "type": "image_picker",
+      "label": "Image Left"
+    },
+    {
+      "id": "imageRight",
+      "type": "image_picker",
+      "label": "Image Right"
+    }
+  ]
+}
+{% endschema %}

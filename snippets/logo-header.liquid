@@ -1,0 +1,20 @@
+{% comment %}
+  Logo Header
+    Replacement section for the regular header that shows on pages that do not
+    have the normal header
+
+  Version:
+    1.0.0 - 2021/09/21
+{% endcomment %}
+
+<header class="c-logo-header">
+  <a href="{{ routes.root_url }}" class="c-logo-header__logo">
+    {%- render 'object.icon' with {
+      icon: 'logo-blue',
+      class: '-logo-header-icon',
+      alt: shop.name,
+      width: "125",
+      height: "108"
+    } -%}
+  </a>
+</header>

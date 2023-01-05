@@ -1,0 +1,97 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Process Creative",
+    "theme_version": "3.5.2",
+    "theme_author": "Infinite Solutions",
+    "theme_documentation_url": "https:\/\/inso.codes",
+    "theme_support_url": "https:\/\/inso.codes"
+  },
+  {
+    "name": "Favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon image",
+        "info": "Will be scaled down to 32 x 32px"
+      }
+    ]
+  },
+  {
+    "name": "Free Shipping Bar",
+    "settings": [
+      {
+        "type": "text",
+        "id": "shippingBarNotMet",
+        "label": "Shipping Bar Message",
+        "default": "Spend an extra %amount% for free shipping",
+        "info": "Place %amount% where you want to show the remaining value."
+      },
+      {
+        "type": "text",
+        "id": "shippingBarMet",
+        "label": "Shipping Bar Message Met",
+        "default": "You qualify for free shipping."
+      },
+      {
+        "type": "number",
+        "id": "shippingBarThreshold",
+        "label": "Shipping Threshold Amount",
+        "default": 100,
+        "info": "Enter amount (in dollars). Money is based on the store currency."
+      }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Sharing links"
+      },
+      {
+        "type": "text",
+        "id": "facebook_link",
+        "label": "Facebook link"
+      },
+      {
+        "type": "text",
+        "id": "instagram_link",
+        "label": "Instagram link"
+      },
+      {
+        "type": "text",
+        "id": "youtube_link",
+        "label": "Youtube link"
+      },
+      {
+        "type": "text",
+        "id": "tiktok_link",
+        "label": "TikTok link"
+      }
+    ]
+  },
+  {
+    "name": "Checkout Messaging",
+    "settings": [
+      {
+        "id": "create_account_message",
+        "type": "textarea",
+        "label": "Create Account Message",
+        "default": "You should have received the Account Activation email. Check that out and activate your account straight away!"
+      }
+    ]
+  },
+  {
+    "name": "Skin Within",
+    "settings": [
+      {
+        "id": "menu-progress",
+        "type": "link_list",
+        "label": "Progress Menu",
+        "info": "Please select the navigation menu for the progress nav"
+      }
+    ]
+  }
+]

@@ -1,0 +1,27 @@
+<div class="o-discussion-topic-thumbnail {{class}}">
+
+      {% if pretitle != blank -%}
+        <div class="o-discussion-topic-thumbnail__pretitle o-heading--7">
+          {{- pretitle | escape -}}
+        </div>
+      {%- endif -%}
+
+      {%- if title != blank -%}
+        <p class="o-discussion-topic-thumbnail__title">
+          {{- title | escape -}}
+        </p>
+      {%- endif -%}
+
+      {%- if text != blank -%}
+        <p class="o-discussion-topic-thumbnail__text">
+          {{- text | escape -}}
+        </p>
+      {%- endif -%}
+
+      {%- if buttonText != blank and buttonLink != blank -%}
+        <a href="{{buttonLink}}" class="o-discussion-topic-thumbnail__cta-btn o-link has-arrow">
+          {{- buttonText | escape -}}
+        </a>
+      {%- endif -%}
+
+</div>

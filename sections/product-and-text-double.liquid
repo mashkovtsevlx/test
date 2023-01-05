@@ -1,0 +1,128 @@
+{%- liquid assign ss = section.settings -%}
+
+{%- capture isSectionLocked -%}
+{%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+
+  {{ 'sections.product-and-text-double.css' | asset_url | stylesheet_tag }}
+  {%- if section.blocks.size == 2 -%}  
+    <section class="c-product-and-text-dbl">
+
+      {%- render 'tool.picture' with {
+        image: ss.backgroundImg,
+        class: 'c-product-and-text-dbl__background-image',
+        width: 1720,
+        sizes: '750,1100,1600',
+        imageSizes: '750,1100,1720',
+        lazy: true
+      } -%}
+
+      <div class="c-product-and-text-dbl__main">
+        {%- for block in section.blocks -%}
+          {%- liquid 
+            assign bs = block.settings
+            if bs.image == blank or bs.product == blank
+              continue
+            endif
+            assign product = all_products[bs.product]
+          -%}
+
+          
+          <div class="c-product-and-text-dbl__text-block text-block is-block-{{forloop.index}}">
+            <h3 class="text-block__heading">
+              {{product.title | escape}}
+            </h3>
+            <p class="text-block__text">
+              {{bs.text | escape}}
+            </p>
+            <a href="{{product.url}}" class="text-block__link o-btn is-tertiary">
+              {{ss.buttonText | escape }}
+            </a>   
+          </div>
+
+          <div class="c-product-and-text-dbl__double-image-container is-image-{{forloop.index}}">
+            <div class="c-product-and-text-dbl__double-image ">
+              {%- render 'tool.picture' with {
+                image: bs.image,
+                class: 'c-product-and-text-dbl__double-image-background',
+                width: 722,
+                sizes: '375,1600',
+                imageSizes: '203,722',
+                lazy: true
+              } -%}
+
+            <div class="c-product-and-text-dbl__double-image-overlay-container">
+              {%- render 'tool.picture' with {
+                image: product.featured_image,
+                class: 'c-product-and-text-dbl__double-image-overlay',
+                width: 722,
+                sizes: '375,1600',
+                imageSizes: '100,300',
+                lazy: true
+              } -%}
+            </div>
+
+            </div>
+          </div>
+
+        {%- endfor -%}
+      </div>
+
+    </section>
+  {%- endif -%}
+  {{ 'sections.product-and-text-double.js' | asset_url | script_tag }}
+{%- endif -%}
+
+{% schema %}
+  {
+    "name": "Product and Text Double",
+    "class": "c-section c-section__product-and-text-double",
+    "settings": [
+      {
+        "id": "buttonText",
+        "type": "text",
+        "label": "Button Text"
+      },
+      {
+        "id": "backgroundImg",
+        "type": "image_picker",
+        "label": "Background Image",
+        "info": "Please upload in .jpg format. Recommended ratio approx. 1.05/1, at least 3440/3284px."
+      }
+    ],
+    "blocks": [
+      {
+        "type": "product",
+        "name": "Product",
+        "limit": 2,
+        "settings": [
+          {
+            "id": "product",
+            "type": "product",
+            "label": "Product"
+          },
+          {
+            "id": "text",
+            "type": "textarea",
+            "label": "Text"
+          },
+          {
+            "id": "image",
+            "type": "image_picker",
+            "label": "Background Image",
+            "info": "Please upload in .jpg format. Recommended ratio approx. 1/1, at least 1454/1454px."
+          }
+          
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Product and Text Double Section",
+        "category": "Content"
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,200 @@
+{%- comment -%}
+
+  Title And Articles with
+  - section title
+  - 3 resent articles
+  - button
+
+  Version:
+    1.0.0 - 2021/12/10
+
+{%- endcomment -%}
+
+{%- liquid
+
+  assign ss = section.settings
+
+  assign title = ss.title
+  assign pretitle = ss.pretitle
+
+  assign currentbBlog = blogs[section.settings.blog]
+
+  assign socialVideos = section.blocks | where: 'type', 'social-videos'
+
+
+-%}
+
+{%- capture isSectionLocked -%}
+  {%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+
+{{ 'sections.articles-slider.css' | asset_url | stylesheet_tag }}
+{{ 'sections.articles-slider.js' | asset_url | script_tag }}
+
+<section class="c-articles-slider">
+
+  <div class="c-articles-slider__inner" data-articles>
+
+    {%- if pretitle != blank -%}
+        <h6 class="c-articles-slider__pretitle o-heading--7">
+          {{- pretitle | escape }}
+        </h6>
+      {%- endif -%}
+
+    {%- if title != blank -%}
+        <h4 class="c-articles-slider__title">
+          {{- title | escape }}
+        </h4>
+      {%- endif -%}
+
+    <div class="c-articles-slider__articles" data-articles-carousel>
+
+    {%- if ss.blogType == 'diaries' or ss.blogType == 'stories' -%}
+
+      {%- for article in currentbBlog.articles limit: 3 -%}
+
+        {%- if ss.blogType == 'diaries' -%}
+          {%- render 'object.article-diaries-thumbnail' with {
+            article: article,
+            class: 'c-articles-slider__diaries-wrapper'
+          } -%}
+
+        {% else %}
+
+          {%- render 'object.article-stories-thumbnail' with {
+            article: article,
+            class: 'c-articles-slider__stories-wrapper'
+          } -%}
+        {%- endif -%}
+
+      {%- endfor -%}
+        
+    {% else %}
+
+      {% for video in socialVideos  %}
+        {%- render 'object.social-video-thumbnail' with {
+          url: video.settings.social-video-link,
+          image: video.settings.social-video-image,
+          pretitle: video.settings.social-video-pretitle,
+          title: video.settings.social-video-title,
+          author: video.settings.social-video-author,
+          class: 'c-articles-slider__social-video-wrapper'
+        } -%}
+      {% endfor %}
+
+    {%- endif -%}
+
+    </div>
+
+    {%- if ss.button-label != blank and ss.button-url != blank -%}   
+      <div class="c-articles-slider__btn-container">
+        <a href="{{ss.button-url}}" class="c-articles-slider__btn o-btn is-primary">
+          {{- ss.button-label -}}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Articles Slider",
+  "class": "c-section c-section__articles-slider",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "text",
+      "id": "pretitle",
+      "label": "Pretitle"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog",
+      "info": "Please select the blog for right info display."
+    },
+    {
+      "type": "radio",
+      "id": "blogType",
+      "label": "Blog Type",
+      "info": "Please select the blog for right styles display.",
+      "options": [
+        {
+          "value": "diaries",
+          "label": "Diaries"
+        },
+        {
+          "value": "stories",
+          "label": "Stories"
+        },
+        {
+          "value": "social-videos",
+          "label": "Social Videos"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "button-label",
+      "label": "Button Label"
+    },
+    {
+      "type": "url",
+      "id": "button-url",
+      "label": "Button Url"
+    }
+  ],
+  "blocks": [
+  {
+    "type": "social-videos",
+    "name": "Social Videos Posts",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Social Video Posts",
+        "info": "This blok is only for social video post."
+      },
+      {
+        "type": "image_picker",
+        "id": "social-video-image",
+        "label": "Video Image"
+      },
+      {
+        "type": "url",
+        "id": "social-video-link",
+        "label": "Video Link"
+      },
+      {
+        "type": "text",
+        "id": "social-video-pretitle",
+        "label": "Video Pretitle"
+      },
+      {
+        "type": "text",
+        "id": "social-video-title",
+        "label": "Video Title"
+      },
+      {
+        "type": "text",
+        "id": "social-video-author",
+        "label": "Video Author"
+      }
+    ]
+  }
+],
+  "presets": [
+    {
+      "name": "Articles Slider",
+      "category": "Content"
+    }
+  ]
+}
+{% endschema %}

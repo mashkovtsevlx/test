@@ -1,0 +1,143 @@
+{% comment %}
+    Active Ingredients Section
+    Active ingredients section for PDP
+
+    Version:
+      1.0.0 - 22/02/23
+{% endcomment %}
+{%- liquid
+
+  assign ss = section.settings
+
+  assign videoUrl = product.metafields.accentuate.ingredients_video_url
+  assign allIngredients = product.metafields.accentuate.all_ingredients
+
+  assign mf = product.metafields.active_ingredients
+
+  assign ingredientName = mf['ingredient_name']
+  assign ingredientIcon = mf['ingredient_icon']
+  assign ingredientDescription = mf['ingredient_description']
+
+-%}
+
+{{ 'sections.active-ingredients.css' | asset_url | stylesheet_tag }}
+{{ 'sections.active-ingredients.js' | asset_url | script_tag }}
+
+{%- if  ss.background-image != blank -%}
+  <section class="c-active-ingredients" data-active-ingredients>
+    <div class="c-active-ingredients__inner">
+
+      {%- comment -%} Heading for Mobile {%- endcomment -%}
+      <div class="c-active-ingredients__heading is-mobile">
+        {%- if ss.pretitle != blank -%}
+          <p class="c-active-ingredients__pretitle o-heading--7">
+            {{- ss.pretitle | escape -}}
+          </p>
+        {%- endif -%}
+
+        {%- if ss.title != blank -%}
+          <h4 class="c-active-ingredients__titles">
+            {{- ss.title | escape -}}
+          </h4>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Active Ingredients Image Banner with Video Link{%- endcomment -%}
+      <div class="c-active-ingredients__right">
+        <div class="c-active-ingredients__images-wrapper" data-lity data-lity-target="{{- videoUrl -}}">
+          <div class="c-active-ingredients__image-container o-responsive-image-container">
+            {%- render 'tool.picture' with {
+              class: 'c-active-ingredients__image o-responsive-image ',
+              image: ss.background-image,
+              width: 783,
+              sizes: '375,20000',
+              imageSizes: '375,783'
+            } -%}
+          </div>
+
+          {%- comment -%} Circle with Formula {%- endcomment -%}
+          <div class="c-active-ingredients__circle-wrapper">
+            <div class="c-active-ingredients__circle">
+              {%- render 'svg.formula' -%}
+            </div>
+
+            {%- comment -%} Play Button {%- endcomment -%}
+            {%- if videoUrl != blank -%}
+              <div class="c-active-ingredients__play-button">
+                {%- render 'svg.play-button' -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+
+      {%- comment -%} Section with Active Ingredients {%- endcomment -%}
+      {%- comment -%} Heading for Desktop {%- endcomment -%}
+      <div class="c-active-ingredients__left">
+        <div class="c-active-ingredients__heading is-desktop">
+          {%- if ss.pretitle != blank -%}
+            <p class="c-active-ingredients__pretitle o-heading--7">
+              {{- ss.pretitle | escape -}}
+            </p>
+          {%- endif -%}
+
+          {%- if ss.title != blank -%}
+            <h4 class="c-active-ingredients__titles">
+              {{- ss.title | escape -}}
+            </h4>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Active Ingredients {%- endcomment -%}
+        <div class="c-active-ingredients__items" data-active-ingredients-tabs>
+          {%- for ingredient in ingredientName -%}
+            {%- assign ingredientNameCapitalize = ingredient | capitalize -%}
+            <div class="c-active-ingredients__item {% if forloop.first %}is-large{% endif %}" data-ingredients-item>
+              <div class="c-active-ingredients__item-icon">
+                {{- ingredientIcon[forloop.index0] -}}
+              </div>
+              <span class="c-active-ingredients__item-name o-heading--7">
+                {{- ingredientNameCapitalize | escape -}}
+              </span>
+              <p class="c-active-ingredients__item-description">
+                {{- ingredientDescription[forloop.index0] | escape | newline_to_br -}}
+              </p>
+            </div>
+          {%- endfor -%}
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+{%- endif -%}
+
+{{ 'sections.active-ingredients.js' | asset_url | script_tag }}
+
+{% schema %}
+{
+	"name": "Active Ingredients",
+	"class": "c-section c-section__active-ingredients",
+	"settings": [{
+			"type": "text",
+			"id": "pretitle",
+			"label": "Pretitle"
+		},
+		{
+			"type": "text",
+			"id": "title",
+			"label": "Title"
+		},
+		{
+			"id": "background-image",
+			"type": "image_picker",
+			"label": "Background image for formula",
+			"info": "Please upload in jpg format."
+		}
+	],
+	"presets": [{
+		"name": "Active Ingredients",
+		"category": "Content"
+	}]
+}
+{% endschema %}

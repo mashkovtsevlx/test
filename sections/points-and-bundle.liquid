@@ -1,0 +1,227 @@
+{%- liquid
+  assign ss = section.settings
+  assign bundleProduct = all_products[ss.bundleProductHandle]
+  assign bundleProdMf = bundleProduct.metafields.accentuate
+  assign childVariantObjs = bundleProdMf.childVariants
+  assign percentageDiscount = bundleProdMf.percentageDiscount | default: 0
+  assign mainTitle = bundleProdMf.title | default: ss.title
+  assign mainImage = ss.image
+-%}
+
+{%- capture isSectionLocked -%}
+  {%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+  {{ 'sections.points-and-bundle.css' | asset_url | stylesheet_tag }}
+
+  {% if bundleProduct != blank %}
+    <script>
+      window.bundle = {
+        bundleProduct: ({% render 'json.product', product: bundleProduct %}),
+        childVariants: [],
+        percentageDiscount: {{ percentageDiscount | json }}
+      }
+    </script>
+  {% endif %}
+
+  {%- if section.blocks.size > 0 -%}
+    <section class="c-points-and-bundle" data-points-and-bundle>
+      <h3 class="c-points-and-bundle__title is-mobile o-heading--4" data-fade-up>
+        {{ mainTitle | escape }}
+      </h3>
+
+      <div class="c-points-and-bundle__bundle-container ">
+        <div class="c-points-and-bundle__products {% if ss.image-desktop-only %}is-desktop-only{% endif %} {% if bundleProduct == blank and mainImage != blank %}has-image{% endif %}">
+          {% if bundleProduct != blank %}
+            {% liquid
+              assign titles = ''
+            %}
+            {%- for childVariantObj in childVariantObjs -%}
+              {%- liquid
+                assign childVariantObjSplit = childVariantObj | split: ':'
+                assign productHandle = childVariantObjSplit[0]
+                assign variantId = childVariantObjSplit[1] | times: 1
+                assign childProduct = all_products[productHandle]
+                assign variantsFiltered = childProduct.variants | where: 'id', variantId
+                assign childVariant = variantsFiltered[0]
+                assign variantIndex = forloop.index0
+
+                unless titles contains childVariant.title
+                  assign sameChildVariantObjs = childVariantObjs | where: childVariantObj
+                  assign childQty = sameChildVariantObjs.size
+
+                  capture titles
+                    echo titles
+                    echo childProduct.title  | append: ' ' | append: childVariant.title
+                    if childQty > 1
+                      echo ' X ' | append: childQty
+                    endif
+                    unless forloop.last
+                      echo ', '
+                    endunless
+                  endcapture
+
+                endunless
+              -%}
+
+              <script>
+                window.bundle.childVariants.push(({% render 'json.variant', variant: childVariant %}))
+              </script>
+
+              <div class="c-points-and-bundle__product is-product-{% cycle "odd", "even" %}">
+                {%-
+                  render 'tool.picture' with {
+                  image: childProduct.featured_image,
+                  class: 'c-points-and-bundle__product-image',
+                  width: 300,
+                  sizes: '375,1600',
+                  imageSizes: '150,300',
+                  lazy: true
+                  }
+                -%}
+              </div>
+            {%- endfor -%}
+          {% endif %}
+
+          {% if mainImage != blank %}
+            <div class="c-points-and-bundle__image  ">
+              {%- liquid
+                assign mainImageWidth1100 = 258 | divided_by: mainImage.aspect_ratio | ceil
+                assign mainImageSizes = "(max-width: 1099px) " | append: mainImageWidth1100 | append: 'px, calc(86vw * 0.6267)'
+              -%}
+              {%-
+                render 'tool.image' with {
+                image: mainImage,
+                class: 'c-points-and-bundle__generic-image',
+                srcsetSizes: '240, 280, 320, 340, 380, 400, 600, 800, 1200, 1400, 1650',
+                sizes: mainImageSizes,
+                lazy: true,
+                width: 400
+                }
+              -%}
+            </div>
+          {% endif %}
+        </div>
+
+        {% if bundleProduct != blank %}
+          <div class="c-points-and-bundle__details">
+            <div class="c-points-and-bundle__items o-heading--7 is-mobile">
+              <span class="c-points-and-bundle__items-item">
+                {{ titles }}
+              </span>
+            </div>
+
+            <button
+              data-add-bundle-button
+              title="Add {{bundleProduct.title}} To Cart"
+              class="c-points-and-bundle__add-cart o-btn is-primary is-disabled"
+              disabled
+            >
+              {%- comment -%} inner set in script {%- endcomment -%}
+              {{ 'products.product.error' | t }}
+            </button>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="c-points-and-bundle__content-container">
+        <h4 class="c-points-and-bundle__title is-desktop">
+          {{ mainTitle | escape }}
+        </h4>
+
+        <div class="c-points-and-bundle__items o-heading--7 is-desktop">
+          <div class="c-points-and-bundle__items-text">
+            {{ ss.itemsIncludedText | escape }}
+          </div>
+          <span class="c-points-and-bundle__items-item">
+            {{ titles }}
+          </span>
+        </div>
+
+        <ul class="c-points-and-bundle__icon-points">
+          {% for block in section.blocks %}
+            {% assign bs = block.settings %}
+            {% if bs.icon == blank or bs.text == blank %}{% continue %}{% endif %}
+            <li class="c-points-and-bundle__point">
+              <div class="c-points-and-bundle__point-icon">
+                {{ bs.icon }}
+              </div>
+              <p class="c-points-and-bundle__point-text">
+                {{ bs.text | escape }}
+              </p>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+  {%- endif -%}
+
+  <script src="{{ 'sections.points-and-bundle.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Points & Bundle",
+  "class": "c-section c-section__points-and-bundle",
+  "settings": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title"
+    },
+    {
+      "id": "buttonText",
+      "type": "text",
+      "label": "Button Text"
+    },
+    {
+      "id": "bundleProductHandle",
+      "type": "product",
+      "label": "Bundle Product"
+    },
+    {
+      "id": "itemsIncludedText",
+      "type": "text",
+      "label": "Items included text",
+      "default": "Items Included:"
+    },
+    {
+      "id": "image",
+      "type": "image_picker",
+      "label": "Image",
+      "info": "Use image instead of a product. Please upload in .jpg format. Recommended ratio approx. 1.2:1"
+    },
+    {
+      "type": "checkbox",
+      "id": "image-desktop-only",
+      "label": "Show image in desktop only",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "iconPoint",
+      "name": "Icon Point",
+      "settings": [
+        {
+          "id": "icon",
+          "type": "textarea",
+          "label": "Icon"
+        },
+        {
+          "id": "text",
+          "type": "textarea",
+          "label": "Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Points & Bundle Section",
+      "category": "Content"
+    }
+  ]
+}
+{% endschema %}

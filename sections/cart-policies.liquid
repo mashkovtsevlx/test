@@ -1,0 +1,57 @@
+
+{{ 'sections.cart-policies.css' | asset_url | stylesheet_tag }}
+<section class="c-cart-policies">
+  <div class="c-cart-policies__block">
+    <p class="o-heading--5 c-cart-policies__block-title">
+      {{- section.settings.title-1 | escape -}}
+    </p>
+    <p>{{- section.settings.body-1 | escape | newline_to_br -}}</p>
+  </div>
+
+  <div class="c-cart-policies__block">
+    <p class="o-heading--5 c-cart-policies__block-title">
+      {{- section.settings.title-2 | escape -}}
+    </p>
+    <p>{{- section.settings.body-2 | escape | newline_to_br -}}</p>
+  </div>
+</section>
+
+
+{% schema %}
+  {
+    "name": "Cart Policies",
+    "settings": [
+      {
+        "type": "header",
+        "content": "First Block"
+      },
+      {
+        "id": "title-1",
+        "label": "Title",
+        "type": "text",
+        "default": "Shipping"
+      },
+      {
+        "id": "body-1",
+        "label": "Body",
+        "type": "textarea"
+      },
+
+      {
+        "type": "header",
+        "content": "Second Block"
+      },
+      {
+        "id": "title-2",
+        "label": "Title",
+        "type": "text",
+        "default": "Returns"
+      },
+      {
+        "id": "body-2",
+        "label": "Body",
+        "type": "textarea"
+      }
+    ]
+  }
+{% endschema %}

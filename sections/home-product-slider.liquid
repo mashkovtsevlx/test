@@ -1,0 +1,204 @@
+{% liquid
+  assign ss = section.settings
+-%}
+
+{%- capture isSectionLocked -%}
+  {%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+  {%- unless template contains 'index' -%}
+    {{ 'sections.home-product-slider.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'sections.home-product-slider.js' | asset_url }}" defer></script>
+  {%- endunless -%}
+
+  <section class="c-home-product-slider c-home-product-slider-{{ ss.display_style }}" data-home-product-slider>
+    <div class="c-home-product-slider__products" data-slides-container>
+      {%- comment -%} Slide loop {%- endcomment -%}
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign bs = block.settings
+          assign product = bs.product
+          assign variant = product.selected_or_first_available_variant
+
+          assign mf = product.metafields.accentuate
+          assign pmf = product.metafields.custom
+          assign above_title = pmf.abovetitle
+
+          assign bgImg = ss.hoverBg
+          if forloop.index == 2
+            assign bgImg = ss.hoverBgMiddle
+          endif
+        -%}
+        <div
+          class="
+            c-home-product-slider__product-wrapper
+            {%- if forloop.index == 2 %}
+              is-middle-product
+            {% endif -%}
+          "
+          data-slider-slide
+          data-home-product-slider-item
+        >
+          <div class="c-home-product-slider__product">
+
+            {% if bs.above_title != blank %}
+              <div class="c-home-product-slider__product-above_title">
+                <p>{{ bs.above_title | escape }}</p>
+              </div>
+            {% elsif above_title != blank %}
+              <div class="c-home-product-slider__product-above_title">
+                <p>{{ above_title | escape }}</p>
+              </div>
+            {% endif %}
+            <h6 class="c-home-product-slider__product-title">
+              {{ product.title | escape }}
+            </h6>
+
+            <div class="c-home-product-slider__product-rating">
+              {% render 'okendo-reviews-product-rating-summary', product: product %}
+            </div>
+
+            {%- liquid
+              assign mobileWidthMultiplier = 0.79 | times: product.featured_image.aspect_ratio | round: 2
+              assign lMobileWidth = 219 | times: product.featured_image.aspect_ratio | round: 2
+              assign tabletWidth = 290 | times: product.featured_image.aspect_ratio | round: 2
+              assign desktopWidth = 339 | times: product.featured_image.aspect_ratio | round: 2
+              assign lDesktopWidth = 291 | times: product.featured_image.aspect_ratio | round: 2
+              assign xlDesktopWidth = 424 | times: product.featured_image.aspect_ratio | round: 2
+              assign featuredImageSizes = "(max-width: 374px) calc((100vw - 80px - 16px) * " | append: mobileWidthMultiplier | append: "), (max-width: 748px) " | append: lMobileWidth | append: "px, (max-width: 1099px) " | append: tabletWidth | append: "px, (max-width: 1349px) " | append: desktopWidth | append: "px, (max-width: 1649px) " | append: lDesktopWidth | append: "px, " | append: xlDesktopWidth | append: "px"
+            -%}
+
+            <div class="c-home-product-slider__product-image-container">
+              {%-
+                render 'tool.image' with {
+                image: product.featured_image,
+                class: 'c-home-product-slider__product-image',
+                srcsetSizes: '125,146,250,350,450',
+                sizes: featuredImageSizes,
+                lazy: true,
+                width: 424
+                }
+              -%}
+            </div>
+            <div class="c-home-product-slider__product-hover-background-container">
+              {%-
+                render 'tool.picture' with {
+                image: bgImg,
+                class: 'c-home-product-slider__product-hover-background',
+                width: 310,
+                lazy: true,
+                sizes: '750,1100,1600',
+                imageSizes: '200,250,310'
+                }
+              -%}
+            </div>
+            <div class="c-home-product-slider__product-buttons">
+              <a href="{{product.url}}" class="c-home-product-slider__product-cta">
+                <span>{{ 'products.thumbnail.cta_button_text' | t }}</span>
+              </a>
+              <div class="c-home-product-slider__product-atc">
+                <button class="c-home-product-slider__product__add-cart o-btn is-quaternary {% if variant.available != true %}is-disabled{% endif %}"
+                  {% if variant.available != true %}
+                    disabled
+                  {% endif %}
+                        data-add-to-cart-button
+                        data-add-to-cart-variant="{{ variant.id }}">
+                  {%- if variant.available -%}
+                    <span>{{- 'products.product.add' | t }}</span>
+                    <span class="is-divider">|</span>
+                    {%- render 'object.product-pricing',
+                      price: variant.price,
+                      class: 'c-home-product-slider__product__add-cart-price' -%}
+                  {%- else -%}
+                    <span>{{- 'products.product.sold_out' | t -}}</span>
+                  {%- endif -%}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {%- capture carouselDots -%}
+          {{- carouselDots -}}
+
+          <div class="c-home-product-slider__dot" data-carousel-dot data-dot-index="{{forloop.index}}"></div>
+        {%- endcapture -%}
+      {%- endfor -%}
+    </div>
+    {%- if section.blocks.size > 1 -%}
+      <div class="c-home-product-slider__dots" data-carousel-dots>
+        {{- carouselDots -}}
+      </div>
+    {%- endif -%}
+  </section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Home Product Slider",
+  "class": "c-section c-section__home-product-slider",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "The style of the middle product will be emphasised."
+    },
+    {
+      "id": "hoverBg",
+      "type": "image_picker",
+      "label": "Background hover image",
+      "info": "Please upload in .png format."
+    },
+    {
+      "id": "hoverBgMiddle",
+      "type": "image_picker",
+      "label": "Background hover image middle",
+      "info": "Please upload in .png format."
+    },
+    {
+      "type": "header",
+      "content": "Display settings"
+    },
+    {
+      "type": "radio",
+      "id": "display_style",
+      "label": "Display style",
+      "options": [
+        {
+          "value": "straight",
+          "label": "Straight"
+        },
+        {
+          "value": "levels",
+          "label": "Levels"
+        }
+      ],
+      "default": "levels"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "products",
+      "name": "Product",
+      "limit": 3,
+      "settings": [
+        {
+          "id": "product",
+          "type": "product",
+          "label": "Product"
+        },
+        {
+          "id": "above_title",
+          "type": "text",
+          "label": "Above title"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home Product Slider Section",
+      "category": "Content"
+    }
+  ]
+}
+{% endschema %}

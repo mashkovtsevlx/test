@@ -1,0 +1,78 @@
+{%- comment -%}
+  Skin within Logic
+
+  Version:
+    1.0.0 - 2021/12/10
+{%- endcomment -%}
+
+
+{%- capture customerLevel -%}
+  {%- render 'tool.skin-customer-level' -%}
+{%- endcapture -%}
+{% assign customerLevel = customerLevel | plus: 0 %}
+
+<script src="{{ 'sections.skin-within.js' | asset_url }}" defer></script>
+
+
+<section data-skin-within>
+
+  {% if template contains 'join-community' %}
+    {% if customerLevel > 0 %}
+
+      {%- comment -%}
+      I get redirected to the overview pages if I'm in skin within
+      If I just logged in I keep the querystring
+      {%- endcomment -%}
+
+      <script type="text/javascript">
+        if(window.location.search === '?logged=now'){
+          if(!window.Shopify.designMode){
+            window.location = '/pages/week_{{ customerLevel }}?logged=now';
+          }
+        } else {
+          if(!window.Shopify.designMode) {
+            window.location = '/pages/week_{{ customerLevel }}';
+          }
+        }
+      </script>
+    {% else %}
+
+    {%- comment -%}
+      if user isn't logged in but has logged in querystring it means that
+      they're coming from the registration page, they just registered but need to activate
+      the account so I show the message
+    {%- endcomment -%}
+      {% unless customer %}
+        <div class="c-join-community__modal-message" data-skin-within-modal>
+          {{ settings.create_account_message }}
+          <button class="o-btn is-secondary c-join-community__modal-btn" data-skin-within-modal-close >{{ 'pages.skin-journeys.close_modal' | t }}</button>
+        </div>
+      {% endunless %}
+    {% endif %}
+
+  {%- comment -%}
+  I track the logged event or just the pageview in Klaviyo
+  or the pageview
+  {%- endcomment -%}
+  {% elsif template contains 'overview' %}
+    {% if customerLevel > 0 %}
+      <script type="text/javascript">
+        var _learnq = _learnq || [];
+
+        var loggedTime = Date.now();
+
+        if(window.location.search === '?logged=now'){
+          _learnq.push(['track', 'Skin Within Login', {
+          Timestamp: loggedTime}
+          ]);
+        } else {
+          var pageViewSkin = '{{ template.suffix }} Pageview';
+          _learnq.push(['track', pageViewSkin, {
+          Timestamp: loggedTime}
+          ]);
+        }
+      </script>
+    {% endif %}
+  {% endif %}
+
+</section>

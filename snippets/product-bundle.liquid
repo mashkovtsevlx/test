@@ -1,0 +1,66 @@
+{%- liquid
+  assign mf = product.metafields.accentuate
+  assign childVariantObjs = mf.childVariants
+  assign percentageDiscount = mf.percentageDiscount | default: 0
+-%}
+
+<script>
+  window.bundle = {
+    bundleProduct: ({% render 'json.product', product: product %}),
+    childVariants: [],
+    percentageDiscount: {{ percentageDiscount | json }}
+  }
+</script>
+
+<div
+  class="c-product-bundle"
+  data-product-bundle
+  {% if trackInventory %}
+    data-track-child-inventory="true"
+  {% endif %}
+>
+  <div class="c-product-bundle__variants">
+    {%- for childVariantObj in childVariantObjs -%}
+      {%- liquid
+        assign childVariantObjSplit = childVariantObj | split: ':'
+        assign productHandle = childVariantObjSplit[0]
+        assign variantId = childVariantObjSplit[1] | times: 1
+        assign childProduct = all_products[productHandle]
+        assign variantsFiltered = childProduct.variants | where: 'id', variantId
+        assign childVariant = variantsFiltered[0]
+        assign variantIndex = forloop.index0
+      -%}
+
+      <script>
+        window.bundle.childVariants.push(({% render 'json.variant', variant: childVariant %}))
+      </script>
+
+      <div
+        class="c-product-bundle__variant"
+        data-bundle-product
+        data-bundle-variant-id=""
+        {{ childVariant.id }}
+        data-bundle-variant-index=""
+        {{ variantIndex }}
+      >
+        <a href="{{childVariant.url}}" class="c-product-bundle__variant-image-container">
+          {%-
+            render 'tool.image' with {
+            image: childProduct.featured_image,
+            class: 'c-product-bundle__variant-image',
+            srcsetSizes: "10,25,35,91",
+            sizes: "(min-width: 2001px) 90.5px, (min-width: 1650px) calc((43vw - 14vw - (43vw - 14vw) * 0.07 - 197px) * 0.25), (min-width: 1493px) 90.5px, (min-width: 1350px) calc((50vw - 96px - (50vw - 96px) * 0.14 - 197px) * 0.25), (min-width: 1296px) 90.5px, (min-width: 1100px) calc((50vw - 96px - (50vw - 96px) * 0.14 - 112px) * 0.25), (min-width: 555px) 90.5px, calc((100vw - 80px - 112px) * 0.25)",
+            lazy: true,
+            width: 91
+            }
+          -%}
+        </a>
+
+        <a href="{{childVariant.url}}" class="c-product-bundle__variant-title o-paragraph o-link">
+          {{- childProduct.title }}
+          {{ childVariant.title -}}
+        </a>
+      </div>
+    {%- endfor -%}
+  </div>
+</div>

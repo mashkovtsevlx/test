@@ -1,0 +1,118 @@
+{%- liquid
+
+  assign mf = article.metafields.accentuate
+
+  assign image1of2 = mf.image_1
+  assign image2of2 = mf.image_2
+
+  assign mobileImage = mf.mobileImage
+  assign desktopImage = mf.desktopImage
+
+  if desktopImage == blank
+    assign desktopImage = article.image
+  endif
+
+  if mobileImage == blank
+    assign mobileImage = imageDesktop
+  endif
+
+  assign articleAuthor = article.metafields.accentuate.article_author | default: article.author
+
+-%}
+
+{{ 'sections.article-stories-template.css' | asset_url | stylesheet_tag }}
+
+{%- if article.content != blank -%}
+  <section class="c-article-stories">
+
+    {%- comment -%} Article Stories Hero Banner {%- endcomment -%}
+    <div class="c-article-stories__banner{% if mobileImage == blank %} has-desktop-only{% endif %}">
+      {%- render 'tool.picture' with {
+        image: mobileImage,
+        class: 'c-article-stories__banner-image is-mobile'
+        width: 750,
+        sizes: '374,750'
+      } -%}
+      {%- render 'tool.picture' with {
+        image: desktopImage,
+        class: 'c-article-stories__banner-image is-desktop'
+        width: 2560,
+        sizes: '374,750,1100,1650,2000'
+      } -%}
+      
+      {%- comment -%} Article Stories Hero Banner Content {%- endcomment -%}
+      <div class="c-article-stories__banner-inner">
+
+        {%- comment -%} Article Stories Categories {%- endcomment -%}
+        <p class="c-article-stories__tags o-heading--7">
+          {%- for tag in article.tags -%}
+            <span class="c-article-stories__tags-tag">
+              {{- tag -}}
+            </span>
+          {%- endfor -%}
+        </p>
+
+        {%- comment -%} Article Stories Title {%- endcomment -%}
+        <h3 class="c-article-stories__heading">
+          {{- article.title | escape -}}
+        </h3>
+
+        {%- comment -%} Article Stories Author {%- endcomment -%}
+        {%- if articleAuthor != blank  -%}
+          <p class="c-article-stories__author o-heading--7">
+            {{- articleAuthor | escape -}}
+          </p>
+        {%- endif -%}
+        
+      </div> 
+      
+    </div>
+
+    {%- comment -%} Article Stories Content {%- endcomment -%}
+    <div class="c-article-stories__content">
+      
+      {%- comment -%} Article Stories Excerpt (looks like blockquote) {%- endcomment -%}
+      {%- if article.excerpt != blank -%}
+        <h6 class="c-article-stories__excerpt">
+          "{{- article.excerpt | escape -}}"
+        </h6>
+      {%- endif -%}
+
+      {%- comment -%} Article Stories Images Block {%- endcomment -%}
+      {%- if image1of2 != blank or image2of2 != blank -%}
+        {%- assign defaultImage1 = image1of2 | default: image2of2 -%}
+        {%- capture images -%}
+          <div class="c-article-stories__content-images">
+            <div class="c-article-stories__content-image-container o-responsive-image-container is-left">
+              {%- render 'tool.picture' with {
+                class: 'c-article-stories__content-image o-responsive-image',
+                image: defaultImage1,
+                width: 1720,
+                sizes: '375,750,1100,1650,2000',
+                lazy: true
+              } -%}
+            </div>
+
+            {%- if image1of2 != blank and image2of2 != blank -%}
+              <div class="c-article-stories__content-image-container o-responsive-image-container is-right">
+                {%- render 'tool.picture' with {
+                  class: 'c-article-stories__content-image o-responsive-image'
+                  image: image2of2,
+                  width: 1720,
+                sizes: '375,750,1100,1650,2000',
+                lazy: true
+                } -%}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endcapture -%}
+      {%- else -%}
+        {%- assign images = "" -%}
+      {%- endif -%}
+
+      {%- comment -%} Article Stories Original Content {%- endcomment -%}
+      {{- article.content | replace: '[images]', images -}}
+    </div>
+
+  </section>
+{%- endif -%}

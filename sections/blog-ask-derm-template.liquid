@@ -1,0 +1,276 @@
+{%- comment -%}
+  Ask a Derm Template
+
+  Version:
+    1.0.0 - 2022/01/20
+
+{%- endcomment -%}
+
+{%- liquid
+
+  assign ss = section.settings
+
+  assign dermPlaceholder = 'pages.ask-derm.ask_derm_placeholder' | t
+  assign dermSubmit = 'pages.ask-derm.ask_derm_submit' | t
+
+-%}
+
+{%- if ss.image != blank -%}
+
+{{ 'sections.blog-ask-derm-template.css' | asset_url | stylesheet_tag }}
+{{ 'sections.blog-ask-derm-template.js' | asset_url | script_tag }}
+
+  <section class="c-ask-derm">
+    
+    <div class="c-ask-derm__header-background">
+    </div>
+
+    <div class="c-ask-derm__hero">
+
+      <div class="c-ask-derm__hero-wrapper">
+        <div class="c-ask-derm__content-container">
+          {%- if ss.hero-pretitle != blank -%}
+            <p class="c-ask-derm__pretitle o-heading--7">
+              {{- ss.hero-pretitle | escape -}}
+            </p>
+          {%- endif -%}
+            
+          {%- if ss.hero-title != blank -%}
+            <h1 class="c-ask-derm__title">
+              {{- ss.hero-title -}}
+            </h1>
+          {%- endif -%}
+
+          {%- comment -%} Section Image with Counter {%- endcomment -%}
+          <div class="c-ask-derm__images-wrapper is-mobile">
+            <div class="c-ask-derm__image-container o-responsive-image-container">
+              {%- render 'tool.picture' with {
+                image: ss.image,
+                class: 'c-ask-derm__image o-responsive-image',
+                width: 865,
+                sizes: '375,20000',
+                imageSizes: '375,865'
+              } -%}
+            </div>
+            <div class="c-ask-derm__image-overlay">
+
+              {%- comment -%} Render Countdown Snippet{%- endcomment -%}
+            <div class="c-ask-derm__counter" data-countdown-banner>
+              <div class="c-ask-derm__counter-coundown">
+                {%- render 'object.countdown' with {
+                  countdownYear: ss.countdownYear,
+                  countdownMonth: ss.countdownMonth,
+                  countdownDay: ss.countdownDay,
+                  countdownHour: ss.countdownHour,
+                  countdownMinute: ss.countdownMinute,
+                  countdownSubtitle: ss.countdown-title,
+                  countdownComplete: ss.countdown-subtitle
+                } -%}
+              </div>
+  
+            </div>
+            </div>
+          </div>
+
+          {%- if ss.hero-content != blank -%}
+            <p class="c-ask-derm__content">
+              {{- ss.hero-content -}}
+            </p>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Ask Derm Input Section{%- endcomment -%}
+
+        {% form 'contact', id: 'ask-derm-blog' %}
+        
+          {%- if form.posted_successfully? -%}
+          
+          {%- comment -%} Success Messaging {%- endcomment -%}
+            <p class="c-ask-derm__ask-success">
+              {{- ss.form-successful | escape -}}
+            </p>
+
+          {%- else -%}
+
+          <div class="c-ask-derm__ask">
+            {%- if ss.section-title != blank -%}
+              <h5 class="c-ask-derm__ask-title">
+                {{- ss.section-title | escape -}}
+              </h5>
+            {%- endif -%}
+
+            {%- if ss.section-content != blank -%}
+              <p class="c-ask-derm__ask-content">
+                {{- ss.section-content -}}
+              </p>
+            {%- endif -%}
+
+            <input
+              type="hidden"
+              name="contact[email]"
+              class="c-ask-derm__ask-input"
+              placeholder="{{ 'comments.email_placeholder' | t }}"
+              value="{{ form.email | escape | default: customer.email }}"
+              required>
+
+            <input
+              type="text"
+              name="contact[message]"
+              class="c-ask-derm__ask-input"
+              placeholder="{{ dermPlaceholder }}"
+              value="{%- if form[message] -%}{{- form[message] -}}{%- endif -%}"
+              required>
+
+            <button type="submit" class="c-ask-derm__ask-submit o-btn is-primary">
+              {{- dermSubmit -}}
+            </button>
+
+          </div>
+          {%- endif -%}
+        {% endform %}
+      </div>
+
+      {%- comment -%} Section Image with Counter {%- endcomment -%}
+      <div class="c-ask-derm__images-wrapper is-desktop">
+        <div class="c-ask-derm__image-container o-responsive-image-container">
+          {%- render 'tool.picture' with {
+            image: ss.image,
+            class: 'c-ask-derm__image o-responsive-image',
+            width: 865,
+            sizes: '375,20000',
+            imageSizes: '375,865'
+          } -%}
+        </div>
+        
+        <div class="c-ask-derm__image-overlay">
+          <div class="c-ask-derm__counter" data-countdown-banner>
+            <div class="c-ask-derm__counter-coundown">
+              {%- render 'object.countdown' with {
+                countdownYear: ss.countdownYear,
+                countdownMonth: ss.countdownMonth,
+                countdownDay: ss.countdownDay,
+                countdownHour: ss.countdownHour,
+                countdownMinute: ss.countdownMinute,
+                countdownSubtitle: ss.countdown-title,
+                countdownComplete: ss.countdown-subtitle
+              } -%}
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </section>
+{%- endif -%}
+
+
+{% schema %}
+  {
+    "name": "Ask Derm",
+    "class": "c-section c-section__ask-derm",
+    "settings": [
+      {
+        "id": "hero-pretitle",
+        "type": "text",
+        "label": "Pretitle"
+      },
+      {
+        "id": "hero-title",
+        "type": "text",
+        "label": "Title"
+      },
+      {
+        "id": "hero-content",
+        "type": "textarea",
+        "label": "Text"
+      },
+      {
+        "id": "image",
+        "type": "image_picker",
+        "label": "Background Image",
+        "info": "Please upload in .jpg format. Recommended ratio approx. 1/1, at least 1700/1700."
+      },
+      {
+        "type": "header",
+        "content": "Countdown Info"
+      },
+      {
+        "type": "range",
+        "id": "countdownDay",
+        "label": "Day",
+          "min": 1,
+          "max": 31,
+          "step": 1,
+        "default": 26
+      },
+      {
+        "type": "range",
+        "id": "countdownMonth",
+        "label": "Month",
+          "min": 1,
+          "max": 12,
+          "step": 1,
+        "default": 11
+      },
+      {
+        "type": "range",
+        "id": "countdownYear",
+        "label": "Year",
+          "min": 2022,
+          "max": 2026,
+          "step": 1,
+        "default": 2022
+      },
+      {
+        "type": "range",
+        "id": "countdownHour",
+        "label": "Hour",
+          "min": 0,
+          "max": 23,
+          "step": 1,
+        "default": 16
+      },
+      {
+        "type": "range",
+        "id": "countdownMinute",
+        "label": "Minute",
+          "min": 0,
+          "max": 60,
+          "step": 1,
+        "default": 0
+      },
+      {
+        "id": "countdown-title",
+        "type": "text",
+        "label": "Countdown Title",
+        "info": "Please add title for countdown"
+      },
+      {
+        "id": "countdown-subtitle",
+        "type": "text",
+        "label": "Countdown Message",
+        "info": "Please add a message in case live was planned but didn't take place."
+      },
+      {
+        "id": "section-title",
+        "type": "text",
+        "label": "Title",
+        "info": "Title for question form."
+      },
+      {
+        "id": "section-content",
+        "type": "textarea",
+        "label": "Text",
+        "info": "Content for question form."
+      },
+      {
+        "id": "form-successful",
+        "type": "textarea",
+        "label": "Successful message.",
+        "info": "Successful message after question submited"
+      }
+    ]
+  }
+{% endschema %}

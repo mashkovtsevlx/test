@@ -1,0 +1,31 @@
+{% comment %}
+  Cart Header Section
+    Shows the cart header, the shipping promo bar and the line items.
+  
+  Version:
+    1.0.0 - 2021-09-07
+{% endcomment %}
+
+{{ 'sections.cart-header.css' | asset_url | stylesheet_tag }}
+
+<section class="c-cart-header">
+  <span class="o-heading--4 c-cart-header__title">
+    {{- section.settings.title | escape -}}
+  </span>
+
+  {%- render 'cart-shipping-bar' with { class: 'c-cart-header__shipping' } -%}
+</section>
+
+{% schema %}
+  {
+    "name": "Cart Header",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Cart Title",
+        "default": "Your Cart"
+      }
+    ]
+  }
+{% endschema %}

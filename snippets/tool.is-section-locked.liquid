@@ -1,0 +1,16 @@
+{%- comment -%}
+  It determines if a section is locked
+
+  Version:
+    1.0.0 - 2022/01/15
+{%- endcomment -%}
+{%- assign pageLevel = page.metafields.accentuate.level | plus: 0-%}
+{%- capture customerLevel -%}
+  {%- render 'tool.skin-customer-level' -%}
+{%- endcapture -%}
+{%- assign customerLevel = customerLevel | plus: 0 -%}
+{%- assign isSectionLocked = 'false' -%}
+{%- if pageLevel > 0 and customerLevel < pageLevel and request.design_mode == false -%}
+  {%- assign isSectionLocked = 'true' -%}
+{%- endif -%}
+{{-isSectionLocked-}}

@@ -1,0 +1,324 @@
+{%- comment -%}
+  Collection Products
+    Collection Products section with image, text
+
+  Version:
+    1.0.0 - 2020/07/14
+{%- endcomment -%}
+
+{%- liquid
+
+-%}
+
+<script src="{{ 'sections.collection-products.js' | asset_url }}" defer></script>
+
+{{ 'sections.collection-products.css' | asset_url | stylesheet_tag }}
+
+{%- if section.settings.show_afterpay -%}
+  <script src="https://js.afterpay.com/afterpay-1.x.js" data-analytics-enabled async></script>
+{%- endif -%}
+{% if section.settings.show_fixed_btn %}
+  <div class="c-collection-products__fixed-btn--wrap">
+    <a class="c-collection-products__fixed-btn o-btn is-primary" href="#{{ section.id }}">
+      {{ section.settings.btn_text }}
+    </a>
+  </div>
+{% endif %}
+<section
+  class="c-collection-products"
+  data-collection-products
+  {% if section.settings.show_fixed_btn %}
+    id="{{ section.id }}"
+  {% endif %}
+>
+  {%- liquid
+    assign accordion_item1_names = ""
+    assign accordion_item1_description = ""
+    assign accordion_item2_names = ""
+    assign accordion_item2_description = ""
+    for block in section.blocks
+      if block.type == "product"
+        continue
+      endif
+      assign bs = block.settings
+
+      if bs.index == "1"
+        assign accordion_item1_names = accordion_item1_names | append: bs.accordion_name | append: "<split>"
+        assign accordion_item1_description = accordion_item1_description | append: bs.accordion_description | append: "<split>"
+      else
+        assign accordion_item2_names = accordion_item2_names | append: bs.accordion_name | append: "<split>"
+        assign accordion_item2_description = accordion_item2_description | append: bs.accordion_description | append: "<split>"
+      endif
+    endfor
+
+    assign product_count = 0
+  -%}
+
+  {% capture expandIcons %}
+    {%- render 'object.icon' with { icon: 'plus' } -%}
+    {%- render 'object.icon' with { icon: 'minus' } -%}
+  {% endcapture %}
+
+  {%- for block in section.blocks -%}
+    {%- liquid
+      assign bs = block.settings
+      assign product = bs.product
+      assign variant = product.selected_or_first_available_variant
+      if block.type != "product"
+        continue
+      endif
+      if product_count == 0
+        assign accordion_names = accordion_item1_names | split: "<split>"
+        assign accordeion_description = accordion_item1_description | split: "<split>"
+      else
+        assign accordion_names = accordion_item2_names | split: "<split>"
+        assign accordeion_description = accordion_item2_description | split: "<split>"
+      endif
+      assign accordion_size =  accordion_names | size
+    -%}
+
+    <div class="c-collection-products__item" data-collection-container data-index="{{ product_count }}">
+      <div class="c-collection-products__item-content">
+        <a
+          class="c-collection-products__title-wrapper"
+          {% unless block.settings.disable_product_link %}
+            href="{{ product.url }}"
+          {% endunless %}
+          {% if bs.disable_product_link and bs.section_id and bs.section_id != "" %}
+            href="#{{ bs.section_id }}"
+          {% endif %}
+        >
+          {%- if bs.subtitle != blank -%}
+            <p class="c-collection-products__subtitle o-heading--7">
+              {{ bs.subtitle | escape }}
+            </p>
+          {%- endif -%}
+
+          <h5 class="o-heading--5 c-collection-products__title">{{ product.title | escape }}</h5>
+          
+          {% if bs.show_product_rating %}
+            {% render 'okendo-reviews-product-rating-summary', product: product %}
+          {% endif %}
+        </a>
+
+        {%- if bs.text != blank -%}
+          <p class="c-collection-products__text">
+            {%- if bs.cta-label != blank -%}
+              {{- bs.text | escape | append: ' ' }}
+              
+              <a href="{{ product.url }}" class="c-collection-products__btn o-link has-arrow">
+                {{ bs.cta-label }}
+              </a>
+            {% else %}
+              <a href="{{ product.url }}">
+                {{- bs.text | escape | append: ' ' }}
+              </a>
+            {%- endif -%}
+          </p>
+        {%- endif -%}
+
+        {%- if section.settings.show_afterpay -%}
+          <afterpay-placement
+            data-locale="{{ shop_locale.iso_code }}"
+            data-currency="{{ shop.currency }}"
+            data-amount="{{ variant.price | money_without_currency }}"
+          ></afterpay-placement>
+        {%- endif -%}
+
+        {%- if accordion_size > 0 -%}
+          <div class="c-collection-products__accordion-wrapper" data-accordion-container>
+            {%- for name in accordion_names -%}
+              {%- if name == "" -%}
+                {%- continue -%}
+              {%- endif -%}
+              <div class="c-collection-products__accordion" data-accordion-slide>
+                <div class="c-collection-products__accordion__title o-heading--7" data-accordion-title>
+                  {{ name | escape }}
+                  {{ expandIcons }}
+                </div>
+                <div class="c-collection-products__accordion__content" data-accordion-content>
+                  {{- accordeion_description[forloop.index0] | newline_to_br -}}
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <a
+        class="c-collection-products__image-container"
+        {% unless block.settings.disable_product_link %}
+          href="{{ product.url }}"
+        {% endunless %}
+        {% if bs.disable_product_link and bs.section_id and bs.section_id != "" %}
+          href="#{{ bs.section_id }}"
+        {% endif %}
+      >
+        {%-
+          render 'tool.image' with {
+          image: product.featured_image,
+          class: 'c-collection-products__image',
+          srcsetSizes: '100,112,150,200,270,350',
+          sizes: "(min-width: 1650px) calc((86vw / 2 - 96px) * 0.4), (min-width: 1100px) calc((86vw / 2 - 48px) * 0.4), (min-width: 750px) calc(((100vw - 112px) / 2 - 48px) * 0.52), calc((100vw - 80px) * 0.4)",
+          lazy: true,
+          width: 112
+          }
+        -%}
+      </a>
+
+      <div class="c-collection-products__btn-wrapper">
+        {% unless block.settings.disable_product_link %}
+          <a
+            class="c-collection-products__btn c-collection-products__btn--show-product o-btn is-quaternary"
+            href="{{ product.url }}"
+          >
+            {{ 'products.general.view_product' | t }}
+          </a>
+        {% endunless %}
+
+        {%- comment -%} Product Price {%- endcomment -%}
+        <button
+          class="
+            c-collection-products__add-cart o-btn is-primary
+            {% if variant.available != true %}is-disabled{% endif %}
+          "
+          {% if variant.available != true %}
+            disabled
+          {% endif %}
+          data-add-to-cart-button
+          data-add-to-cart-variant="{{ variant.id }}"
+          data-index="{{ product_count }}"
+        >
+          {%- if variant.available -%}
+            {{- 'products.product.add' | t }}
+            <span class="is-divider">|</span>
+            {%-
+              render 'object.product-pricing',
+              price: variant.price,
+              comparePrice: variant.compare_at_price,
+              class: 'c-collection-products__add-cart-price'
+            -%}
+          {%- else -%}
+            {{- 'products.product.sold_out' | t -}}
+          {%- endif -%}
+        </button>
+      </div>
+    </div>
+    
+    {% assign product_count = product_count | plus: 1 %}
+  {%- endfor -%}
+</section>
+
+<script src="{{ 'sections.collection-products-accordion.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Collection Products",
+  "class": "c-section c-section__collection-products",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_afterpay",
+      "label": "Show afterpay"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_fixed_btn",
+      "label": "Show fixed button",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": "Fixed button text",
+      "default": "Buy now"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "limit": 2,
+      "settings": [
+        {
+          "id": "product",
+          "type": "product",
+          "label": "Product"
+        },
+        {
+          "id": "disable_product_link",
+          "type": "checkbox",
+          "label": "Disable product link"
+        },
+        {
+          "id": "show_product_rating",
+          "type": "checkbox",
+          "label": "Show product rating",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "section_id",
+          "label": "Anchor id (scroll to section id)",
+          "info": "For advanced users or engineers"
+        },
+        {
+          "id": "subtitle",
+          "type": "text",
+          "label": "Subtitle"
+        },
+        {
+          "id": "text",
+          "type": "textarea",
+          "label": "Text"
+        },
+        {
+          "type": "text",
+          "id": "cta-label",
+          "label": "CTA Label"
+        }
+      ]
+    },
+    {
+      "type": "accordion_item",
+      "name": "Accordion item",
+      "limit": 20,
+      "settings": [
+        {
+          "id": "index",
+          "type": "select",
+          "label": "Product index",
+          "options": [
+            {
+              "value": "1",
+              "label": "1"
+            },
+            {
+              "value": "2",
+              "label": "2"
+            }
+          ],
+          "default": "1"
+        },
+        {
+          "type": "text",
+          "id": "accordion_name",
+          "label": "Accordion item name",
+          "default": "Name"
+        },
+        {
+          "type": "richtext",
+          "id": "accordion_description",
+          "label": "Accordion item description"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Products",
+      "category": "Content"
+    }
+  ]
+}
+{% endschema %}

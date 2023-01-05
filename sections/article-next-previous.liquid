@@ -1,0 +1,126 @@
+{%- comment -%}
+Next or Previous Article
+
+Version:
+1.0.0 - 2022/03/21
+{%- endcomment -%}
+
+
+{%- liquid
+
+  assign moreArticles = section.settings.articles
+  assign reverse = section.settings.reverse
+
+  if template.name == 'article'
+
+    if moreArticles == 'next'
+      assign currentArticle = blog.next_article
+    elsif moreArticles == 'prev'
+      assign currentArticle = blog.previous_article
+    endif
+
+    assign image = currentArticle.image
+    assign pretitleArticleNext = 'articles.next_article' | t
+    assign pretitleArticlePrev = 'articles.previous_article' | t
+    assign title = currentArticle.title
+
+    if currentArticle.excerpt != blank
+      assign articleExerpt = currentArticle.excerpt | truncatewords: 19
+    else
+      assign articleExerpt = currentArticle.content | strip_html | truncatewords: 19
+    endif
+
+    assign learnMore = 'articles.learn_more' | t
+    assign articleUrl = currentArticle.url
+
+  endif
+
+-%}
+
+{%- if image != blank and title != blank -%}
+{{- 'sections.article-next-previous.css' | asset_url | stylesheet_tag -}}
+
+<section class="c-article-next-previous">
+  <a class="c-article-next-previous__link" href="{{- articleUrl -}}">
+    <div class="c-article-next-previous__inner {% if reverse %} is-reversed {% endif %}">
+      <div class="c-article-next-previous__image-wrapper">
+
+        {%- comment -%} Article Image {%- endcomment -%}
+        <div class="c-article-next-previous__image-container o-responsive-image-container">
+          {%- render 'tool.picture' with {
+          image: image,
+          class: 'c-article-next-previous__image o-responsive-image',
+          width: 1400,
+          sizes: '375,750,1100,1350,1650',
+          imageSizes: '375,750,1100,900,1000',
+          lazy: true
+          } -%}
+        </div>
+      </div>
+
+      {%- comment -%} Article Content {%- endcomment -%}
+      <div class="c-article-next-previous__text-content">
+
+        {%- comment -%} Article Pretitle {%- endcomment -%}
+        {%- if moreArticles == 'next' -%}
+        <span class="c-article-next-previous__pretitle o-heading--7">
+          {{- pretitleArticleNext | escape -}}
+        </span>
+        {%- else -%}
+        <h6 class="c-article-next-previous__pretitle o-heading--7">
+          {{- pretitleArticlePrev | escape -}}
+        </h6>
+        {%- endif -%}
+
+        {%- comment -%} Section Title {%- endcomment -%}
+        <h4 class="c-article-next-previous__title">
+          {{- title | escape -}}
+        </h4>
+
+        {%- comment -%} Section Description {%- endcomment -%}
+        <p class="c-article-next-previous__excerpt">
+          {{- articleExerpt -}}
+        </p>
+
+        <span  class="c-diaries-template__btn o-link has-arrow">
+          {{- learnMore -}}
+        </span>
+      </div>
+
+    </div>
+  </a>
+</section>
+
+{%- endif -%}
+
+{% schema %}
+{
+	"name": "Next or Previous Article",
+	"class": "c-section c-section__next-prev-article",
+	"settings": [{
+			"type": "checkbox",
+			"id": "reverse",
+			"label": "Reverse order on desktop",
+			"default": false
+		},
+		{
+			"type": "select",
+			"id": "articles",
+			"label": "Choose whether to show next or previous article",
+			"info": "This only applies to the article template",
+			"options": [{
+					"value": "next",
+					"label": "Next"
+				},
+				{
+					"value": "prev",
+					"label": "Previous"
+				}
+			]
+		}
+	],
+	"presets": [{
+		"name": "Next or Previous Article"
+	}]
+}
+{% endschema %}

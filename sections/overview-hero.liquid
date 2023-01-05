@@ -1,0 +1,340 @@
+{%- comment -%}
+  Overview Hero Video Banner
+
+  Version:
+    1.0.0 - 2021/12/10
+{%- endcomment -%}
+
+{%- liquid
+  
+  assign ss = section.settings
+
+  assign imageDesktop = ss.image
+  assign imageMobile = ss.image-mobile
+  if imageMobile == blank
+    assign imageMobile = imageDesktop
+  endif
+  assign videoUrl = ss.video-link
+
+  assign teaserImageDesktop = ss.image-teaser
+  assign teaserImageMobile = ss.image-mobile-teaser
+  if teaserImageMobile == blank
+    assign teaserImageMobile = iteaserImageDesktop
+  endif
+  assign teaserVideoUrl = ss.video-link-teaser
+
+  assign pageLevel = page.metafields.accentuate.level | plus: 0
+
+-%}
+
+{%- capture customerLevel -%}
+  {%- render 'tool.skin-customer-level' -%}
+{%- endcapture -%}
+{% assign customerLevel = customerLevel | plus: 0 %}
+
+{%- if customer.first_name != blank -%}
+  {%- capture customerName -%}
+    <span class="c-overview-hero__customer-name">{{ customer.first_name }}</span>
+  {%- endcapture -%}
+{%- endif -%}
+
+{{ 'sections.overview-hero.css' | asset_url | stylesheet_tag }}
+{{ 'sections.overview-hero.js' | asset_url | script_tag }}
+
+<section class="c-overview-hero">
+  <div class="c-overview-hero__header-background">
+  </div>
+  <div class="c-overview-hero__inner">
+
+    {%- comment -%} Section Title with User Name {%- endcomment -%}
+    {%- if ss.title != blank -%}
+      <h1 class="c-overview-hero__heading">
+        {{- ss.title | replace: '$customerName$', customerName -}}
+      </h1>
+    {%- endif -%}
+
+    {%- comment -%} Progress bar {%- endcomment -%}
+    <div class="c-overview-hero__progress-container is-week-{{pageLevel}}" >
+      <div class="c-overview-hero__progress-items" data-progress-bar>
+        {%- for link in settings.menu-progress.links -%}
+          {%- liquid
+            assign status = 'locked'
+            assign currentPageLevel = link.object.metafields.accentuate.level | plus: 0
+            if customerLevel >= currentPageLevel
+              assign status = 'unlocked'
+            endif
+          -%}
+          
+          <a class="c-overview-hero__progress-item is-{{status}} {% if link.active %}is-active{% endif %}" href="{{- link.url -}}">
+            <div class="c-overview-hero__progress-check">
+            {%- render 'svg.check' -%}
+            </div>
+            
+            <div class="c-overview-hero__progress-lock">
+              {%- render 'svg.lock' -%}
+            </div>
+
+            <p class="c-overview-hero__progress-title o-heading--7">
+              {{link.title}}
+            </p>
+          </a>
+          
+        {%- endfor -%}
+      </div>
+    </div>
+    
+    {%- if customerLevel >= pageLevel -%}
+
+      {%- comment -%} Section Video Banner {%- endcomment -%}
+
+      {%- if ss.video-embed != blank  -%}
+        <a class="c-overview-hero__wrapper" data-lity href="#inline">
+          <div class="c-overview-hero__image-container o-responsive-image-container
+            {% if imageMobile == blank %} has-desktop-only {% endif %}">
+            
+            {%- render 'tool.picture' with {
+              image: imageMobile,
+              class: 'c-overview-hero__image o-responsive-image is-mobile'
+              width: 750,
+              sizes: '374,750'
+            } -%}
+            
+            {%- render 'tool.picture' with {
+              image: imageDesktop,
+              class: 'c-overview-hero__image o-responsive-image is-desktop'
+              width: 2560,
+              sizes: '374,750,1100,1650,2000'
+            } -%}
+          </div>
+            
+          <div class="c-overview-hero__content">
+
+            {%- if ss.video-pretitle -%}
+              <p class="c-overview-hero__content-pretitle o-heading--7">
+                {{- ss.video-pretitle | escape -}}
+              </p>
+            {%- endif -%}
+
+            {%- if ss.video-title -%}
+              <h4 class="c-overview-hero__content-title">
+                {{- ss.video-title | escape -}}
+              </h4>
+            {%- endif -%}
+
+            <div class="c-overview-hero__play-button">
+              {%- render 'svg.play-button' -%}
+            </div>
+          </div>
+        </a>
+
+        <div id="inline" class="lity-hide">
+          {{- ss.video-embed -}}
+        </div>
+      {%- endif -%}
+
+    {%- else -%}
+
+
+      {%- comment -%} Teaser Section if customer level is low {%- endcomment -%}
+      {%- if teaserImageDesktop != blank -%}
+      <div id="lockedModal" class="lity-hide c-overview-hero__teaser-modal"><p>{{- 'pages.skin-journeys.locked_modal' | t -}}</p></div>
+        <div class="c-overview-hero__teaser-wrapper" data-lity data-lity-target="#lockedModal">
+          <div class="c-overview-hero__teaser-image-container o-responsive-image-container
+            {% if teaserImageMobile == blank %} has-desktop-only {% endif %}">
+            
+            {%- render 'tool.picture' with {
+              image: teaserImageMobile,
+              class: 'c-overview-hero__teaser-image o-responsive-image is-mobile'
+              width: 750,
+              sizes: '374,750'
+            } -%}
+            
+            {%- render 'tool.picture' with {
+              image: teaserImageDesktop,
+              class: 'c-overview-hero__teaser-image o-responsive-image is-desktop'
+              width: 2560,
+              sizes: '374,750,1100,1650,2000'
+            } -%}
+          </div>
+
+
+            <div class="c-overview-hero__teaser-image-overlay">
+              <div class="c-overview-hero__teaser-content">
+
+                {%- if ss.video-pretitle -%}
+                  <p class="c-overview-hero__teaser-content-pretitle o-heading--7">
+                    {{- ss.video-pretitle | escape -}}
+                  </p>
+                {%- endif -%}
+
+                {%- if ss.video-title -%}
+                  <h4 class="c-overview-hero__teaser-content-title">
+                    {{- ss.video-title | escape -}}
+                  </h4>
+                {%- endif -%}
+
+                <div class="c-overview-hero__teaser-play-button">
+                  {%- render 'svg.play-button' -%}
+                </div>
+              </div>
+            </div>
+          
+          </a>
+
+          <div id="inline" class="lity-hide">
+            {{- ss.video-embed-teaser -}}
+          </div>
+
+      {%- endif -%}
+
+      {%- if ss.image1of2-teaser != blank and ss.image2of2-teaser != blank -%}
+        <div class="c-overview-hero__teaser-info">
+
+          <div class="c-overview-hero__teaser-image1of2-container o-responsive-image-container">
+            {%- render 'tool.picture' with {
+              image: ss.image1of2-teaser,
+              class: 'c-overview-hero__teaser-image1of2 o-responsive-image',
+              width: 452,
+              sizes: '375,2000',
+              imageSizes: '297,452',
+              lazy: true
+            } -%}
+          </div>
+
+          <div class="c-overview-hero__teaser-info-content">
+            {% if ss.pretitle-teaser != blank -%}
+                <div class="c-overview-hero__teaser-info-pretitle o-heading--7">
+                  {{- ss.pretitle-teaser | escape -}}
+                </div>
+            {%- endif -%}
+
+            {%- if ss.title-teaser != blank -%}
+              <h4 class="c-overview-hero__teaser-info-title">
+                {{- ss.title-teaser | escape -}}
+              </h4>
+            {%- endif -%}
+            
+            {%- if ss.text-teaser != blank -%}
+              <div class="c-overview-hero__teaser-info-text">
+                {{- ss.text-teaser -}}
+              </div>
+            {%- endif -%}
+          </div>
+
+          <div class="c-overview-hero__teaser-image2of2-container o-responsive-image-container">
+            {%- render 'tool.picture' with {
+              image: ss.image2of2-teaser,
+              class: 'c-overview-hero__teaser-image2of2 o-responsive-image',
+              width: 452,
+              sizes: '375,2000',
+              imageSizes: '297,450',
+              lazy: true
+            } -%}
+          </div>
+        </div>
+      {%- endif -%}
+      
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Overview Hero Banner",
+  "class": "c-section c-section__overview-hero",
+  "settings": [
+    {     
+      "type": "textarea",
+      "id": "title",
+      "label": "Section Title",
+      "info": "Please include $customerName$ where you wish to display the customer name inside your title."
+    },
+    {
+      "id": "image",
+      "type": "image_picker",
+      "label": "Image (desktop)",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 1/1, at least 1190/1188px."
+    },
+    {
+      "id": "image-mobile",
+      "type": "image_picker",
+      "label": "Image (mobile)",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 1/1.3, at least 1500/2200px."
+    },
+    {
+      "type": "html",
+      "id": "video-embed",
+      "label": "Video embed"
+    },
+    {
+      "type": "text",
+      "id": "video-pretitle",
+      "label": "Video Pretitle"
+    },
+    {
+      "type": "text",
+      "id": "video-title",
+      "label": "Video Title"
+    },
+    {
+      "type": "paragraph",
+      "content": "The next information will only be displayed if the customer doesn't have access to it, as a temporary teaser until the time of the next challenge week comes."
+    },
+    {
+      "id": "image-teaser",
+      "type": "image_picker",
+      "label": "Image (desktop)",
+      "info": "Teaser image. Please upload in .jpg format. Recommended ratio approx. 1/1, at least 1190/1188px."
+    },
+    {
+      "id": "image-mobile-teaser",
+      "type": "image_picker",
+      "label": "Image (mobile)",
+      "info": "Teaser image. Please upload in .jpg format. Recommended ratio approx. 1/1.3, at least 1500/2200px."
+    },
+    {
+      "type": "html",
+      "id": "video-embed-teaser",
+      "label": "Teaser video embed"
+    },
+    {
+      "type": "text",
+      "id": "video-pretitle-teaser",
+      "label": "Teaser Video Pretitle"
+    },
+    {
+      "type": "text",
+      "id": "video-title-teaser",
+      "label": "Teaser Video Title"
+    },
+    {
+      "type": "text",
+      "id": "pretitle-teaser",
+      "label": "Teaser Pretitle"
+    },
+    {
+      "type": "text",
+      "id": "title-teaser",
+      "label": "Teaser Title"
+    },
+    {
+      "type": "textarea",
+      "id": "text-teaser",
+      "label": "Teaser Text"
+    },
+    {
+      "id": "image1of2-teaser",
+      "type": "image_picker",
+      "label": "Teaser Image 1 of 2",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 1/3, at least 910/1200px."
+    },
+    {
+      "id": "image2of2-teaser",
+      "type": "image_picker",
+      "label": "Teaser Image 2 of 2",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 1/14, at least 900/1040px."
+    }
+  ]
+ 
+}
+{% endschema %}

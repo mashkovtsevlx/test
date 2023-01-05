@@ -1,0 +1,170 @@
+{%- comment -%}
+  Title And Articles with
+  - section title
+  - 3 resent articles
+  - button
+
+  Version:
+    1.0.0 - 2021/12/10
+{%- endcomment -%}
+
+{%- liquid
+  assign ss = section.settings
+
+  assign title = ss.title
+
+  assign currentbBlog = blogs[section.settings.blog]
+
+  assign socialVideos = section.blocks | where: 'type', 'social-videos'
+-%}
+
+{%- capture isSectionLocked -%}
+  {%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+  {{ 'sections.title-and-articles.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'sections.title-and-articles.js' | asset_url }}" defer></script>
+
+  <section class="c-title-articles" data-title-articles-container>
+    <div class="c-title-articles__inner" data-title-articles-inner>
+      {%- if title != blank -%}
+        <h4 class="c-title-articles__title">
+          {{- title | escape }}
+        </h4>
+      {%- endif -%}
+
+      <div class="c-title-articles__articles">
+        {%- if ss.blogType == 'diaries' or ss.blogType == 'stories' -%}
+          {%- for article in currentbBlog.articles -%}
+            {%- if ss.blogType == 'diaries' -%}
+              {%-
+                render 'object.article-diaries-thumbnail' with {
+                article: article,
+                class: 'c-title-articles__diaries-wrapper'
+                }
+              -%}
+            {% else %}
+              {%-
+                render 'object.article-stories-thumbnail' with {
+                article: article,
+                class: 'c-title-articles__stories-wrapper'
+                }
+              -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {% else %}
+          {% for video in socialVideos %}
+            {%-
+              render 'object.social-video-thumbnail' with {
+              url: video.settings.social-video-link,
+              image: video.settings.social-video-image,
+              pretitle: video.settings.social-video-pretitle,
+              title: video.settings.social-video-title,
+              author: video.settings.social-video-author,
+              class: 'c-title-articles__social-video-wrapper'
+              }
+            -%}
+          {% endfor %}
+        {%- endif -%}
+      </div>
+
+      {%- if section.blocks.size > 3 or currentbBlog.articles.size > 3 -%}
+        <div class="c-title-articles__btn-container">
+          <button class="c-title-articles__btn o-btn is-primary" data-title-articles-more>
+            {{- ss.button-label -}}
+          </button>
+        </div>
+      {%- endif -%}
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Title and Articles",
+  "class": "c-section c-section__title-and-articles",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog",
+      "info": "Please select the blog for right info display."
+    },
+    {
+      "type": "radio",
+      "id": "blogType",
+      "label": "Blog Type",
+      "info": "Please select the blog for right styles display.",
+      "options": [
+        {
+          "value": "diaries",
+          "label": "Diaries"
+        },
+        {
+          "value": "stories",
+          "label": "Stories"
+        },
+        {
+          "value": "social-videos",
+          "label": "Social Videos"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "button-label",
+      "label": "Button Label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "social-videos",
+      "name": "Social Videos Posts",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Social Video Posts",
+          "info": "This blok is only for social video post."
+        },
+        {
+          "type": "image_picker",
+          "id": "social-video-image",
+          "label": "Video Image"
+        },
+        {
+          "type": "url",
+          "id": "social-video-link",
+          "label": "Video Link"
+        },
+        {
+          "type": "text",
+          "id": "social-video-pretitle",
+          "label": "Video Pretitle"
+        },
+        {
+          "type": "text",
+          "id": "social-video-title",
+          "label": "Video Title"
+        },
+        {
+          "type": "text",
+          "id": "social-video-author",
+          "label": "Video Author"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Title and Articles",
+      "category": "Content"
+    }
+  ]
+}
+{% endschema %}

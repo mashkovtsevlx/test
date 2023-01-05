@@ -1,0 +1,288 @@
+{%- comment -%}
+  Ajax Cart
+    Ajax Cart Drawer that is displayed from the right side of the page.
+
+  Version
+    1.0.0 - 2021/09/10
+{%- endcomment -%}
+
+{%- liquid 
+
+  assign cartCount = 0
+  for item in cart.items
+    if item.properties.isChildVariant
+      continue
+    else 
+      assign cartCount = cartCount | plus: item.quantity
+    endif
+  endfor
+
+-%}
+{{ 'sections.ajax-cart.css' | asset_url | stylesheet_tag }}
+
+<section class="c-ajax-cart" data-ajax-cart data-cart-container>
+  <div class="c-ajax-cart__wrapper">
+  <div class="c-ajax-cart__inner">
+
+    <div class="c-ajax-cart__drawer scrollbar">
+
+        <div class="c-ajax-cart__header">
+          <div class="c-ajax-cart__header-inner">
+            <span class="c-ajax-cart__header-title o-heading--7">
+              {{- section.settings.ajaxCartTitle | escape -}}
+            </span>
+            <span class="c-ajax-cart__header-amount o-heading--7" data-cart-count>
+              {{- cartCount -}}
+            </span>
+
+            <button type="button" class="c-ajax-cart__header-close is-inner" data-ajax-cart-close>
+              {%- render 'svg.close' -%}
+            </button>
+          </div>
+
+          {%- render 'cart-shipping-bar' with { class: 'c-ajax-cart__shipping' } -%}
+          
+          <button type="button" class="c-ajax-cart__header-close is-outer" data-ajax-cart-close>
+            {%- render 'svg.close' -%}
+          </button>
+        </div>
+
+        <div class="c-ajax-cart__lines" data-ajax-cart-lines>
+          {%- for item in cart.items -%}
+            {%- liquid
+              if item.properties.isChildVariant
+                continue
+              endif
+              
+              assign isProductBundle = item.properties.isProductBundle
+              if isProductBundle != blank
+                assign bundleProduct = item.product
+                assign childProductTitles = item.properties._childTitles | split: '|'
+
+                assign totalItemPrice = 0
+                assign originalItemPrice = 0
+                for itm in cart.items
+                  if itm.properties.isChildVariant == isProductBundle
+                    assign totalItemPrice = totalItemPrice | plus: itm.line_price
+                    assign originalItemPrice = originalItemPrice | plus: itm.original_line_price
+                  endif
+                endfor
+
+                assign bundlePrice = totalItemPrice
+                if originalItemPrice > totalItemPrice
+                  assign bundleComparePrice = originalItemPrice
+                endif
+                
+              endif
+            -%}
+
+            <div class="c-ajax-cart__item" data-cart-item>
+              {% comment %} Image {% endcomment %}
+              <div class="c-ajax-cart__item-image">
+                {%- render 'tool.picture' with {
+                  image: item.image,
+                  alt: item.title,
+                  width: 200,
+                  sizes: '700'
+                  imagesizes: '100,200',
+                  class: 'c-ajax-cart__item-image-picture',
+                  lazy: true
+                } -%}
+              </div>
+
+              <div class="c-ajax-cart__item-body"> 
+                <a href={{item.variant.url}} class="c-ajax-cart__item-title o-heading--6">
+                  {{ item.product.title | escape }}
+                </a>
+                {%- unless item.product.has_only_default_variant -%}
+                  <div class="c-ajax-cart__item-variant-title">
+                    {{ item.variant.title }}
+                  </div>
+                {%- endunless -%}
+
+                {%- unless item.product.has_only_default_variant or item.product.variants.size < 2 -%}
+                  <p class="c-ajax-cart__item-variant">
+                    {{ item.title | split: ' - ' | last }}
+                  </p>
+                {%- endunless -%}
+
+
+
+                {%- if item.product.metafields.accentuate.thumbnailText != blank -%}
+                  <p class="c-ajax-cart__item-subtitle o-type--7">
+                    {{- item.product.metafields.accentuate.thumbnailText | escape -}}
+                  </p>
+                {%- endif -%}
+
+                
+
+                <a href="{{ item.url_to_remove }}" class="c-ajax-cart__item-remove" data-ajax-cart-remove data-index="{{ forloop.index0 }}">
+                  {%- render 'svg.close' -%}
+                </a>
+
+
+                {%- if isProductBundle -%}
+                  <div class="c-ajax-cart__bundle-items">
+                    {%- for title in childProductTitles -%}
+                      {% if title == '' %}{% continue %}{% endif %}
+                      <div class="c-ajax-cart__bundle-item o-heading--7">
+                        {{title}}
+                      </div>
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+
+                <div data-error-elem="" class="c-ajax-cart__error is-hidden"></div>
+                <div class="c-ajax-cart__item-money">
+                  {%- assign productType = item.product.type | downcase  -%}
+                  {%- if productType != 'promotions' -%}
+                    {%- render 'object.cart-quantity-selector' with {
+                      item: item,
+                      index: forloop.index0
+                    } -%}
+                  {%- endif -%}
+
+    
+                  {%- assign productTypeClass = 'c-ajax-cart__item-price' -%}
+                  {% if productType == 'promotions' %} 
+                    {%- assign productTypeClass = 'c-ajax-cart__item-price is-sample' -%}
+                  {%- endif -%}
+                  {%- if isProductBundle -%}
+                    {%- render 'object.product-pricing' with {
+                      price: bundlePrice,
+                      comparePrice: bundleComparePrice
+                      class: productTypeClass
+                    } -%}
+                  {% else %}
+                    {% assign compare_at_price = item.quantity | times: item.product.compare_at_price %}
+                    {%- render 'object.product-pricing' with {
+                      price: item.final_line_price,
+                      class: productTypeClass,
+                      comparePrice: compare_at_price
+                    } -%}
+
+                  {% endif %}
+                </div>
+
+              </div>
+            </div>
+          {%- else -%}
+            <div class="c-ajax-cart__empty">
+              <span class="o-heading--5">
+                {{- section.settings.ajaxCartEmpty | escape -}}
+              </span>
+            </div>
+          {%- endfor -%}
+
+
+        </div>
+
+        <div class="o-cart-upsell-drawer__container" data-cart-upsell-container>
+        </div>
+        
+        <div class="c-ajax-cart__footer" data-ajax-cart-footer>
+          {% if section.settings.messaging-link != blank or section.settings.messaging-line1 != blank %}
+            
+            <div class="c-ajax-cart__footer-msg">
+              <a class="c-ajax-cart__footer-msg-link" href="{{section.settings.messaging-link}}">
+                {% render 'svg.locker' with {clazz:"c-ajax-cart__footer-msg-icon" } %}
+                <div class="c-ajax-cart__footer-msg-text">
+                  <p class="c-ajax-cart__footer-msg-content o-type--7">{{section.settings.messaging-line1}}</p>
+                  <p class="c-ajax-cart__footer-msg-content o-type--7">{{section.settings.messaging-line2}}</p>
+                </div>
+              </a>
+              
+
+            </div>
+          {% endif %}
+          
+        </div>
+    </div>
+    
+    <form action="/checkout" method="post" class="c-ajax-cart__footer-buttons">
+      <button type="submit" class="c-ajax-cart__footer-checkout o-btn is-primary">
+        {{- section.settings.ajaxCartCheckout | escape | append: ' - '}} 
+        <span data-currency data-money="{{ cart.total_price }}">
+          {{- cart.total_price | money -}}
+        </span>
+      </button>
+    </form>
+  </div>
+  <div class="c-ajax-cart__backdrop" data-ajax-cart-close></div>
+</div>
+</section>
+
+{{ 'sections.ajax-cart.js' | asset_url | script_tag }}
+{% schema %}
+  {
+    "name": "Cart Drawer",
+    "class": "c-section c-seciton__ajax-cart",
+    "settings": [
+      {
+        "type": "text",
+        "id": "ajaxCartTitle",
+        "label": "Title",
+        "default": "Your Cart"
+      },
+      {
+        "type": "text",
+        "id": "messaging-line1",
+        "label": "Messaging Line 1",
+        "default": "Unlock <span>Skin Within</span> with your first purchase!"
+      },
+      {
+        "type": "text",
+        "id": "messaging-line2",
+        "label": "Messaging Line 2",
+        "default": "Join qualified dermatoligists for a 6 week skin rejuvination journey."
+      },
+      {
+        "type": "url",
+        "id": "messaging-link",
+        "label": "Messaging link"
+      },
+      {
+        "type": "text",
+        "id": "ajaxCartSubtotal",
+        "label": "Subtotal Label",
+        "default": "Subtotal:"
+      },
+      {
+        "type": "text",
+        "id": "ajaxCartCheckout",
+        "label": "Checkout Label",
+        "default": "Checkout"
+      },
+      {
+        "type": "text",
+        "id": "ajaxCartEmpty",
+        "label": "Cart Empty",
+        "default": "Your cart is empty"
+      },
+      {
+        "type": "text",
+        "id": "ajaxCartViewCart",
+        "label": "View Cart Label",
+        "default": "View cart"
+      },
+
+      {
+        "type": "text",
+        "id": "ajaxCartUpsellTitle",
+        "label": "Upsell Title",
+        "default": "Achieve optimal results & save"
+      },
+      {
+        "type": "text",
+        "id": "ajaxCartRecommended",
+        "label": "Product Recommended",
+        "default": "Recommended"
+      },
+      {
+        "type": "collection",
+        "id": "upsellProducts",
+        "label": "Upsell Product Collection"
+      }
+    ]
+  }
+{% endschema %}

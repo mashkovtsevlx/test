@@ -1,0 +1,136 @@
+{% comment %}
+  Science Atoms
+
+  Version:
+    1.0.0 - 21/09/24
+{% endcomment %}
+
+<section class="c-science-atoms">
+
+  {{- 'sections.science-atoms.css' | asset_url | stylesheet_tag -}}
+
+  <div class="c-science-atoms__text is-first">
+    {%- if section.settings.leftPretitle != blank -%}
+      <span class="c-science-atoms__text-pretitle o-heading--7">
+        {{- section.settings.leftPretitle | escape -}}
+      </span>
+    {%- endif -%}
+
+    {%- if section.settings.leftTitle != blank -%}
+      <span class="c-science-atoms__text-title o-heading--5">
+        {{- section.settings.leftTitle | escape -}}
+      </span>
+    {%- endif -%}
+
+    {%- if section.settings.leftContent != blank -%}
+      <span class="c-science-atoms__text-subtitle">
+        {{- section.settings.leftContent | escape | newline_to_br -}}
+      </span>
+    {%- endif -%}
+
+    {%- if section.settings.buttonTextLeft != blank and section.settings.buttonLinkLeft != blank -%}
+      <a href="{{s.buttonLinkLeft}}" class="c-science-atoms__cta-btn o-link has-arrow">
+        {{- section.settings.buttonTextLeft | escape -}}
+      </a>
+    {%- endif -%}
+  </div>
+
+  <div class="c-science-atoms__atom">{{ section.settings.logo }}</div>
+
+  <div class="c-science-atoms__text is-last">
+    {%- if section.settings.rightPretitle != blank -%}
+      <span class="c-science-atoms__text-pretitle o-heading--7">
+        {{- section.settings.rightPretitle | escape -}}
+      </span>
+    {%- endif -%}
+
+    {%- if section.settings.rightTitle != blank -%}
+      <span class="c-science-atoms__text-title o-heading--5">
+        {{- section.settings.rightTitle | escape -}}
+      </span>
+    {%- endif -%}
+
+    {%- if section.settings.rightContent != blank -%}
+      <span class="c-science-atoms__text-subtitle">
+        {{- section.settings.rightContent | escape | newline_to_br -}}
+      </span>
+
+    {%- endif -%}
+
+    {%- if section.settings.buttonTextRight != blank and section.settings.buttonLinkRight != blank -%}
+      <a href="{{s.buttonLinkRight}}" class="c-science-atoms__cta-btn o-link has-arrow">
+        {{- section.settings.buttonTextRight | escape -}}
+      </a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+	"name": "Science Atoms and Content",
+	"class": "c-section c-section__science-atoms",
+	"settings": [{
+			"type": "textarea",
+			"id": "logo",
+			"label": "Logo",
+			"default": "<svg fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 295 296\"><mask id=\"a\" style=\"mask-type:alpha\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"295\" height=\"296\"><ellipse cx=\"147.5\" cy=\"147.8\" rx=\"147.5\" ry=\"147.8\" fill=\"#C4C4C4\"/></mask><g mask=\"url(#a)\"><ellipse cx=\"147.5\" cy=\"148.2\" rx=\"147.5\" ry=\"147.8\" fill=\"#A6D6DE\"/><path d=\"M195 190v4h-1v1a46 46 0 0 1 0 4v1h1v4h-1l-1 1-1 4v1h1l-1 4h-1v1l-2 3-1 1 1 1-2 3h-1 0l-3 4h-1l1 1-3 3v-1l-1 1-3 2-1 1v1l-3 2-1-1v1l-4 1-1 1v1l-4 1v-1h-1l-4 1h-1v1l-4 1v-1h-1a45 45 0 0 1-4 0h-1v1l-4-1v-1h-1l-4-1h-1v1l-4-1 1-1-1-1-4-1-1-1v1l-4-2 1-1-1-1-3-2-1-1-1 1-3-3 1-1h0l-3-4h-1 0l-3-3 1-1v-1l-2-3v-1h-1l-2-4h1v-1l-1-4v-1h-1v-4h1v-1a46 46 0 0 1 0-4v-1h-1v-4h1v-1l1-4v-1h-1l2-4h1v-1l2-3v-1l-1-1 3-3h1l3-4h0l-1-1 3-3 1 1 1-1 3-2 1-1-1-1 4-2v1l1-1 4-1 1-1-1-1 4-1v1h1l4-1h1v-1l4-1v1h1a46 46 0 0 1 4 0h1v-1l4 1v1h1l4 1h1v-1l4 1v1l1 1 4 1v1l1-1 3 2v1l1 1 3 2 1 1v-1l3 3-1 1h1l3 4h1l2 3-1 1 1 1 2 3v1h1l1 4h-1v1l1 4 1 1h1Z\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"square\" stroke-dasharray=\"4 6\"/><path d=\"M-46 200h-1v-1l7-44-59 34h-1l-61-35-1-1V84l1-1 61-35h1l59 33-7-65v-1l1-1h16v1l-7 67 57-34h2v-68l59-35h2l57 34 1-68 1-1h1l16 2h1v2l-17 64 64-21 13-64 2-1 8 2v-1l1-1 67-15h2l46 53 69-16 2-3h-1v-1c-3-1-6-3-6-8l2-3c2-2 6 0 9 0h1l1-5-3-3c-2 0-4-1-4-3l1-4c1-2 3-3 6-3l7-1 1 1c1 1 0 1-1 1l-7 2-4 1-1 2 3 2c2 1 5 2 5 5s0 6-2 7l-4 1-7-1v1c0 3 2 5 4 6l1 1 1 2-2 4 42 50 4-1-4-5c-2-2-2-3-2-5 1-3 5-4 10-5l1-1-3-6c-2-2-3-5-2-7 0-2 2-3 3-3h4l4-1 2-1v2c-1 3-4 3-6 3h-3l-2 1 2 4 4 8c0 1-1 3-4 3-2 1-7 2-7 4l1 2 5 7 60-13h2l31 34v2l-2-1-31-33-59 13-1 1h-1l-5 1-22 63 30 32v2h-2l-30-33v-1l21-64-42-50-69 16h-2l-46-53-64 14 3 1 1 1v1l-28 61 41 56v2l-41 58h-2l-67-22-58 35h-2v68l-59 35h-2l-56-34 6 41-1 1-1 1-14 1Zm8-38-6 35 11-1-5-34Zm1-9 58 34 58-34V85L22 52l-1-1-58 34v68Zm-122-1 60 35 59-35V85l-59-34-60 34v67ZM81 83l1 1 58-34v-68L82-52 24-18v68l57 33ZM-44 17l6 54 5-54h-11Zm187 33 65 21 40-56-40-56-65 22v69Zm1-137-1 56 14-55-13-1Zm79-18-9 45 15-44-6-1Zm9 2-14 38 17-38h-3Zm-425 287h-1l-8-15v-2l2 1 8 14v2h-1Zm308-1-1-1v-2l9-13 2-1 1 2-10 14-1 1Zm-297-9h-1l-5-10 1-1h2l4 9v2h-1Zm287-2-1-1v-1l6-8 2-1v2l-6 8-1 1Zm-275-8-1-1-3-5 1-2 2 1 2 5-1 2Zm263-2h-1v-2l3-5h2v2l-3 5h-1Zm50-67-1-1c-1-1 0-1 1-2l16-3 1 1c1 1 0 2-1 2l-16 3Zm0-15-1-1 1-2 10-1 1 1-1 1-10 2Zm-2-15-1-2 1-1 6-1 1 2-1 1-6 1Zm79-180h-1v-2l4-3 2 1-1 1-3 3h-1Zm-11-9-1-1v-2l6-4h2v2l-6 4-1 1Zm-9-8-1-1v-2l8-6h2v2l-8 6-1 1Zm-10-9-1-1v-2l11-8h2v2l-11 9h-1Zm-10-11h-1v-2l12-10h2v2l-12 10h-1ZM165 220h3l1-1v-38l-1-1h-3l-2 1v14l-1 1h-3l-1-1v-14l-1-1h-4l-1 1v38l1 1h4l1-1v-16l1-1h3l1 1v16l2 1Zm-23-29v18c0 3 0 6-3 6s-3-3-3-6v-18c0-3 0-6 3-6s3 3 3 6Zm5 18v-18c0-8-2-11-8-11s-9 3-9 11v18c0 8 3 11 9 11s8-3 8-11Z\" fill=\"#fff\"/><path d=\"M159 148h4l1-1v-38l-1-1h-4l-1 1v14l-1 1h-3l-1-1v-14l-1-1h-4l-1 1v38l1 1h4l1-1v-16l1-1h3l1 1v16l1 1Z\" fill=\"#fff\"/><path d=\"M85 30h3l1-1V-8l-1-1h-3l-1 1V6l-1 1h-4l-1-1V-8l-1-1h-4l-1 1v37l1 1h4l1-1V13l1-1h4l1 1v16l1 1Z\" fill=\"#A6D6DE\"/><path d=\"m80 86-5-45 13 1-8 44Z\" fill=\"#fff\"/><path d=\"m80 87-1-1-5-44v-1l1-1 13 1h1v1l-8 44-1 1Zm-3-44 3 33 6-33h-9Z\" fill=\"#fff\"/></g></svg>"
+		},
+		{
+			"type": "text",
+			"id": "leftTitle",
+			"label": "Left Title"
+		},
+		{
+			"type": "text",
+			"id": "leftPretitle",
+			"label": "Left Pretitle"
+		},
+		{
+			"type": "textarea",
+			"label": "Left Content",
+			"id": "leftContent"
+		},
+    {
+      "id": "buttonTextLeft",
+      "type": "text",
+      "label": "Button Text Left"
+    },
+    {
+      "id": "buttonLinkLeft",
+      "type": "url",
+      "label": "Button Link Left"
+    },
+		{
+			"type": "text",
+			"id": "rightTitle",
+			"label": "Right Title"
+		},
+		{
+			"type": "text",
+			"id": "rightPretitle",
+			"label": "Right Pretitle"
+		},
+		{
+			"type": "textarea",
+			"label": "Right Content",
+			"id": "rightContent"
+		},
+    {
+      "id": "buttonTextRight",
+      "type": "text",
+      "label": "Button Text Right"
+    },
+    {
+      "id": "buttonLinkRight",
+      "type": "url",
+      "label": "Button Link Right"
+    }
+	],
+  "presets": [
+      {
+        "name": "Science Atoms and Content",
+        "category": "Content"
+      }
+    ]
+}
+{% endschema %}

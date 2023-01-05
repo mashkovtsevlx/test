@@ -1,0 +1,203 @@
+{%- comment -%}
+    Account Template
+    Template section for the account page.
+
+    Version:
+    1.0.0 - 2020/03/25
+{%- endcomment -%}
+
+
+{{ 'sections.account-template.css' | asset_url | stylesheet_tag }}
+
+{%- capture customerLevel -%}
+  {%- render 'tool.skin-customer-level' -%}
+{%- endcapture -%}
+
+{% assign customerLevel = customerLevel | plus: 0 %}
+
+<div class="c-account" data-account-page>
+  <div class="c-account__header">
+    <div class="c-account__header-inner">
+      <h1 class="c-account__header-heading">
+        {{- 'customer.account.title' | t -}}
+      </h1>
+    </div>
+  </div>
+
+  {%- comment -%} User profile banner {%- endcomment -%}
+  {%- if customerLevel < 1  -%}
+    <a class="c-account__banner" href="{{section.settings.banner-url}}">
+
+      <div class="c-account__banner-image-container o-responsive-image-container">
+        {%- render 'tool.picture' with {
+        image: section.settings.image,
+        class: 'c-account__banner-image o-responsive-image',
+        width: 867,
+        sizes: '375,2000',
+        imageSizes: '341,867'
+        } -%}
+      </div>
+
+      <div class="c-account__banner-content">
+
+        {%- if section.settings.title != blank -%}
+        <h2 class="c-account__banner-title">
+          {{- section.settings.title | escape }}
+        </h2>
+        {%- endif -%}
+
+        {%- if section.settings.subtitle != blank -%}
+        <p class="c-account__banner-subtitle">
+          {{- section.settings.subtitle | escape -}}
+        </p>
+        {%- endif -%}
+
+      </div>
+
+    </a>
+  {%- endif -%}
+  
+  <div class="c-account__inner">
+
+    <aside class="c-account__sidebar">
+
+      {%- comment -%} Account Page Navigation {%- endcomment -%}
+      {%- render 'account-navigation' with {
+      communityUrl: section.settings.community-link,
+      communityLabel: section.settings.community-label
+      }-%}
+
+    </aside>
+
+    <div class="c-account__main">
+      {%- comment -%} Account Details {%- endcomment -%}
+      <section class="c-account__details" data-detail-section>
+
+        {%- comment -%} Title {%- endcomment -%}
+        <h5 class="c-account__details-title">
+          {{- 'customer.account.details' | t -}}
+        </h5>
+
+        <div class="c-account__details-inner">
+          <div class="c-account__detail">
+            <span class="c-account__detail-title">
+              {{- 'customer.account.name' | t -}}
+            </span>
+            <span>{{- customer.name -}}</span>
+          </div>
+          <div class="c-account__detail">
+            <span class="c-account__detail-title">
+              {{- 'customer.account.email' | t -}}
+            </span>
+            <span>{{- customer.email -}}</span>
+          </div>
+          {%- if customer.phone -%}
+          <div class="c-account__detail">
+            <span class="c-account__detail-title">
+              {{- 'customer.account.phone' | t -}}
+            </span>
+            <span>{{- customer.phone -}}</span>
+          </div>
+          {%- endif -%}
+        </div>
+        {%- if customer.default_address != blank -%}
+        <div class="c-account__default-address">
+          <div class="c-account__detail is-address">
+            <span class="c-account__detail-title">
+              {{- 'customer.addresses.default' | t }}
+            </span>
+          </div>
+          <span>{{- customer.default_address | format_address -}}</span>
+        </div>
+        {%- endif -%}
+      </section>
+
+      {%- comment -%} Orders {%- endcomment -%}
+      <section id="account-orders" class="c-account__orders">
+
+        {%- comment -%} Title {%- endcomment -%}
+        <h5 class="c-account__details-title">
+          {{ 'customer.orders.title' | t }}
+        </h5>
+
+        {%- paginate customer.orders by 20 -%}
+        {%- if customer.orders.size > 0 -%}
+        <div class="c-account__orders-container">
+          <table class="c-account__orders-table">
+            <thead>
+              <tr>
+                <th>{{ 'customer.orders.order_number' | t }}</th>
+                <th>{{ 'customer.orders.date' | t }}</th>
+                <th>{{ 'customer.orders.payment_status' | t }}</th>
+                <th>{{ 'customer.orders.fulfillment_status' | t }}</th>
+                <th>{{ 'customer.orders.total' | t }}</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {%- for order in customer.orders -%}
+              <tr>
+                <td>{{ order.name | link_to: order.customer_url }}</td>
+                <td>{{ order.created_at | date: "%B %d, %Y %I:%M%p" }}</td>
+                <td>{{ order.financial_status_label }}</td>
+                <td>{{ order.fulfillment_status_label }}</td>
+                <td>{{ order.total_price | money_with_currency }}</td>
+              </tr>
+              {%- endfor -%}
+            </tbody>
+          </table>
+
+          {%- if paginate.pages > 1 -%}
+          {%- render 'object.pagination' -%}
+          {%- endif -%}
+
+        </div>
+        {%- else -%}
+        <p>{{ 'customer.orders.none' | t }}</p>
+        {%- endif -%}
+
+        {%- endpaginate -%}
+      </section>
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+	"name": "Account Template",
+	"class": "c-section c-section__account",
+	"settings": [{
+			"id": "community-link",
+			"type": "url",
+			"label": "Link to Skinwithin Community"
+		},
+		{
+			"type": "text",
+			"id": "community-label",
+			"label": "Label for link to Skinwithin Community"
+		},
+		{
+			"type": "image_picker",
+			"id": "image",
+			"label": "Banner Image",
+			"info": "Please upload in .jpg format. Recommended size 810/1380px."
+		},
+		{
+			"type": "text",
+			"id": "title",
+			"label": "Banner Title"
+		},
+		{
+			"type": "text",
+			"id": "subtitle",
+			"label": "Banner Subtitle"
+		},
+		{
+			"id": "banner-url",
+			"type": "url",
+			"label": "Banner Url"
+		}
+	]
+}
+{% endschema %}

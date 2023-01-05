@@ -1,0 +1,165 @@
+{%- liquid
+  assign mf = product.metafields.accentuate
+  assign pmf = product.metafields.custom
+  assign variant = product.selected_or_first_available_variant
+  assign additional_features = pmf.particular_qualities | metafield_text | split: ';'
+
+
+  assign bundleChildTrackInventory = true
+
+  if mf.childVariants
+    assign isBundleProduct = true
+  endif
+
+  if mf.childInventoryTrackingDisabled
+    assign bundleChildTrackInventory = false
+  endif
+-%}
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function(){
+    const target = document.querySelector('.c-product-template__container .c-product-details__add-cart');
+    const panel = document.querySelector('.c-product-template__panel');
+    const option = {
+      threshold: .25, 
+      // default value is 0
+      rootMargin: "0px" 
+      // -100 - will shrink our container for observe,
+      //  100 - elements will shown before came in visible part of the screen
+    };
+    function handleIntersection(entries) {
+      entries.map((entry) => {
+        if (entry.boundingClientRect.top > 0) {
+            panel.classList.remove('visible');
+        } else {
+            panel.classList.add('visible');
+        }
+        if (entry.isIntersecting) {
+          panel.classList.remove('visible')
+        }
+      });
+    }
+
+    const observer = new IntersectionObserver(handleIntersection, option);
+    observer.observe(target);
+  });
+</script>
+
+<div class="c-product-template__panel" data-product-panel>
+  <div class="c-product-template__panel-image">
+    {%- for image in product.images -%}
+      {% if forloop.first %}
+        <div>
+          {% liquid
+            comment
+              Image size is set to 14.625rem (234px) on mobile, and 20rem (320px) on tablet in CSS.
+              You have to change values here if you changed CSS
+            endcomment
+            assign mobileImageWidth = 234 | times: image.aspect_ratio | ceil
+            assign tabletImageWidth = 320 | times: image.aspect_ratio | ceil
+            assign imageAspectRatio = image.aspect_ratio | round: 2
+            comment
+              Formulas for small and big desktop calculated based on the 85 and 70 height to width aspect ratio (padding-bottom property)
+              set in CSS in .c-product-template__product-image-container picture
+              You have to change values here if you changed CSS
+            endcomment
+            assign imageSizes = "(min-width: 1650px) calc(100vw * 0.57 * 0.70 * " | append: imageAspectRatio | append: "), (min-width: 1100px) calc(100vw / 2 * 0.85 * " | append: imageAspectRatio | append: "), (min-width: 750px) " | append: tabletImageWidth | append: "px, " | append: mobileImageWidth | append: "px"
+            assign imageSrcsetSizes = mobileImageWidth | append: "," | append: tabletImageWidth | append: ",100,150,250,350,750,800,850,1000,1100,1200,1400"
+          %}
+          <div class="c-product-template__product-image-container__img-wrapper">
+            {%-
+              render 'tool.image' with {
+              image: image,
+              class: 'c-product-template__panel-product-image',
+              srcsetSizes: imageSrcsetSizes,
+              sizes: imageSizes,
+              lazy: true,
+              width: mobileImageWidth
+              }
+            -%}
+          </div>
+        </div>
+      {% endif %}
+    {%- endfor -%}
+  </div>
+
+  <div class="c-product-template__panel-info">
+    <div class="c-product-template__panel-info-inner" >
+      <h2 class="c-product-template__panel-product-title">
+        {{- product.title -}}
+      </h2>
+
+      {% unless additional_features == empty %}
+        <div class="c-product-template__product-features">
+          {% for i in additional_features %}
+            <div class="c-product-template__product-features-item">
+              {%- render 'object.icon' with {
+                icon: 'check-w',
+                class: 'c-product-template__product-features-item-icon',
+                width: 15,
+                height: 12
+              } -%}
+
+              {% if forloop.last %}
+                {{ i | split: 'and' | last }}
+              {% else%}
+                {{ i }}
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% endunless %}
+    </div>
+
+    <div class="c-product-template__panel-swatches">
+      {%- if isBundleProduct -%}
+        {%- render 'product-bundle', trackInventory: bundleChildTrackInventory -%}
+
+        <span class="c-product-details__divider">|</span>
+      {%- else -%}
+        {%- comment -%} Product Swatches {%- endcomment -%}
+        {%-
+          render 'object.product-template-swatches' with {
+            class: 'c-product-details__swatches',
+            product: product, variant: variant,
+            printJson: true
+          }
+        -%}
+      {%- endif -%}
+    </div>
+
+    {%-
+      render 'object.quantity-selector' with {
+      class: 'c-product-details__quantity-selector',
+      min: 1
+      }
+    -%}
+
+    <button
+      data-add-to-cart-button
+      data-add-to-cart-button-panel
+      class="
+        c-product-details__add-cart o-btn is-primary
+        {% if variant.available != true %}is-disabled{% endif %}
+      "
+      {% if variant.available != true %}
+        disabled
+      {% endif %}
+    >
+      {%- if variant.available -%}
+        {{- 'products.product.add' | t }}
+        <span class="is-divider">|</span>
+        {%-
+          render 'object.product-pricing',
+          price: variant.price,
+          comparePrice: variant.compare_at_price,
+          class: 'c-product-details__add-cart-price'
+        -%}
+      {%- else -%}
+        {{- 'products.product.sold_out' | t -}}
+      {%- endif -%}
+    </button>
+  </div>
+</div>
+<script src="{{ 'sections.product-panel.js' | asset_url }}" defer></script>

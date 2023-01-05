@@ -1,0 +1,183 @@
+{%- comment -%}
+  Weekly Challenge Gallery
+
+   Weekly Challenge Gallery with before and after ptotos
+
+  Version:
+    1.0.0 - 2021/12/23
+{%- endcomment -%}
+
+{%- liquid
+  assign ss = section.settings
+
+  assign galleryItems = section.blocks | where: 'type', 'items'
+
+  assign buttonLabel = 'pages.weekly_challenge.load_more' | t
+-%}
+
+{%- capture isSectionLocked -%}
+  {%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+  {{ 'sections.weekly-challenge-gallery.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'sections.weekly-challenge-slider.js' | asset_url }}" defer></script>
+
+  <section class="c-weekly-challenge-gallery">
+    <div class="c-weekly-challenge-gallery__inner">
+      {%- comment -%} Weekly Challenge Gallery Pretitle {%- endcomment -%}
+      {%- if ss.pretitle != blank -%}
+        <p class="c-weekly-challenge-gallery__pretitle o-heading--7">
+          {{- ss.pretitle | escape -}}
+        </p>
+      {%- endif -%}
+
+      {%- comment -%} Weekly Challenge Gallery Title {%- endcomment -%}
+      {%- if ss.title != blank -%}
+        <h4 class="c-weekly-challenge-gallery__title">
+          {{- ss.title | escape -}}
+        </h4>
+      {%- endif -%}
+
+      {% assign galleryItemsLength = galleryItems | size %}
+      {%- comment -%} Weekly Challenge Gallery Photos {%- endcomment -%}
+      <div class="c-weekly-challenge-slider" data-weekly-challenge-slider>
+        <div class="c-weekly-challenge-slider__buttons {% if galleryItemsLength < 2 %}no-display{% elsif galleryItemsLength < 3 %}only-mobile{% endif %}" data-carousel-navigation>
+          <button class="c-weekly-challenge-slider__button is-prev" data-carousel-previous>
+            {%- render 'svg.slider-arrow' with {
+            class: 'c-article-diaries-slider__button-left'
+            } -%}
+          </button>
+          <button class="c-weekly-challenge-slider__button is-next" data-carousel-next>
+            {%- render 'svg.slider-arrow' with {
+            class: 'c-article-diaries-slider__button-right'
+            } -%}
+          </button>
+        </div>
+        <div class="c-weekly-challenge-gallery__items" data-slides-container>
+          {%- for item in galleryItems -%}
+            <div
+              class="c-weekly-challenge-gallery__item"
+              data-slider-slide
+              data-weekly-challenge-slider-item
+            >
+              <div class="c-weekly-challenge-gallery__images">
+                {%- if item.settings.image-before != blank -%}
+                  <div class="c-weekly-challenge-gallery__container">
+                    <div class="c-weekly-challenge-gallery__image-container o-responsive-image-container is-before">
+                      {%-
+                        render 'tool.image' with {
+                      image: item.settings.image-before,
+                      class: 'c-weekly-challenge-gallery__image o-responsive-image',
+                      srcsetSizes: "140, 160, 175, 200, 300, 404",
+                      sizes: "(min-width: 2000px) 404px, (min-width: 1350px) calc((86vw - 104px) / 4), (min-width: 1100px) calc((86vw - 35px) / 4), (min-width: 750px): calc((100vw - 147px) / 4), calc((100vw - 80px) / 2)",
+                      lazy: true,
+                      width: 140
+                      }
+                      -%}
+                    </div>
+                    <div class="c-weekly-challenge-gallery__image-caption o-heading--7">
+                      {{ item.settings.before-title | escape }}
+                    </div>
+                  </div>
+                {%- endif -%}
+
+                {%- if item.settings.image-after != blank -%}
+                  <div class="c-weekly-challenge-gallery__container">
+                    <div class="c-weekly-challenge-gallery__image-container o-responsive-image-container is-after">
+                      {%-
+                        render 'tool.image' with {
+                      image: item.settings.image-after,
+                      class: 'c-weekly-challenge-gallery__image o-responsive-image',
+                      srcsetSizes: "140, 160, 175, 200, 300, 404",
+                      sizes: "(min-width: 2000px) 404px, (min-width: 1350px) calc((86vw - 104px) / 4), (min-width: 1100px) calc((86vw - 35px) / 4), (min-width: 750px): calc((100vw - 147px) / 4), calc((100vw - 80px) / 2)",
+                      lazy: true,
+                      width: 140
+                      }
+                      -%}
+                    </div>
+                    <div class="c-weekly-challenge-gallery__image-caption o-heading--7">
+                      {{ item.settings.after-title | escape }}
+                    </div>
+                  </div>
+                {%- endif -%}
+              </div>
+
+              {%- if item.settings.user-url != blank and item.settings.user-name != blank -%}
+                <a href="{{- item.settings.user-url -}}" class="c-weekly-challenge-gallery__user o-heading--7">
+                  @
+                  {{- item.settings.user-name | escape -}}
+                </a>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Weekly Challenge Slider",
+  "class": "c-section c-section__weekly-challenge-gallery",
+  "settings": [
+    {
+      "id": "pretitle",
+      "type": "text",
+      "label": "Pre Title"
+    },
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "items",
+      "name": "Challenge Gallery Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image-before",
+          "label": "Before Image",
+          "info": "Please upload in .jpg format. Recommended ratio approx. 1/1.7, at least 810/1380px."
+        },
+        {
+          "type": "text",
+          "id": "before-title",
+          "label": "Before Title"
+        },
+        {
+          "type": "image_picker",
+          "id": "image-after",
+          "label": "After Image",
+          "info": "Please upload in .jpg format. Recommended ratio approx. 1/1.7, at least 810/1380px."
+        },
+        {
+          "type": "text",
+          "id": "after-title",
+          "label": "After Title"
+        },
+        {
+          "type": "text",
+          "id": "user-name",
+          "label": "User Name"
+        },
+        {
+          "type": "url",
+          "id": "user-url",
+          "label": "User Url"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Weekly Challenge Slider",
+      "category": "Content"
+    }
+  ]
+}
+{% endschema %}

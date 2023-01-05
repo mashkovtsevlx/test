@@ -1,0 +1,103 @@
+{%- liquid
+
+  assign productMf = product.metafields.accentuate
+  assign childVariantObjs = productMf.childVariants
+  assign upsellProductIsBundle = productMf.childVariants
+  assign upsellTitle = cart.items.first.product.metafields.accentuate.title_for_cart
+  assign price = product.price
+  assign comparePrice = product.compare_at_price
+
+  if upsellProductIsBundle
+    assign percentageDiscount = productMf.percentageDiscount | default: 0
+    assign uniqueChildVariantObjs = productMf.childVariants | uniq
+    assign totalItemPrice = 0
+    assign upsellTitle = productMf.title_for_cart
+
+    for childVariantObj in uniqueChildVariantObjs
+      assign childVariantObjSplit = childVariantObj | split: ':'
+      assign productHandle = childVariantObjSplit[0]
+      assign variantId = childVariantObjSplit[1] | times: 1
+      assign filteredVariants = all_products[productHandle].variants | where: 'id', variantId
+      assign childVariant = filteredVariants[0]
+      assign sameChildVariantObjs = childVariantObjs | where: childVariantObj
+      assign childQty = sameChildVariantObjs.size
+
+      assign priceToAdd = childVariant.price | times: childQty
+      assign totalItemPrice = totalItemPrice | plus: priceToAdd
+    endfor
+
+    assign discountNumber = percentageDiscount | plus: 0
+    if discountNumber > 0
+      assign discountAmount = totalItemPrice | times: discountNumber | divided_by: 100.0
+      assign bundlePrice = totalItemPrice | minus: discountAmount
+      assign bundleComparePrice = totalItemPrice
+      assign price = bundlePrice
+      assign comparePrice = bundleComparePrice
+    else
+      assign price = product.price
+      assign comparePrice = product.compare_at_price
+    endif
+  endif
+
+-%}
+
+{% layout none %}
+<div class="o-cart-upsell-drawer">
+  {%- if upsellTitle != blank -%}
+    <div class="o-cart-upsell-drawer__title o-heading--7">
+      {{ upsellTitle }}
+    </div>
+  {%- endif -%}
+  
+  <div class="o-cart-upsell-drawer__bundle">
+    {%- render 'tool.picture' with {
+      image: product.featured_image,
+      width: 100,
+      class: 'o-cart-upsell-drawer__bundle-image',
+      lazy: true
+    } -%}
+
+    <div class="o-cart-upsell-drawer__middle-container">
+
+      <div class="o-cart-upsell-drawer__bundle-container">
+        <div class="o-cart-upsell-drawer__upsell-icon">
+          {% render 'svg.upsell-icon' %}
+        </div>
+        <div class="o-cart-upsell-drawer__bundle-title">
+          <span class="o-cart-upsell-drawer__bundle-title-prefix">
+            {{ 'cart.upsell.bundle_prefix' | t }}
+          </span></br>
+          {{ product.title | escape }}
+        </div>
+      </div>
+      
+      {%- if productMf.thumbnailText != blank -%}
+        <div class="o-cart-upsell-drawer__bundle-text">
+          {{ productMf.thumbnailText | escape }}
+        </div>
+      {%- endif -%}
+      {%- render 'object.product-pricing', 
+        price: price,
+        comparePrice: comparePrice,
+        class: 'o-cart-upsell-drawer__bundle-price' 
+      -%}
+
+    </div>
+    <div class="o-cart-upsell-drawer__button-container">
+      <button 
+        class="o-cart-upsell-drawer__add-to-cart" 
+        type="button"
+        data-upsell-add-to-cart
+      >
+        {% render 'svg.plus' %}
+      </button>
+
+      {%- render 'object.product-pricing', 
+        price: price,
+        comparePrice: comparePrice,
+        class: 'o-cart-upsell-drawer__bundle-price' 
+      -%}
+
+    </div>
+  </div>
+</div>

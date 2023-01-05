@@ -1,0 +1,49 @@
+{%- comment -%}
+  Article Diaries Thumbnail
+
+  Version:
+    1.0.0 - 2021/12/23
+
+{%- endcomment -%}
+
+{%- liquid
+
+  assign learnMore = 'articles.watch_now' | t
+
+-%}
+
+{%- if article.url != blank -%}
+  
+  <div class="o-article-diaries-thumbnail {{ class -}}">
+
+    <a class="o-article-diaries-thumbnail__article" href="{{- article.url -}}" >
+
+      <div class="o-article-diaries-thumbnail__images-container">
+        <div class="o-article-diaries-thumbnail__article-image-container o-responsive-image-container">
+          {%- render 'tool.picture' with {
+            image: article.image,
+            class: 'o-article-diaries-thumbnail__article-image o-responsive-image',
+            width: 339,
+            sizes: '375,1600',
+            imageSizes: '193,339'
+          } -%}
+        </div>
+
+        <div class="o-article-diaries-thumbnail__play-button">
+          {%- render 'svg.play-button' -%}
+        </div>
+        
+      </div>
+      
+      <h6 class="o-article-diaries-thumbnail__article-title">
+        {{- article.title | escape -}}
+      </h6>
+
+      <span class="o-article-diaries-thumbnail__article-btn o-link has-arrow">
+        {{- learnMore -}}
+      </span>
+    </a>
+
+  </div>
+
+{%- endif -%}

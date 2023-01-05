@@ -1,0 +1,100 @@
+{%- liquid
+  assign mf = product.metafields.accentuate
+  assign pmf = product.metafields.custom
+  assign variant = product.selected_or_first_available_variant
+
+  assign bundleChildTrackInventory = true
+
+  if mf.childVariants
+    assign isBundleProduct = true
+  endif
+
+  if mf.childInventoryTrackingDisabled
+    assign bundleChildTrackInventory = false
+  endif
+
+  assign what_is_it = pmf.what_is_it_
+  assign additional_features = pmf.particular_qualities | metafield_text | split: ';'
+-%}
+
+{{ 'sections.product-details.css' | asset_url | stylesheet_tag }}
+
+<div class="c-product-details">
+  {%- assign productType = product.type | downcase -%}
+  {%- if productType != 'promotions' -%}
+    <div class="c-product-details__container">
+      {%- if isBundleProduct -%}
+        {%- render 'product-bundle', trackInventory: bundleChildTrackInventory -%}
+        
+        <span class="c-product-details__divider">|</span>
+      {%- else -%}
+        {%- comment -%} Product Swatches {%- endcomment -%}
+         {%-
+          render 'object.product-template-swatches' with {
+          class: 'c-product-details__swatches',
+          product: product, variant: variant,
+          printJson: true
+          }
+        -%} 
+      {%- endif -%}
+
+      {%-
+        render 'object.quantity-selector' with {
+        class: 'c-product-details__quantity-selector',
+        min: 1
+        }
+      -%}
+    </div>
+
+    <button
+      data-add-to-cart-button
+      class="
+        c-product-details__add-cart o-btn is-primary
+        {% if variant.available != true %}is-disabled{% endif %}
+      "
+      {% if variant.available != true %}
+        disabled
+      {% endif %}
+    >
+      {%- if variant.available -%}
+        {{- 'products.product.add' | t }}
+        <span class="is-divider">|</span>
+        {%-
+          render 'object.product-pricing',
+          price: variant.price,
+          comparePrice: variant.compare_at_price,
+          class: 'c-product-details__add-cart-price'
+        -%}
+      {%- else -%}
+        {{- 'products.product.sold_out' | t -}}
+      {%- endif -%}
+    </button>
+  {%- endif -%}
+
+  {% if what_is_it != blank %}
+    <div class="c-product-template__product-about">
+      {{- what_is_it -}}
+    </div>
+  {% endif %}
+
+  {% unless additional_features == empty %}
+    <div class="c-product-template__product-features">
+      {% for i in additional_features %}
+        <div class="c-product-template__product-features-item">
+          {%- render 'object.icon' with {
+            icon: 'check',
+            class: 'c-product-template__product-features-item-icon',
+            width: 20,
+            height: 17
+          } -%}
+          
+          {% if forloop.last %}
+            {{ i | split: 'and' | last }} 
+          {% else%}
+            {{ i }}
+          {% endif %}  
+        </div>
+      {% endfor %}
+    </div>
+  {% endunless %}
+</div>

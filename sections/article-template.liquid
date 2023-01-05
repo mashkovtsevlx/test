@@ -1,0 +1,145 @@
+{%- liquid
+
+  assign s = section.settings
+  assign mf = article.metafields.accentuate
+
+  assign image1of2 = mf.image_1
+  assign image2of2 = mf.image_2
+
+  assign mobileImage = mf.mobileImage | default: s.mobileImage
+  assign desktopImage = mf.desktopImage | default: s.desktopImage
+
+  assign videoPoster = mf.video_poster
+  assign videoUrl = mf.video_url
+  assign videoTitle = mf.video_title
+
+  assign articleAuthor = mf.article_author | default: article.author
+
+-%}
+
+{{ 'sections.article-template.css' | asset_url | stylesheet_tag }}
+
+{%- if article.content != blank -%}
+  <section class="c-article">
+
+    {%- comment -%} Article Hero Banner {%- endcomment -%}
+    <div class="c-article__banner {% if mobileImage == blank %} has-desktop-only{% endif %} ">
+      {%- render 'tool.picture' with {
+      image: mobileImage,
+      class: 'c-article__banner-image is-mobile'
+      width: 750,
+      sizes: '374,750'
+      } -%}
+      {%- render 'tool.picture' with {
+      image: desktopImage,
+      class: 'c-article__banner-image is-desktop'
+      width: 2560,
+      sizes: '374,750,1100,1650,2000'
+      } -%}
+
+      {%- comment -%} Article Hero Banner Content {%- endcomment -%}
+      <div class="c-article__banner-inner">
+
+        {%- comment -%} Article Categories {%- endcomment -%}
+        <p class="c-article__tags o-heading--7">
+          {%- for tag in article.tags -%}
+          <span class="c-article__tags-tag">
+            {{- tag -}}
+          </span>
+          {%- endfor -%}
+        </p>
+
+        {%- comment -%} Article Title {%- endcomment -%}
+        <h3 class="c-article__heading">
+          {{- article.title | escape -}}
+        </h3>
+
+        {%- comment -%} Article Stories Author {%- endcomment -%}
+        {%- if articleAuthor != blank -%}
+        <p class="c-article__author o-heading--7">
+          {{- articleAuthor | escape -}}
+        </p>
+        {%- endif -%}
+
+      </div>
+
+    </div>
+
+    <div class="c-article__content">
+
+      {%- if article.excerpt != blank -%}
+      <h6 class="c-article__excerpt">
+        "{{article.excerpt | escape }}"
+      </h6>
+      {%- endif -%}
+
+      {%- comment -%} Article Stories Images Block {%- endcomment -%}
+      {%- if image1of2 != blank or image2of2 != blank -%}
+      {%- assign defaultImage1 = image1of2 | default: image2of2 -%}
+      {%- capture images -%}
+      </div>
+      <div class="c-article__content-images">
+        <div class="c-article__content-image-container o-responsive-image-container is-left">
+          {%- render 'tool.picture' with {
+          class: 'c-article__content-image o-responsive-image',
+          image: defaultImage1,
+          width: 1720,
+          sizes: '375,750,1100,1650,2000',
+          lazy: true
+          } -%}
+        </div>
+
+        {%- if image1of2 != blank and image2of2 != blank -%}
+        <div class="c-article__content-image-container o-responsive-image-container is-right">
+          {%- render 'tool.picture' with {
+          class: 'c-article__content-image o-responsive-image'
+          image: image2of2,
+          width: 1720,
+          sizes: '375,750,1100,1650,2000',
+          lazy: true
+          } -%}
+        </div>
+        {%- endif -%}
+      </div>
+      <div class="c-article__content-content">
+      {%- endcapture -%}
+      {%- else -%}
+      {%- assign images = "" -%}
+      {%- endif -%}
+
+      {%- comment -%} Article Content {%- endcomment -%}
+      <div class="c-article__content-content">
+        {{article.content
+        | replace: '<p>[images]</p>', images
+        | replace: '<p><span>[images]</span></p>', images
+        | replace: '[images]', images }}
+      </div>
+
+      {%- comment -%} Article Video Section {%- endcomment -%}
+      {%- if videoPoster != blank and videoUrl != blank -%}
+      <div class="c-article__content-video" data-lity data-lity-target="{{- videoUrl -}}">
+        <div class="c-article__content-video-inner">
+          <h4 class="c-article__content-video-title">
+            {{- videoTitle | escape-}}
+          </h4>
+          <div class="c-article__content-video-play-button">
+            {%- render 'svg.play-button' -%}
+          </div>
+        </div>
+
+        <div class="c-article__content-video-image-container o-responsive-image-container">
+          {%- render 'tool.picture' with {
+          image: videoPoster,
+          class: 'c-article__content-video-image o-responsive-image',
+          width: 2000,
+          sizes: '375,750,1100,2000',
+          imageSizes: '375,750,1100,2000',
+          lazy: true
+          } -%}
+        </div>
+
+      </div>
+      {%- endif -%}
+    </div>
+  </section>
+{%- endif -%}

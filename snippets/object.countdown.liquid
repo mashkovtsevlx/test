@@ -1,0 +1,40 @@
+<div class="o-countdown" data-countdown-container>
+  <div class="o-countdown__text" data-countdown-active>
+    {%- comment -%} Countdown numbers {%- endcomment -%}
+    <h4 class="o-countdown__title"
+      data-countdown
+      data-target-year="{{ countdownYear }}"
+      data-target-month="{{ countdownMonth }}"
+      data-target-day="{{ countdownDay }}"
+      data-target-hour="{{ countdownHour }}"
+      data-target-minute="{{ countdownMinute }}"
+    >
+      <div class="o-countdown__date-title-container">
+        <span class="o-countdown__date-title">{{ 'countdown.days' | t }}</span>
+        <span class="o-countdown__date-title">{{ 'countdown.hours' | t }}</span>
+        <span class="o-countdown__date-title">{{ 'countdown.minutes' | t }}</span>
+        <span class="o-countdown__date-title">{{ 'countdown.seconds' | t }}</span>
+      </div>
+
+      <div class="o-countdown__date-container">
+        <span class="o-countdown__date" data-days></span>
+        <span class="o-countdown__date-colon">:</span>
+        <span class="o-countdown__date" data-hours></span>
+        <span class="o-countdown__date-colon">:</span>
+        <span class="o-countdown__date" data-minutes></span>
+        <span class="o-countdown__date-colon">:</span>
+        <span class="o-countdown__date" data-seconds></span>
+      </div> 
+    </h4>
+   
+    {%- comment -%} Countdown title {%- endcomment -%}
+    <h6 class="o-countdown__subtitle">
+      {{- countdownSubtitle -}}
+    </h6>
+
+  </div>
+  {%- comment -%} Countdown message displayed after countdown finished {%- endcomment -%}
+  <h4 class="o-countdown__text is-hidden" data-countdown-complete>
+    {{- countdownComplete -}}
+  </h4>
+</div>

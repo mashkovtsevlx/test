@@ -1,0 +1,125 @@
+{%- comment -%}
+   Join Community Content with
+   - odometer
+   - 2 images
+
+  Version:
+    1.0.0 - 2022/01/06
+
+{%- endcomment -%}
+
+{%- liquid
+
+  assign ss = section.settings
+  assign customerCount = ss.customers_count | default: 7000
+  
+-%}
+
+{%- capture isSectionLocked -%}
+{%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+
+  {%- capture customerCountElement -%}
+    <span class="odometer" data-odometer data-new-value="{{ customerCount }}">{{ customerCount | times: 0.80 | round }}</span>
+  {%- endcapture -%}
+
+  {%- if ss.title != blank -%}
+
+  {{ 'sections.banner-with-odometer.css' | asset_url | stylesheet_tag }}
+  {{ 'sections.banner-with-odometer.js' | asset_url | script_tag }}
+
+    <section class="c-banner-with-odometer">
+
+      <div class="c-banner-with-odometer__inner">
+
+        {%- comment -%} Banner Content {%- endcomment -%}
+        <div class="c-banner-with-odometer__content">
+          {%- if ss.pretitle != blank -%}
+          <div class="c-banner-with-odometer__content-pretitle o-heading--7">
+            {{- ss.pretitle | escape -}}
+          </div>
+          {%- endif -%}
+
+          <h2 class="c-banner-with-odometer__content-title" >
+            {{- ss.title | replace: '$customer$', customerCountElement -}}
+          </h2>
+        </div>
+
+        {%- comment -%} Banner Immages {%- endcomment -%}
+        {%- if ss.image1of2 -%}
+          <div class="c-banner-with-odometer__image-wrapper">
+            <div class="c-banner-with-odometer__image-container o-responsive-image-container">
+              {%- render 'tool.picture' with {
+                image: ss.image1of2,
+                class: 'c-banner-with-odometer__image o-responsive-image is-left',
+                width: 270,
+                sizes: '375,750,1100,1600'
+              } -%}
+            </div>
+          </div>
+        {%- endif -%}
+          
+        {%- if ss.image2of2 -%}
+          <div class="c-banner-with-odometer__image-wrapper">
+            <div class="c-banner-with-odometer__image-container o-responsive-image-container">
+              {%- render 'tool.picture' with {
+                image: ss.image2of2 ,
+                class: 'c-banner-with-odometer__header-image o-responsive-image is-right',
+                width: 270,
+                sizes: '375,750,1100,1600'
+              } -%}
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+      
+    </section>
+
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Banner With Odometer",
+  "class": "c-section c-section__banner-with-odometer",
+  "settings": [
+    {
+      "type": "text",
+      "id": "pretitle",
+      "label": "Section Pretitle"
+    },
+    {     
+      "type": "textarea",
+      "id": "title",
+      "label": "Section Title",
+      "info": "Please include $customer$ where you wish to display the customer count inside your title."
+    },
+    {
+      "type": "number",
+      "id": "customers_count",
+      "label": "Amount of customers that use SkinShark",
+      "default": 6836
+    },
+    {
+      "id": "image1of2",
+      "type": "image_picker",
+      "label": "Image 1 of 2",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 1/1.5, at least 540/810px."
+    },
+    {
+      "id": "image2of2",
+      "type": "image_picker",
+      "label": "Image 2 of 2",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 1/1.5, at least 540/810px."
+    }
+  ],
+    "presets": [
+    {
+      "name": "Banner With Odometer",
+      "category": "Content"
+    }
+  ]
+}
+{% endschema %}

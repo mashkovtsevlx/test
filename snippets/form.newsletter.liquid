@@ -1,0 +1,52 @@
+<div class="{{ prefix }}__form" data-form-id="{{ id }}">
+
+  {% assign generalClass =  prefix | append: '__form-form' %}
+
+  {%- form 'customer', class: generalClass -%}
+
+    {%- comment -%} Get and output the error state handler {%- endcomment -%}
+    {%- capture submitState -%}
+      {%- render 'tool.form-track-submit' with {
+        form: form, id: id, type: 'contact'
+      } -%}
+    {%- endcapture -%}
+    {{- submitState -}}
+
+    {%- if form.posted_successfully? -%}
+      <p class="{{ prefix }}__confirmation">
+        {{- success | escape -}}
+      </p>
+
+    {%- else -%}
+
+      {%- comment -%} Hidden Attributes {%- endcomment -%}
+      <input type="hidden" name="contact[tags]" value="newsletter" />
+      <input type="hidden" name="customer[accepts_marketing]" value="" />
+
+      {%- liquid
+        assign emailError = false
+        if submitState contains 'FORM_WAS_SUBMITTED' and form.errors contains 'email'
+          assign emailError = true
+        endif
+      -%}
+      <input placeholder="{{ placeholder | escape }}" required autocomplete="off" class="
+        {{ prefix }}__input {% if emailError %}has-error{% endif %}
+        {% if inputStyle %}{{ inputStyle }}{% endif -%}
+        " type="email" name="contact[email]"
+      />
+      <p class="{{ prefix }}__confirmation" style="display: none;">
+        {{- success | escape -}}
+      </p>
+
+      <button type="submit" name="subscribe" class=" {{ prefix }}__submit">
+        {{- btnLabel | escape -}}
+        <span class="o-icon is-arrow-right">{%- render 'svg.arrow-right'  -%}</span>
+        <div class=" {{ prefix }}__submit-loader hidden">
+          <svg aria-hidden="true" focusable="false" role="presentation" class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+            <circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
+          </svg>
+        </div>
+      </button>
+    {%- endif -%}
+  {%- endform -%}
+</div>

@@ -1,0 +1,32 @@
+{%- comment -%}
+  links: Shopify link object array
+  blocks: Customizer block array: settings: {title, url}
+  class
+{%- endcomment -%}
+
+{%- liquid
+  assign array = links
+  if blocks
+    assign array = blocks
+  endif
+-%}
+
+{%- if array.size > 0 -%}
+  <nav class='c-footer__menu {% if class %}{{ class }}{% endif %}'>
+    {%- for link in array -%}
+      {%- if links -%}
+        {%- if link.url == blank or link.title == blank -%}{%- continue -%}{%- endif -%}
+        <a href="{{ link.url }}" class="c-footer__menu-item">
+          {{- link.title | escape -}}
+        </a>        
+      {%- endif -%}
+      {%- if blocks -%}
+        {%- if link.settings.url == blank or link.settings.title == blank -%}{%- continue -%}{%- endif -%}
+        <a href="{{ link.settings.url }}" class="c-footer__menu-item">
+          {{- link.settings.title | escape -}}
+        </a>        
+      {%- endif -%}
+    {%- endfor -%}
+  </nav>
+{%- endif -%}
+

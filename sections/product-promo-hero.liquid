@@ -1,0 +1,181 @@
+{%- comment -%}
+   Product Promo Hero with add to cart
+
+  Version:
+    1.0.0 - 2022/01/06
+{%- endcomment -%}
+
+{%- liquid
+  assign ss = section.settings
+
+  assign title = ss.title | default: page.title
+  assign text = ss.text
+  assign buttonText =  ss.buttonText
+  assign textColor =  ss.text_color
+
+  assign slideImages = section.blocks | where: 'type', 'slider-images'
+  assign prod = all_products[ss.product]
+-%}
+
+{{ 'sections.join-community-hero.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'sections.product-promo-hero.js' | asset_url }}" defer></script>
+
+<style>
+  .c-join-community__text p {
+    color: {{ textColor }};
+  }
+
+  .c-join-community__text {
+    opacity: 1;
+  }
+</style>
+
+<section class="c-join-community" data-promo-hero>
+  <div class="c-join-community__inner">
+    <div class="c-join-community__wrapper">
+      <div class="c-join-community__background-image-container-wrapper">
+        <div class="c-join-community__background-image-container">
+          {%-
+            render 'tool.picture' with {
+            image: ss.background-image,
+            class: 'c-join-community__background-image o-responsive-image',
+            width: 867,
+            sizes: '375,2000',
+            lazy: true,
+            imageSizes: '341,867'
+            }
+          -%}
+        </div>
+      </div>
+
+      <div class="c-join-community__left-container">
+        {%- if ss.pretitle != blank -%}
+          <h6 class="c-join-community__pretitle o-heading--7">
+            {{- ss.pretitle | escape -}}
+          </h6>
+        {%- endif -%}
+
+        {%- if title != blank -%}
+          <h1 class="c-join-community__title">
+            {{- title | escape }}
+          </h1>
+        {%- endif -%}
+
+        {%- if text != blank -%}
+          <div class="c-join-community__text c-join-community__text--product-promo">
+            {{- text | newline_to_br -}}
+          </div>
+        {%- endif -%}
+
+        <div class="c-join-community__btn-wrapper">
+          {% if prod != blank and buttonText != blank %}
+            <div class="c-join-community__btn-container">
+              <button
+                class="
+                  c-join-community__btn o-btn is-primary
+                  {% if prod.available != true %}is-disabled{% endif %}
+                "
+                {% if prod.available != true %}
+                  disabled
+                {% endif %}
+                data-add-to-cart-button
+                data-add-to-cart-variant="{{prod.selected_or_first_available_variant.id}}"
+              >
+                {{ buttonText | escape }}
+              </button>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="c-join-community__slides" data-join-community>
+        <div class="c-join-community__slides-wrapper" data-images-carousel>
+          {%- for slide in slideImages -%}
+            <div class="c-join-community__image-container o-responsive-image-container">
+              {%-
+                render 'tool.picture' with {
+                image: slide.settings.slider-image,
+                class: 'c-join-community__image o-responsive-image',
+                width: 602,
+                sizes: '375,2000',
+                imageSizes: '261,602'
+                }
+              -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Product Promo Hero",
+  "class": "c-section c-section__join-community-hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Banner"
+    },
+    {
+      "id": "background-image",
+      "type": "image_picker",
+      "label": "Background Image",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 1/1, at least 1190/1188px."
+    },
+    {
+      "type": "text",
+      "id": "pretitle",
+      "label": "Pre Title"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#779196"
+    },
+    {
+      "id": "product",
+      "type": "product",
+      "label": "Product"
+    },
+    {
+      "type": "text",
+      "id": "buttonText",
+      "label": "Button label",
+      "default": "Add to cart"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slider-images",
+      "name": "Slider Images",
+      "settings": [
+        {
+          "id": "slider-image",
+          "type": "image_picker",
+          "label": "Slider Image",
+          "info": "Please upload in .jpg format. Recommended ratio approx. 1/1, at least 1180/1350px."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Promo Hero",
+      "category": "Content"
+    }
+  ]
+}
+{% endschema %}

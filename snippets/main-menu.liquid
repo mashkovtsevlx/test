@@ -1,0 +1,63 @@
+{%- comment -%}
+  Main Menu
+    Snippet for use as the desktop and mobile menus.
+
+  Version:
+    1.0.0 2021/04/08
+{%- endcomment -%}
+
+{%- liquid
+
+  if template.name == 'page'
+    assign mf = page.metafields.hero-banner
+  elsif template.name == 'index'
+    assign mf = shop.metafields.hero-banner
+  endif
+
+  if mf
+    assign isDarkMode = mf['toggle_dark_mode']
+  endif
+
+
+  assign additionalLinks = section.blocks | where: 'type', 'additionalLink'
+  assign logoAlt = 'general.header.logo_title' | t
+
+-%}
+
+<nav class="c-main-menu {% unless isDarkMode -%}has-inverted-header{%- endunless %}" data-main-menu>
+
+  {%- comment -%} Top Level Links Iteration {%- endcomment -%}
+  <ul class="c-main-menu__list is-level-1 is-submenu-open" data-menu-submenu="1">
+
+    <header class="c-main-menu__header">
+
+      {%- comment -%} Account logo for mobile menu {%- endcomment -%}
+      <a class="c-main-menu__header-account" href="{{ routes.account_url }}">
+
+        {%- render 'svg.user' with {
+          class: 'c-main-menu__header-account-icon'
+        } -%}
+      </a>
+
+      <div class="c-main-menu__header-close" data-menu-toggle>
+        {%- render 'svg.close' -%}
+      </div>
+    </header>
+
+    {%- for link in menu.links -%}
+      {%- render 'main-menu-item' with {
+        link: link, mobileImage: mobileImage, desktopImage: desktopImage
+      } -%}
+    {%- endfor -%}
+
+    {%- for link in additionalMenu.links -%}
+      {%- render 'main-menu-item' with {
+        link: link
+        class: 'is-additional'
+      } -%}
+    {%- endfor -%}
+
+    </ul>
+
+</nav>
+<div class="o-drawer__background c-main-menu__background" data-menu-toggle></div>

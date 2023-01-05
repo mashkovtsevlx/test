@@ -1,0 +1,197 @@
+{%- liquid
+
+  assign ss = section.settings
+  assign title = ss.title
+  assign blockTypes = 'product|payment|delivery|returns' | split: '|'
+-%}
+
+{{ 'sections.faq-template.css' | asset_url | stylesheet_tag }}
+
+<section class="c-faq c-faq-homepage">
+  <div class="c-faq__inner">
+    <div class="c-faq__main-container">
+
+      <div class="c-faq__categories">
+        <h4 class="c-faq__categories-heading">{{ss.categoryHeading | escape }}</h4>
+        
+        <div class="c-faq__categories-container">
+          <button class="c-faq__category is-active" data-category="product">
+            <div class="c-faq__category-icon">{{ss.productsIcon }}</div>
+            <div class="c-faq__category-name o-heading--7">
+              {{ss.productsLabel | escape }}
+            </div>
+          </button>
+          <button class="c-faq__category" data-category="payment">
+            <div class="c-faq__category-icon">{{ss.paymentIcon }}</div>
+            <div class="c-faq__category-name o-heading--7">
+              {{ss.paymentLabel | escape }}
+            </div>
+          </button>
+          <button class="c-faq__category" data-category="delivery">
+            <div class="c-faq__category-icon">{{ss.deliveryIcon }}</div>
+            <div class="c-faq__category-name o-heading--7">
+              {{ss.deliveryLabel | escape }}
+            </div>
+          </button>
+          <button class="c-faq__category" data-category="returns">
+            <div class="c-faq__category-icon">{{ss.returnsIcon }}</div>
+            <div class="c-faq__category-name o-heading--7">
+              {{ss.returnsLabel | escape }}
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {% for blockType in blockTypes %}
+        <div class="c-faq__accordion {% if forloop.first %} is-visible {% endif %}" data-accordion-container={{blockType}} data-no-expand>
+              
+          {% for block in section.blocks %}
+            {% assign bs = block.settings %}
+            {% assign category = bs.category | downcase %}
+
+            {% if category == blockType %}
+      
+              <div class="c-faq__accordion-slide" data-accordion-slide>
+                <div class="c-faq__accordion-slide-title o-heading--6" data-accordion-title>
+
+                  <span class="c-faq__accordion-slide-title-inner">
+                    {{- bs.question | escape  -}}
+                  </span>
+
+                  {%- render 'object.icon' with {
+                    icon: 'plus',
+                    class: 'c-faq__accordion-slide-title-icon is-plus'
+                  } -%}
+                  {%- render 'object.icon' with {
+                    icon: 'minus',
+                    class: 'c-faq__accordion-slide-title-icon is-minus'
+                  } -%}
+                </div>
+                <div class="c-faq__accordion-slide-body" data-accordion-content>
+                  {{- bs.answer -}}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{{ 'sections.faq-template.js' | asset_url | script_tag }}
+
+{% schema %}
+{
+  "name": "FAQ Template",
+  "class": "c-section c-section__faq-template",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Categories"
+    },
+    {
+      "label": "Category Heading",
+      "type": "text",
+      "id": "categoryHeading",
+      "default": "Choose category:"
+    },
+    {
+      "label": "Delivery Label",
+      "type": "text",
+      "id": "deliveryLabel",
+      "default": "Delivery"
+    },
+    {
+      "label": "Delivery Icon",
+      "type": "textarea",
+      "id": "deliveryIcon",
+      "info": "Paste SVG code into text area."
+    },
+    {
+      "label": "Products Label",
+      "type": "text",
+      "id": "productsLabel",
+      "default": "Products"
+    },
+    {
+      "label": "Products Icon",
+      "type": "textarea",
+      "id": "productsIcon",
+      "info": "Paste SVG code into text area."
+    },
+    {
+      "label": "Payment Label",
+      "type": "text",
+      "id": "paymentLabel",
+      "default": "Payment"
+    },
+    {
+      "label": "Payment Icon",
+      "type": "textarea",
+      "id": "paymentIcon",
+      "info": "Paste SVG code into text area."
+    },
+    {
+      "label": "Returns Label",
+      "type": "text",
+      "id": "returnsLabel",
+      "default": "Returns"
+    },
+    {
+      "label": "Returns Icon",
+      "type": "textarea",
+      "id": "returnsIcon",
+      "info": "Paste SVG code into text area."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ item",
+      "settings": [
+        {
+          "id": "question",
+          "type": "text",
+          "label": "Question"
+        },
+        {
+          "id": "answer",
+          "type": "richtext",
+          "label": "Answer"
+        },
+        {
+          "type": "select",
+          "id": "category",
+          "label": "Category",
+          "options": [
+            {
+              "value": "product",
+              "label": "Product"
+            },
+            {
+              "value": "delivery",
+              "label": "Delivery"
+            },
+            {
+              "value": "payment",
+              "label": "Payment"
+            },
+            {
+              "value": "returns",
+              "label": "Returns"
+            }
+          ],
+          "default": "product"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ Homepage",
+      "category": "Content"
+    }
+  ]
+}
+{% endschema %}

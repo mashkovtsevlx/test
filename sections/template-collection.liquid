@@ -1,0 +1,67 @@
+{%- comment -%}
+  Collection Template
+    Section for the template of the collection page.
+
+  Version:
+    1.0.0 - 2020/11/27
+{%- endcomment -%}
+
+
+{%- liquid
+  assign description = collection.description
+  assign image = collection.image | default: section.settings.image
+  capture perPage
+    render 'tool.collection-per-page'
+  endcapture
+
+  echo 'sections.template-collection.css' | asset_url | stylesheet_tag
+-%}
+<section class="c-collection">
+
+  <div class="c-collection__header-background"></div>
+  
+  <div class="c-collection__inner">
+    {%- comment -%} Products {%- endcomment -%}
+    {%- paginate collection.products by 12 -%}
+      <div class="c-collection__products o-products-list" data-collection-template-products>
+        {%- for product in collection.products -%}
+          <a href={{product.url}} class="c-collection__product">
+            {%- render 'tool.picture' with {
+              image: product.featured_image,
+              class: 'c-collection__product-image',
+              width: 520,
+              sizes: '374,500,750,1200,1600',
+              imageSizes: '300,420,375,380,520'
+            } -%}
+            <h4 class="c-collection__product-title">
+              {{product.title}}
+            </h4>
+          </a>
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Standard Pagination {%- endcomment -%}
+      <div class="c-collection__pagination">
+        {%- render 'object.pagination', paginate: paginate -%}
+      </div>
+    {%- endpaginate -%}
+
+  </div>
+</div>
+
+
+
+{% schema %}
+  {
+    "name": "Collection Template",
+    "class": "c-section__collection-template",
+    "settings": [
+      {
+        "id": "image",
+        "type": "image_picker",
+        "label": "Default Collection Image",
+        "info": "Default image to show in the collection banner on mobile. An image can be set for individual collections from the collection's settings."
+      }
+    ]
+  }
+{% endschema %}

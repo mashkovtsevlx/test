@@ -1,0 +1,135 @@
+{%- comment -%}
+  Diaries Template
+
+  Version:
+    1.0.0 - 2021/12/10
+
+{%- endcomment -%}
+
+{%- liquid
+
+  assign ss = section.settings 
+  assign imageDesktop = ss.featured_article.metafields.accentuate.desktopImage
+  assign imageMobile = ss.featured_article.metafields.accentuate.mobileImage
+
+  if imageMobile == blank
+    assign imageMobile = imageDesktop
+  endif
+
+  assign learnMore = 'articles.learn_more' | t
+  assign authorPrefix = 'articles.author_prefix' | t
+
+  assign storiesBlog = blogs[section.settings.storiesBlog]
+
+-%}
+
+{%- if storiesBlog.articles.size > 0 -%}
+
+  <section class="c-stories-blog">
+    {%- comment -%} Diaries Vlog Hero Banner {%- endcomment -%}
+    <div class="c-stories-blog__header-background">
+    </div>
+    <div class="c-stories-blog__inner">
+      <div class="c-stories-blog__content-container">
+        {%- if ss.title != blank -%}
+          <p class="c-stories-blog__pre-title o-heading--7">
+            {{- ss.title | escape -}}
+          </p>
+        {%- endif -%}
+          
+        {%- if ss.featured_article.title != blank -%}
+          <h1 class="c-stories-blog__heading">
+            {{- ss.featured_article.title -}}
+          </h1>
+        {%- endif -%}
+
+        {%- if ss.featured_article.excerpt != blank -%}
+          <p class="c-stories-blog__description">
+            {{- ss.featured_article.excerpt | truncatewords: 15 -}}
+          </p>
+        {%- endif -%}
+
+        <a class="c-stories-blog__btn-wrapper" href="{{- ss.featured_article.url -}}">
+          <span class="c-stories-blog__btn o-link has-arrow">
+            {{- learnMore -}}
+          </span>
+        </a>
+        
+      </div>
+
+      <div class="c-stories-blog__image-container o-responsive-image-container">
+        {%- render 'tool.picture' with {
+          image: imageDesktop,
+          class: 'c-stories-blog__image o-responsive-image is-desktop',
+          width: 1000,
+          sizes: '750,1350,1650',
+          imageSizes: '1,650,800'
+        } -%}
+
+        {%- render 'tool.picture' with {
+          image: imageMobile,
+          class: 'c-stories-blog__image o-responsive-image is-mobile',
+          width: 295,
+          sizes: '375,500,750',
+          imageSizes: '341,450,700'
+        } -%}
+      </div>
+    </div>
+
+    {%- comment -%}Blog Stories Listing {%- endcomment -%}
+    {%- paginate blog.articles by 9 -%}
+
+      <div class="c-stories-blog__articles">
+
+        {%- for article in storiesBlog.articles -%}
+          
+          {%- render 'object.article-stories-thumbnail' with {
+            article: article,
+            class: 'c-stories-blog__articles-wrapper'
+          } -%}
+
+        {%- endfor -%}
+
+      </div>
+
+      {%- render 'object.pagination' with {
+        paginate: paginate,
+        class: 'c-stories-blog__pagination'
+      } -%}
+      
+    {%- endpaginate -%}
+
+  </section>
+
+  {{ 'sections.blog-stories-template.css' | asset_url | stylesheet_tag }}
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Stories Blog",
+  "class": "c-section c-section__blog-stories-template",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Banner",
+      "info":"Hero banner will be different all the time, depending from the featured article"
+    },
+    {
+      "label": "Title",
+      "type": "text",
+      "id": "title"
+    },
+    {
+			"type": "article",
+			"id": "featured_article",
+			"label": "Featured article"
+		},
+    {
+      "type": "blog",
+      "id": "storiesBlog",
+      "label": "Stories Blog"
+    }
+  ]
+}
+{% endschema %}

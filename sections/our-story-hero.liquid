@@ -1,0 +1,129 @@
+{%- comment -%}
+  Our story hero banner
+
+  Version:
+    1.0.0 - 2021/02/23
+{%- endcomment -%}
+
+{%- liquid
+
+  assign mf = page.metafields.hero-banner
+  assign isDarkMode = mf['toggle_dark_mode']
+
+
+  assign ss = section.settings
+  assign title = ss.title | default: page.title
+  assign image = ss.image
+  assign mobileImage = image
+  if ss.image-mobile != blank
+    assign mobileImage = ss.image-mobile
+  endif
+
+-%}
+
+{%- capture isSectionLocked -%}
+{%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+  {{ 'sections.our-story-hero.css' | asset_url | stylesheet_tag }}
+
+  <section class="c-our-story-hero {% if isDarkMode -%}is-dark-mode{%- endif -%}">
+
+    <div class="c-our-story-hero__header">
+      <div class="c-our-story-hero__header-inner">
+        <div class="c-our-story-hero__header-left-container">
+          <p class="c-our-story-hero__pre-title o-heading--7">{{ss.preTitle | escape }}</p>
+          <h1 class="c-our-story-hero__header-heading">{{title  }}</h1>
+        </div>
+        <div class="c-our-story-hero__image-container o-responsive-image-container">
+          {%- render 'tool.picture' with {
+            image: image,
+            class: 'c-our-story-hero__image o-responsive-image is-desktop',
+            width: 1000,
+            sizes: '750,1350,1650',
+            imageSizes: '750,650,800'
+          } -%}
+
+          {%- render 'tool.picture' with {
+            image: mobileImage,
+            class: 'c-our-story-hero__image o-responsive-image is-mobile',
+            width: 700,
+            sizes: '375,500,750',
+            imageSizes: '341,450,700'
+          } -%}
+        </div>
+      </div>
+      {% if section.blocks.size > 0 %}
+      <div class="c-our-story-hero__usps-wrap">
+        <div class="c-our-story-hero__usps">
+          {% for block in section.blocks %}
+            <div class="c-our-story-hero__usp">
+              <span class="c-our-story-hero__usp-icon">
+                {{block.settings.icon}}
+              </span>
+              <span class="c-our-story-hero__usp-title o-heading--7">
+                {{block.settings.title}}
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      
+    </div>
+  </section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Our Story",
+  "class": "c-section c-section__our-story-hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Banner"
+    },
+    {
+      "type": "text",
+      "id": "preTitle",
+      "label": "Pre Title"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "id": "image",
+      "type": "image_picker",
+      "label": "Image (desktop)",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 1/1, at least 1190/1188px."
+    },
+    {
+      "id": "image-mobile",
+      "type": "image_picker",
+      "label": "Image (mobile)",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 1/1.3, at least 1500/2200px."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "usp",
+      "name": "USP",
+      "settings": [
+        {
+          "label": "Title",
+          "type": "text",
+          "id": "title"
+        },
+        {
+          "label": "Icon (svg)",
+          "type": "textarea",
+          "id": "icon"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

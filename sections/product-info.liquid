@@ -1,0 +1,168 @@
+{%- liquid
+  assign productDescriptionTitle = 'products.product.description_title' | t
+  assign productDescriptionContent = product.description
+  unless productDescriptionContent contains '<p>'
+    assign productDescriptionContent = '<p>' | append: productDescriptionContent | append: '</p>'
+  endunless
+
+  assign ss = section.settings
+  assign mf = product.metafields.accentuate
+  assign mfSlideCount = mf.slideTitle.size
+-%}
+
+{{ 'sections.product-info.css' | asset_url | stylesheet_tag }}
+
+{% capture expandIcons %}
+  {%- render 'object.icon' with { icon: 'plus' } -%}
+  {%- render 'object.icon' with { icon: 'minus' } -%}
+{% endcapture %}
+
+<section
+  class="c-product-info"
+  data-product-info
+  {% if ss.section_id and ss.section_id != "" %}
+    id="{{ ss.section_id }}"
+  {% endif %}
+>
+  <h5 class="c-product-info__title is-mobile">
+    {{- section.settings.title -}}
+  </h5>
+
+  <div class="c-product-info__double-image">
+    {%-
+      render 'tool.picture' with {
+      image: ss.bgImage,
+      class: 'c-product-info__double-image-background',
+      width: 850,
+      sizes: '375,1600',
+      imageSizes: '295,850',
+      attributes: 'data-image'
+      }
+    -%}
+
+    {% if ss.overlayImage %}
+      <div class="c-product-info__double-image-overlay-container" data-image>
+        {%-
+          render 'tool.picture' with {
+          image: ss.overlayImage,
+          class: 'c-product-info__double-image-overlay',
+          width: 455,
+          sizes: '375,1600',
+          imageSizes: '160,455'
+          }
+        -%}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="c-product-info__inner">
+    <div class="c-product-info__left-container">
+      <h2 class="c-product-info__title is-desktop o-heading--5">
+        {{- section.settings.title | escape -}}
+      </h2>
+
+      <div class="c-product-info__accordion-wrapper" data-accordion-container>
+        {%- if product.description != blank -%}
+          <div class="c-product-info__accordion is-expanded" data-accordion-slide>
+            <div class="c-product-info__accordion__title o-heading--7" data-accordion-title>
+              {{ productDescriptionTitle | escape }}
+              {{ expandIcons }}
+            </div>
+
+            <div class="c-product-info__accordion__content" data-accordion-content>
+              {{- productDescriptionContent -}}
+            </div>
+          </div>
+        {%- endif -%}
+
+        {%- for title in mf.slideTitle -%}
+          <div class="c-product-info__accordion" data-accordion-slide>
+            <div class="c-product-info__accordion__title o-heading--7" data-accordion-title>
+              {{ title | escape }}
+              {{ expandIcons }}
+            </div>
+            <div class="c-product-info__accordion__content" data-accordion-content>
+              {{- mf.slideText[forloop.index0] -}}
+            </div>
+          </div>
+        {%- endfor -%}
+
+        {%- for block in section.blocks -%}
+          {% assign bs = block.settings %}
+          <div class="c-product-info__accordion" data-accordion-slide>
+            <div class="c-product-info__accordion__title o-heading--7" data-accordion-title>
+              {{ bs.title | escape }}
+              {{ expandIcons }}
+            </div>
+            <div class="c-product-info__accordion__content" data-accordion-content>
+              {{- bs.text | escape | newline_to_br -}}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="{{ 'sections.product-info.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Accordion",
+  "class": "c-section c-section__product-information",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_id",
+      "label": "Custom section id",
+      "info": "For advanced users or engineers"
+    },
+    {
+      "type": "paragraph",
+      "content": "Use blocks to create product info accordion slides. Note: 2 of the slides are not managed here, product description is set in the product in admin, and product ingredients is set in accentuate metafields for that product."
+    },
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title",
+      "default": "Product Information"
+    },
+    {
+      "id": "bgImage",
+      "type": "image_picker",
+      "label": "Background Image",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 1/1, at least 1700/1700."
+    },
+    {
+      "id": "overlayImage",
+      "type": "image_picker",
+      "label": "Overlay Image",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 0.94/1, at least 1142/1216px."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "accordionSlide",
+      "name": "Accordion Slide",
+      "settings": [
+        {
+          "id": "title",
+          "type": "text",
+          "label": "Title"
+        },
+        {
+          "id": "text",
+          "type": "textarea",
+          "label": "Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Information Accordion",
+      "category": "Content"
+    }
+  ]
+}
+{% endschema %}

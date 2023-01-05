@@ -1,0 +1,146 @@
+{%- comment -%}
+  Weekly Challenge Content
+
+   Weekly Challenge Content with before and after posts
+
+  Version:
+    1.0.0 - 2021/12/23
+{%- endcomment -%}
+
+{{ 'sections.weekly-challenge-content.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  
+  assign ss = section.settings
+  
+  assign challengePosts = section.blocks | where: 'type', 'posts'
+
+-%}
+
+
+{%- capture isSectionLocked -%}
+  {%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+
+<section class="c-weekly-challenge-content">
+  <div class="c-weekly-challenge-content__inner">
+
+      {%- if ss.pretitle != blank -%}
+        <p class="c-weekly-challenge-content__pretitle o-heading--7">
+          {{- ss.pretitle | escape -}}
+        </p>
+      {%- endif -%}
+
+      {%- if ss.title != blank -%}
+        <h4 class="c-weekly-challenge-content__title">
+          {{- ss.title | escape -}}
+        </h4>
+      {%- endif -%}
+
+      <div class="c-weekly-challenge-content__posts">
+        {%- for post in challengePosts -%}
+        
+        {%- render 'object.challenge-post', with {
+          imageAligment: post.settings.image-aligment,
+          beforeImage: post.settings.image-before,
+          afterImage: post.settings.image-after,
+          title: post.settings.title,
+          userName: post.settings.user-name,
+          userUrl: post.settings.user-url,
+          text: post.settings.content,
+          productLeft: post.settings.product-left,
+          productRight: post.settings.product-right
+        } -%}       
+
+        {%- endfor -%}
+      </div>
+    
+  </div>
+</section>
+{%- endif -%}
+
+{% schema %}
+  {
+    "name": "Weekly Challenge content",
+    "class": "c-section c-section__weekly-challenge-content",
+    "settings": [
+      {
+        "id": "pretitle",
+        "type": "text",
+        "label": "Pre Title"
+      },
+      {
+        "id": "title",
+        "type": "text",
+        "label": "Title"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "posts",
+        "name": "Weekly Challenge Post",
+        "settings": [
+          {
+            "type": "radio",
+            "id": "image-aligment",
+            "label": "Image Alignment",
+            "options": [
+              {
+                "value": "left",
+                "label": "Left"
+              },
+              {
+                "value": "right",
+                "label": "Right"
+              }
+            ]
+          },
+          {
+            "type": "image_picker",
+            "id": "image-before",
+            "label": "Before Image",
+            "info": "Please upload in .jpg format. Recommended ratio approx. 1/1.7, at least 810/1380px."
+          },
+          {
+            "type": "image_picker",
+            "id": "image-after",
+            "label": "After Image",
+            "info": "Please upload in .jpg format. Recommended ratio approx. 1/1.7, at least 810/1380px."
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title"
+          },
+          {
+            "type": "text",
+            "id": "user-name",
+            "label": "User Name"
+          },
+          {
+            "type": "url",
+            "id": "user-url",
+            "label": "User Url"
+          },
+          {
+            "type": "textarea",
+            "id": "content",
+            "label": "Content"
+          },
+          {
+            "type": "product",
+            "id": "product-left",
+            "label": "First Product"
+          },
+          {
+            "type": "product",
+            "id": "product-right",
+            "label": "Second Product"
+          }
+        ]
+      }
+    ]  
+  }
+{% endschema %}

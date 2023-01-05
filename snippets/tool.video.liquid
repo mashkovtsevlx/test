@@ -1,0 +1,43 @@
+{%- comment -%}
+  Video Tool
+    Tool to create a HTML5 video element with optional poster attribute.
+    Supports a SRC path to a mp4 video from theme settings or Accentuate MF.
+
+  Version
+    1.0.0 - 2020/09/15
+{%- endcomment -%}
+
+{%- liquid
+  assign posterWidth = posterWidth | default: 1000
+  assign posterWidth = posterWidth | append: 'x'
+  assign loop = loop | default: true
+  assign controls = controls | default: false
+
+  if src.first.src != blank
+    assign src = src.first.src
+  endif
+
+  if poster.first.src != blank and poster.first.cloudinary_src != blank
+    assign poster = poster.first.cloudinary_src
+  elsif poster != blank
+    assign poster = poster | img_url: posterWidth
+  endif
+-%}
+
+<video
+  {% unless autoplay == false %}autoplay="autoplay"{% endunless %}
+  playsinline
+  {% if loop == true %}loop{% endif %}
+  {% if controls == true %}controls{% endif %}
+  title="{{ 'general.controls.video_play_title' | t }}"
+  muted="muted"
+  class="{{ class }}"
+  data-video
+  {% if poster != blank %}poster="{{ poster }}"{% endif -%}
+>
+  {%- if webm -%}
+    <source src="{{ webm }}" type="video/webm">
+  {%- endif -%}
+
+  <source src="{{ src }}" type="video/mp4">
+</video>

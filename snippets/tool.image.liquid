@@ -1,0 +1,56 @@
+{% comment %}
+  Picture
+    Image snippet to create a responsive img element with multiple scales and sizes.
+
+  Settings:
+    image - Image to add elements for.
+    alt (Optional) - Optional ALT Tag for passed Image URLs
+    srcsetSizes - Sizes for the srcSets. 2x, 3x and 4x resolutions will be provided automatically
+    sizes - "sizes" attribute string
+    class (Optional) - Additional class(es) to attach to the img element.
+    lazy (Optional) - Adds the lazy attribute to the image (ref: https://web.dev/browser-level-image-lazy-loading/)
+    width (Optional) - Fallback image width (in case srcset doesn't work)
+
+  Version:
+    1.0.0 - 2022/05/26 alex@inso.codes
+{% endcomment %}
+
+{%- liquid
+  assign srcsetSizesSpl = srcsetSizes | split: ','
+  assign srcsetSizesScaled = ","
+
+  for srcsetSize in srcsetSizesSpl
+    assign srcsetSizeNum = srcsetSize | times: 1
+    assign srcsetSizesScaled = srcsetSizesScaled | append: srcsetSize | append: ","
+
+    for i in (2..3)
+      assign srcsetSizeINum = srcsetSizeNum | times: i
+      assign srcsetSizeISearchStr = "," | append: srcsetSizeINum | append: ','
+      assign srcsetSizeIStr = srcsetSizeINum | append: ','
+      unless srcsetSizesScaled contains srcsetSizeISearchStr
+        assign srcsetSizesScaled = srcsetSizesScaled | append: srcsetSizeIStr
+      endunless
+    endfor
+  endfor
+
+  assign srcsetSizesScaledSize = srcsetSizesScaled | size
+  assign srcsetSizesScaled = srcsetSizesScaled | slice: 1, srcsetSizesScaledSize
+  assign srcsetSizesScaledSpl = srcsetSizesScaled | split: ","
+-%}
+<img
+  sizes="{{ sizes }}"
+  srcset="
+    {%- for srcsetSize in srcsetSizesScaledSpl -%}
+      {%- assign srcsetSizeNum = srcsetSize | times: 1 -%}
+      {%- if image.width >= srcsetSizeNum %}{{ image | image_url: width: srcsetSizeNum }} {{srcsetSizeNum}}w{%- unless forloop.last -%},{%- endunless -%}{%- endif -%}
+    {%- endfor -%}
+  "
+  src="{%- if width -%}{{ image | image_url: width: width }}{%- else -%}{{ image | image_url }}{%- endif -%}"
+  alt="{%- if alt -%}{{ alt | escape }}{%- else -%}{{ image.alt | escape }}{%- endif -%}"
+  {% if lazy %}
+    loading="lazy"
+  {% endif %}
+  width="{{ image.width }}"
+  height="{{ image.height }}"
+  class="{{ class }}"
+>

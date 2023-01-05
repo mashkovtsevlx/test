@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="{{ locale }}" dir="{{ direction }}" class="{{ checkout_html_classes }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, user-scalable=0">
+    <meta name="referrer" content="origin">
+
+
+    {%- comment -%} Checkout SCSS {%- endcomment -%}
+   
+
+    <title>{{ page_title }}</title>
+
+    
+    <script type="text/javascript">
+      window.Language = window.Language || {};
+      window.Language.strings = window.Language.strings || {};
+      window.Cart = window.Cart || {};
+      window.Cart.data = window.Cart.data || {%- render 'json.cart' -%};
+      window.Currency = window.Currency || {};
+      window.Currency.currency = {{ cart.currency.iso_code | json }};
+      window.Currency.format = {{ shop[settings.native_format] | default: shop.money_format | json }};
+      window.Currency.convertedFormat = {{ settings.currency_conversion_format | json }};
+    </script>
+
+    {{ content_for_header }}
+
+    {{ checkout_stylesheets }}
+    {{ checkout_scripts }}
+
+    <style>      
+      #preview-bar-iframe {
+        // display: none;
+      }
+
+      .c-checkout-message{
+        display: none;
+      }
+
+      .text-container .c-checkout-message{
+          display: block;
+          margin: 1rem 0;
+          padding: 1rem;
+          background: rgb(166, 214, 222, 0.5);
+        
+      }
+
+    </style>
+    
+    
+  </head>
+  <body>
+    {{ skip_to_content_link }}
+
+    <script type="application/json" data-checkout-json>
+      {%- render 'json.checkout' with { checkout: checkout } -%}
+    </script>
+
+    <header class="banner" data-header role="banner">
+      <div class="wrap">
+        {{ content_for_logo }}
+      </div>
+    </header>
+
+    {{ order_summary_toggle }}
+    <div class="content" data-content>
+      <div class="wrap">
+        <div class="main">
+          <header class="main__header" role="banner">
+            {{ content_for_logo }}
+            {{ breadcrumb }}
+            {{ alternative_payment_methods }}
+          </header>
+          <main class="main__content" role="main">
+            {{ content_for_layout }}
+          </main>
+          <footer class="main__footer" role="contentinfo">
+            {{ content_for_footer }}
+          </footer>
+        </div>
+        <aside class="sidebar" role="complementary">
+          <div class="sidebar__header">
+            {{ content_for_logo }}
+          </div>
+          <div class="sidebar__content">
+            {{ content_for_order_summary }}
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    {{ tracking_code }}
+    {{ 'vendor.js' | asset_url | script_tag }}
+    {{ 'layout.checkout.js' | asset_url | script_tag }}
+
+    <div class="c-checkout-message" data-checkout-message>
+      {% if checkout.customer.has_account == false and settings.create_account_message != blank %}
+      
+        {{ settings.create_account_message | escape }}
+      
+      {% else %}
+        <a class="btn" href="/pages/week_1">{{- 'pages.skin-journeys.start_journey' | t -}}</a>
+      {% endif %}
+    </div>
+
+
+    <script>
+      var domIsReady = (function(domIsReady) {
+        var isBrowserIeOrNot = function() {
+          return (!document.attachEvent || typeof document.attachEvent === "undefined" ? 'not-ie' : 'ie');
+        }
+
+        domIsReady = function(callback) {
+          if(callback && typeof callback === 'function'){
+            if(isBrowserIeOrNot() !== 'ie') {
+              document.addEventListener("DOMContentLoaded", function() {
+                return callback();
+              });
+            } else {
+              document.attachEvent("onreadystatechange", function() {
+                if(document.readyState === "complete") {
+                  return callback();
+                }
+              });
+            }
+          } else {
+            console.error('The callback is not a function!');
+          }
+        }
+
+        return domIsReady;
+      })(domIsReady || {});
+
+      (function(document, window, domIsReady, undefined) {
+        domIsReady(function() {
+
+          if (Shopify.Checkout.step === 'payment_method') {
+          }
+
+          var orderSummary = document.querySelector('.content-box__row.text-container'); 
+          if(!orderSummary) return;
+          var specialMessage = document.querySelector('[data-checkout-message]'); 
+          if(!specialMessage) return;
+          orderSummary.appendChild(specialMessage);
+
+
+        });
+      })(document, window, domIsReady);
+    </script>
+
+  </body>
+</html>

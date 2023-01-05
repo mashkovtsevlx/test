@@ -1,0 +1,46 @@
+{%- comment -%}
+  link: shopify link object
+  class
+{%- endcomment -%}
+
+{%- liquid
+
+  assign hasSubmenu = false
+
+  if link.links.size > 0
+    assign hasSubmenu = true
+  endif
+
+-%}
+
+<li class="c-main-menu__item {{ class }}
+  {%- if link.active %}  is-active{%- endif -%}
+  {%- if link.url == '/account' %} is-account{%- endif -%}">
+  
+  <a
+    href="{{ link.url }}"
+    title="{{ link.title | escape }}"
+    class="c-main-menu__link
+      {%- if hasSubmenu %} has-submenu{%- endif -%}"
+    data-submenu-handle="{{ link.title | handle }}"
+    {% if hasSubmenu %}data-submenu-toggle{% endif %}
+  >
+    <span class="c-main-menu__link-inner">
+      {{- link.title | escape -}}
+      {%- if hasSubmenu and customer -%}
+        {%- render 'svg.menu-arrow' with {
+          class: 'c-main-menu__link-icon-arrow'
+        } -%}
+      {%- endif -%}
+    </span>
+
+    {%- if hasSubmenu -%}
+      <div class='c-main-menu__link-icon-submenu'></div>
+    {%- endif -%}
+  </a>
+
+  {%- comment -%} Submenu for this link {%- endcomment -%}
+  {% if hasSubmenu %}
+    {%- render 'main-menu--submenu', link: link, mobileImage: mobileImage, desktopImage: desktopImage -%}
+  {% endif %}
+</li>

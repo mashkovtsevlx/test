@@ -1,0 +1,128 @@
+{%- comment -%}
+  Article Diaries Slider
+
+  Version:
+    1.0.0 2021/10/19
+{%- endcomment -%}
+
+{{ 'sections.our-community.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+
+  assign s = section.settings
+  assign diariesBlog = blogs[section.settings.diariesBlog]
+  assign heroStory = 'articles.hero_story' | t
+  assign learnMore = 'articles.learn_more' | t
+-%}
+
+{%- if diariesBlog.articles.size > 0 -%}
+
+{{ 'sections.article-diaries-slider.css' | asset_url | stylesheet_tag }}
+{{ 'sections.article-diaries-slider.js' | asset_url | script_tag }}
+
+  <section class="c-article-diaries-slider">
+    <div class="c-article-diaries-slider__inner">
+
+      <div class="c-article-diaries-slider__content">
+        {%- if s.title != blank -%}
+          <h5 class="c-article-diaries-slider__title">
+            {{- s.title | escape -}}
+          </h5>
+        {%- endif -%}
+      
+        {%- if s.subtitle != blank -%}
+          <p class="c-article-diaries-slider__subtitle">
+            {{- s.subtitle | escape -}}
+          </p>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Featured Arcticles Carousel {%- endcomment -%}
+      <div class="c-article-diaries-slider__articles" data-diaries-articles>
+        <div class="c-article-diaries-slider__articles-container">
+          
+          <div class="c-article-diaries-slider__buttons" data-carousel-navigation>
+            <button class="c-article-diaries-slider__button is-prev" data-carousel-previous>
+              {%- render 'svg.slider-arrow' with {
+                class: 'c-article-diaries-slider__button-left'
+              } -%}
+            </button>
+            <button class="c-article-diaries-slider__button is-next" data-carousel-next>
+              {%- render 'svg.slider-arrow' with {
+                class: 'c-article-diaries-slider__button-right'
+              } -%}
+            </button>
+          </div>
+
+          <div class="c-article-diaries-slider__articles-wrapper">
+            <div class="c-article-diaries-slider__slider-container" data-carousel-container>
+              {%- for article in diariesBlog.articles -%}
+
+                {%- liquid
+
+                  assign heroName = article.metafields.accentuate.hero_name
+                  assign heroStory = 'articles.hero_story' | t
+                  assign articleTitle = heroName | append: heroStory
+                  if heroName == blank
+                    assign articleTitle = article.title
+                  endif
+                -%}
+              
+                {%- if articleTitle != blank -%}
+                  <a href="{{- article.url -}}" class="c-article-diaries-slider__article-wrapper" data-carousel-slide>
+                    <div class="c-article-diaries-slider__image-container o-responsive-image-container">
+                      {%- render 'tool.picture' with {
+                        image: article.image,
+                        class: "c-article-diaries-slider__image o-responsive-image",
+                        width: 367,
+                        sizes: '375,2000',
+                        imageSizes: '253,415'
+                      } -%}
+                    </div>
+
+                      <h6 class="c-article-diaries-slider__article-title">
+                        {{- articleTitle -}}
+                      </h6>
+
+                    <span class="c-article-diaries-slider__btn o-link has-arrow">
+                      {{- learnMore -}}
+                    </span>
+                  </a>
+                {%- endif -%}
+        
+              {%- endfor -%}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Article Diaries Slider",
+  "class": "c-section c-section__article-diaries-slider",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Article Diaries Slider"
+    },
+    {
+      "type": "blog",
+      "id": "diariesBlog",
+      "label": " Diaries Blog"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle"
+    }
+  ]
+}
+{% endschema %}

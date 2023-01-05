@@ -1,0 +1,73 @@
+{%- comment -%}
+  Hero Banner with Products
+    Hero banner section with product images 
+
+  Version:
+    1.0.0 - 2022/02/21
+
+{%- endcomment -%}
+
+{%- liquid
+
+  assign s = section.settings
+
+-%}
+
+{{ 'sections.hero-with-products.css' | asset_url | stylesheet_tag }}
+
+<section class="c-hero-with-products">
+  <div class="c-hero-with-products__header">
+    <div class="c-hero-with-products__header-inner {% if s.leftImage or s.rightImage %} has-header-images{% endif %}">
+
+      <h1 class="c-hero-with-products__header-heading">
+        {{- s.title | default: page.title | escape -}}
+      </h1>
+
+      {%- if s.leftImage -%}
+        {%- render 'tool.picture' with {
+          image: s.leftImage,
+          class: 'c-hero-with-products__header-image is-left',
+          width: 200,
+          sizes: '375,750,1100,1600'
+        } -%}
+      {%- endif -%}
+      
+      {%- if s.rightImage -%}
+        {%- render 'tool.picture' with {
+          image: s.rightImage,
+          class: 'c-hero-with-products__header-image is-right',
+          width: 200,
+          sizes: '375,750,1100,1600'
+        } -%}
+      {%- endif -%}
+    </div>
+  </div>
+
+  
+</section>
+
+{% schema %}
+  {
+    "name": "Hero with Products",
+    "class": "c-section c-section__hero-with-products",
+    "settings": [
+      {
+        "id": "title",
+        "type": "text",
+        "label": "Title"
+      },
+      {
+        "type": "image_picker",
+        "id": "leftImage",
+        "label": "Left Banner Image",
+        "info": "Please upload in .png format. Recommended ratio approx. .45/1, at least 300/650."
+      },
+      {
+        "type": "image_picker",
+        "id": "rightImage",
+        "label": "Right Banner Image",
+        "info": "Please upload in .png format. Recommended ratio approx. .45/1, at least 300/650."
+      }
+    ]
+  }
+{% endschema %}

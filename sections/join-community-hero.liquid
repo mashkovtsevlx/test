@@ -1,0 +1,205 @@
+{%- comment -%}
+   Join Community Hero with
+   - slider
+   - sign up/login buttons
+
+  Version:
+    1.0.0 - 2022/01/06
+{%- endcomment -%}
+
+{%- liquid
+  assign ss = section.settings
+
+  assign title = ss.title | default: page.title
+  assign text = ss.text
+
+  assign slideImages = section.blocks | where: 'type', 'slider-images'
+
+  if customer
+
+    assign title = ss.alternate-title | default: title
+    assign text = ss.alternate-text | default: text
+
+  endif
+-%}
+
+{{ 'sections.join-community-hero.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'sections.join-community-slider.js' | asset_url }}" defer></script>
+
+<section class="c-join-community">
+  <div class="c-join-community__inner">
+    <div class="c-join-community__wrapper">
+      <div class="c-join-community__background-image-container-wrapper">
+        <div class="c-join-community__background-image-container">
+          {%-
+            render 'tool.picture' with {
+            image: ss.background-image,
+            class: 'c-join-community__background-image o-responsive-image',
+            width: 867,
+            sizes: '375,2000',
+            lazy: true,
+            imageSizes: '341,867'
+            }
+          -%}
+        </div>
+      </div>
+
+      <div class="c-join-community__left-container">
+        {%- if ss.pretitle != blank -%}
+          <h6 class="c-join-community__pretitle o-heading--7">
+            {{- ss.pretitle | escape -}}
+          </h6>
+        {%- endif -%}
+
+        {%- if title != blank -%}
+          <h1 class="c-join-community__title">
+            {{- title | escape }}
+          </h1>
+        {%- endif -%}
+
+        {%- if text != blank -%}
+          <p class="c-join-community__text">
+            {{- text | escape | newline_to_br -}}
+          </p>
+        {%- endif -%}
+
+        <div class="c-join-community__btn-wrapper">
+          {% if customer %}
+            {% if ss.enroll-label != blank %}
+              <div>
+                <div class="c-join-community__btn-container">
+                  <a href="{{ss.enroll-url}}" class="c-join-community__btn o-btn is-primary">
+                    {{- ss.enroll-label -}}
+                  </a>
+                </div>
+              </div>
+            {% endif %}
+          {% else %}
+            {%- if ss.sign-up-label != blank -%}
+              <div class="c-join-community__btn-container">
+                <a href="{{ routes.account_register_url }}" class="c-join-community__btn o-btn is-primary">
+                  {{- ss.sign-up-label -}}
+                </a>
+              </div>
+            {%- endif -%}
+
+            {%- if ss.login-label != blank -%}
+              <div class="c-join-community__btn-container">
+                <a href="{{routes.account_login_url}}" class="c-join-community__btn o-btn is-tertiary">
+                  {{- ss.login-label -}}
+                </a>
+              </div>
+            {%- endif -%}
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="c-join-community__slides" data-join-community>
+        <div class="c-join-community__slides-wrapper" data-images-carousel>
+          {%- for slide in slideImages -%}
+            <div class="c-join-community__image-container o-responsive-image-container">
+              {%-
+                render 'tool.picture' with {
+                image: slide.settings.slider-image,
+                class: 'c-join-community__image o-responsive-image',
+                width: 602,
+                sizes: '375,2000',
+                imageSizes: '261,602'
+                }
+              -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Join Community Hero",
+  "class": "c-section c-section__join-community-hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Banner"
+    },
+    {
+      "id": "background-image",
+      "type": "image_picker",
+      "label": "Background Image",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 1/1, at least 1190/1188px."
+    },
+    {
+      "type": "text",
+      "id": "pretitle",
+      "label": "Pre Title"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "text",
+      "id": "sign-up-label",
+      "label": "Sign up Label",
+      "default": "Sign up"
+    },
+    {
+      "type": "text",
+      "id": "login-label",
+      "label": "Login Label",
+      "default": "Login"
+    },
+    {
+      "type": "header",
+      "content": "NON-Skin Within Customers"
+    },
+    {
+      "type": "text",
+      "id": "alternate-title",
+      "label": "Title",
+      "default": "THE SKIN WITHIN - YOU'RE ALMOST THERE!"
+    },
+    {
+      "type": "textarea",
+      "id": "alternate-text",
+      "label": "Text",
+      "default": "You can only access your FREE 6 week Skin Within Program after making a purchase on site. "
+    },
+    {
+      "type": "text",
+      "id": "enroll-label",
+      "label": "Make a purchase label",
+      "default": "Shop Now",
+      "info": "Label for button if customer doesn't have access to Skin Within"
+    },
+    {
+      "type": "url",
+      "id": "enroll-url",
+      "label": "Enroll Button Url",
+      "info": "Url for button if customer doesn't have access to Skin Within"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slider-images",
+      "name": "Slider Images",
+      "settings": [
+        {
+          "id": "slider-image",
+          "type": "image_picker",
+          "label": "Slider Image",
+          "info": "Please upload in .jpg format. Recommended ratio approx. 1/1, at least 1180/1350px."
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,100 @@
+{%- comment -%}
+  Blocked Content Section
+
+  Version:
+    1.0.0 - 2022/01/13
+
+{%- endcomment -%}
+
+{%- liquid
+
+  assign ss = section.settings
+
+  assign blocks = section.blocks | where: 'type', 'blocks'
+
+  assign lockTitle = 'pages.skin-journeys.locked_content' | t
+
+-%}
+
+{%- capture isSectionLocked -%}
+{%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+
+  {{ 'sections.blocked-content.css' | asset_url | stylesheet_tag }}
+
+  <section class="c-blocked-content">
+
+    <div class="c-blocked-content__inner">
+
+      {%- if ss.title != blank -%}
+        <h4 class="c-blocked-content__title">
+          {{- ss.title | escape }}
+        </h4>
+      {%- endif -%}
+
+      <div class="c-blocked-content__blocks">
+
+        {%- for block in blocks -%}
+
+          <a class="c-blocked-content__image-wrapper" href="{{- block.settings.content-link -}}">
+            <div class="c-blocked-content__image-container o-responsive-image-container">
+              {%- render 'tool.picture' with {
+                image: block.settings.content-image,
+                class: 'c-blocked-content__image o-responsive-image',
+                width: 339,
+                sizes: '375,1600',
+                imageSizes: '193,339'
+              } -%}
+            </div>
+            <div class="c-blocked-content__overlay">
+              <div class="c-blocked-content__overlay-container">
+                <div class="c-blocked-content__overlay-logo">
+                  {%- render 'svg.lock' -%} 
+                </div>
+                <h6 class="c-blocked-content__overlay-title o-heading--7">
+                  {{- lockTitle -}}
+                </h6>
+              </div>
+            </div>
+          </a>
+
+        {%- endfor -%}
+          
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{% schema %}
+{
+	"name": "Blocked Content",
+	"class": "c-section c-section__blocked-content",
+	"max_blocks": 3,
+	"settings": [{
+		"type": "text",
+		"id": "title",
+		"label": "Title"
+	}],
+	"blocks": [{
+		"type": "blocks",
+		"name": "Block",
+		"settings": [{
+				"type": "image_picker",
+				"id": "content-image",
+				"label": "Image for blocked content"
+			},
+			{
+				"type": "url",
+				"id": "content-link",
+				"label": "Content Post Link"
+			}
+		]
+	}],
+	"presets": [{
+		"name": "Blocked Content",
+		"category": "Content"
+	}]
+}
+{% endschema %}

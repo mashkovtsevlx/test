@@ -1,0 +1,1 @@
+@keyframes c-test-section--frames{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.c-test-section{display:inline-block;animation-name:c-test-section--frames;animation-duration:.3s;animation-timing-function:linear;animation-iteration-count:infinite}

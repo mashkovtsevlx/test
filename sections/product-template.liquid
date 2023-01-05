@@ -1,0 +1,470 @@
+{% comment %}
+  Product Detail Page
+
+
+  Version:
+  1.0.0 - 22/02/24
+{% endcomment %}
+
+{%- liquid
+  assign mf = product.metafields.accentuate
+
+  assign pmf = product.metafields.custom
+
+  assign ss = section.settings
+
+  assign above_title = pmf.abovetitle
+  assign active_ingredients = pmf.active_ingredients
+  assign ingredients = pmf.ingredients
+-%}
+
+<style>
+  .c-product-bundle {
+    max-width:22.625rem;
+    width:100%;
+    margin:0 auto 3rem;
+    display: none;
+  }
+
+  .c-product-bundle + .c-product-details__divider {
+    display: none;
+  }
+
+  .c-product-bundle__variant {
+    display:flex;
+    margin-bottom:2rem;
+    justify-content:center;
+    align-items:center
+  }
+  .c-product-bundle__variant:last-child {margin-bottom:unset}
+  .c-product-bundle__variant-title {
+    margin-left:1rem;
+    text-align:left;
+    display:inline-block
+  }
+  .c-product-bundle__variant-image {
+    position:absolute;
+    height:100%
+  }
+  .c-product-bundle__variant-image-container {
+    padding-bottom:25%;
+    width:25%;
+    position:relative
+  }
+  .c-product-bundle__variant-image {
+    -o-object-fit:contain;
+    object-fit:contain
+  }
+</style>
+{{ 'sections.product-template.css' | asset_url | stylesheet_tag }}
+
+{% capture expandIcons %}
+  {%- render 'object.icon' with { icon: 'plus' } -%}
+  {%- render 'object.icon' with { icon: 'minus' } -%}
+{% endcapture %}
+
+{% capture product_options %}
+  {%- for option in product.options_with_values -%}
+    {%- for value in option.values -%}
+      {% assign val = value | downcase %}
+
+      {% if val != "default title" %}
+        <span>
+          {{- value | capitalize | escape -}}
+        </span>
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+{% endcapture %}
+
+<section class="c-product-template" data-product-template>
+  <div class="c-product-template__container">
+    <div class="c-product-template__inner">
+      <div class="c-product-template__header-banner">
+        <div class="c-product-template__product-info">
+          {% if above_title != blank %}
+            <div class="c-product-template__product-subtitle is-mobile">
+              {{ above_title }}
+            </div>
+          {% endif %}
+
+          <h2 class="c-product-template__product-title is-mobile">
+            {{- product.title -}}
+          </h2>
+          
+          <div class="c-product-template__product-variant-wrapper is-mobile">
+            <div class="c-product-template__product-variant">
+              {{- product_options | strip -}}
+            </div>
+  
+            {% render 'okendo-reviews-product-rating-summary', product: product %}
+          </div>
+
+          <div class="c-product-template__product-images" data-product-carousel-container>
+            {% if product.images.size > 1 and ss.show_slider_arrows %}
+              <div class="c-product-template__product-navigation" data-carousel-navigation>
+                <button class="c-product-template__product-navigation-prev" data-carousel-previous></button>
+                <button class="c-product-template__product-navigation-next" data-carousel-next></button>
+              </div>
+            {% endif %}
+
+            <div 
+              class="c-product-template__product-image-container {% if ss.first_image_smaller %}c-product-template__product-image-container--fis{% endif %}" data-product-carousel>
+              {%- for image in product.images -%}
+                {% if forloop.first and product.images.size > 1 %}
+                  <div class="keen-slider__slide number-slide{{- forloop.index -}}">
+
+                    {% liquid
+                      comment
+                        Image size is set to 14.625rem (234px) on mobile, and 20rem (320px) on tablet in CSS.
+                        You have to change values here if you changed CSS
+                      endcomment
+                      assign mobileImageWidth = 234 | times: image.aspect_ratio | ceil
+                      assign tabletImageWidth = 320 | times: image.aspect_ratio | ceil
+                      assign imageAspectRatio = image.aspect_ratio | round: 2
+                      comment
+                        Formulas for small and big desktop calculated based on the 85 and 70 height to width aspect ratio (padding-bottom property)
+                        set in CSS in .c-product-template__product-image-container picture
+                        You have to change values here if you changed CSS
+                      endcomment
+                      assign imageSizes = "(min-width: 1650px) calc(100vw * 0.57 * 0.70 * " | append: imageAspectRatio | append: "), (min-width: 1100px) calc(100vw / 2 * 0.85 * " | append: imageAspectRatio | append: "), (min-width: 750px) " | append: tabletImageWidth | append: "px, " | append: mobileImageWidth | append: "px"
+                      assign imageSrcsetSizes = mobileImageWidth | append: "," | append: tabletImageWidth | append: ",100,150,250,350,750,800,850,1000,1100,1200,1400"
+                    %}
+                    <div class="c-product-template__product-image-container__img-wrapper c-product-template__product-image-container__img-wrapper--bg" style="background-image: url({{ ss.desktopImage | image_url }})">
+
+                      {% comment %} Background inside slide {% endcomment %}
+                      {%- if ss.mobileImage != blank or ss.desktopImage != blank %}
+                        {% comment %} <div class="
+                            c-product-template__banner-image-container o-responsive-image-container
+                            {%- if ss.mobileImage == blank %} has-no-mobile-image {%- endif -%}
+                          ">
+                          <picture>
+                            {%- if ss.mobileImage -%}
+                              <source
+                                media="(max-width: 749px)"
+                                srcset="
+                                  {%- if ss.mobileImage.width >= 300 -%}{{ ss.mobileImage | image_url: width: 300 }} 300w,{%- endif -%}
+                                  {%- if ss.mobileImage.width >= 350 -%}{{ ss.mobileImage | image_url: width: 350 }} 350w,{%- endif -%}
+                                  {%- if ss.mobileImage.width >= 375 -%}{{ ss.mobileImage | image_url: width: 375 }} 375w,{%- endif -%}
+                                  {% comment %} Kept max resolution as 375w to lower the network load. It's only a background image, so we don't need a big one {% endcomment %}
+                                "
+                              >
+                            {%- endif -%}
+                            {%- if ss.desktopImage -%}
+                              <source
+                                media="(min-width: 750px)"
+                                sizes="50vw"
+                                srcset="
+                                  {%- if ss.desktopImage.width >= 500 -%}{{ ss.desktopImage | image_url: width: 500 }} 500w,{%- endif -%}
+                                  {%- if ss.desktopImage.width >= 600 -%}{{ ss.desktopImage | image_url: width: 600 }} 600w,{%- endif -%}
+                                  {%- if ss.desktopImage.width >= 800 -%}{{ ss.desktopImage | image_url: width: 800 }} 800w,{%- endif -%}
+                                  {%- if ss.desktopImage.width >= 900 -%}{{ ss.desktopImage | image_url: width: 900 }} 900w,{%- endif -%}
+                                  {%- if ss.desktopImage.width >= 1000 -%}{{ ss.desktopImage | image_url: width: 1000 }} 1000w,{%- endif -%}
+                                  {%- if ss.desktopImage.width >= 1135 -%}{{ ss.desktopImage | image_url: width: 1135 }} 1135w,{%- endif -%}
+                                  {% comment %} Kept max resolution as 1135w to lower the network load. It's only a background image, so we don't need a big one {% endcomment %}
+                                "
+                              >
+                            {%- endif -%}
+                            {%- liquid
+                              if ss.mobileImage
+                                assign imageSrc = ss.mobileImage | image_url
+                                assign imageWidth = ss.mobileImage.width
+                                assign imageHeight = ss.mobileImage.height
+                              elsif ss.desktopImage
+                                assign imageSrc = ss.desktopImage | image_url
+                                assign imageWidth = ss.desktopImage.width
+                                assign imageHeight = ss.desktopImage.height
+                              endif
+                            -%}
+                            {%- if imageSrc -%}
+                              <img
+                                {% if ss.mobileImage %}
+                                  src="{{ ss.mobileImage | image_url }}"
+                                {% elsif ss.desktopImage %}
+                                  src="{{ ss.desktopImage | image_url }}"
+                                {% endif %}
+                                alt="Background image"
+                                width="{{ imageWidth }}"
+                                height="{{ imageHeight }}"
+                                loading="eager"
+                                fetchpriority="high"
+                                class="c-product-template__banner-image o-responsive-image"
+                              >
+                            {%- endif -%}
+                          </picture>
+                        </div> {% endcomment %}
+                      {%- endif -%}
+
+                      {%-
+                        render 'tool.image' with {
+                        image: image,
+                        class: 'c-product-template__product-image c-product-template__banner-image o-responsive-image',
+                        srcsetSizes: imageSrcsetSizes,
+                        sizes: imageSizes,
+                        lazy: true,
+                        width: mobileImageWidth
+                        }
+                      -%}
+                    </div>
+                  </div>
+                {% else %}  
+                  <div class="keen-slider__slide number-slide{{- forloop.index -}}">
+                    {% liquid
+                      comment
+                        Image size is set to 14.625rem (234px) on mobile, and 20rem (320px) on tablet in CSS.
+                        You have to change values here if you changed CSS
+                      endcomment
+                      assign mobileImageWidth = 234 | times: image.aspect_ratio | ceil
+                      assign tabletImageWidth = 320 | times: image.aspect_ratio | ceil
+                      assign imageAspectRatio = image.aspect_ratio | round: 2
+                      comment
+                        Formulas for small and big desktop calculated based on the 85 and 70 height to width aspect ratio (padding-bottom property)
+                        set in CSS in .c-product-template__product-image-container picture
+                        You have to change values here if you changed CSS
+                      endcomment
+                      assign imageSizes = "(min-width: 1650px) calc(100vw * 0.57 * 0.70 * " | append: imageAspectRatio | append: "), (min-width: 1100px) calc(100vw / 2 * 0.85 * " | append: imageAspectRatio | append: "), (min-width: 750px) " | append: tabletImageWidth | append: "px, " | append: mobileImageWidth | append: "px"
+                      assign imageSrcsetSizes = mobileImageWidth | append: "," | append: tabletImageWidth | append: ",100,150,250,350,750,800,850,1000,1100,1200,1400"
+                    %}
+                    <div class="c-product-template__product-image-container__img-wrapper">
+                      {%-
+                        render 'tool.image' with {
+                        image: image,
+                        class: 'c-product-template__product-image',
+                        srcsetSizes: imageSrcsetSizes,
+                        sizes: imageSizes,
+                        lazy: true,
+                        width: mobileImageWidth
+                        }
+                      -%}
+                    </div>
+                  </div>
+                {% endif %}
+              {%- endfor -%}
+            </div>
+
+            {% comment %} Thumbnails {% endcomment %}
+            {% if product.images.size > 1 %}
+              <div id="thumbnails" class="keen-slider thumbnail c-product-template__product-thumbnails" data-carousel-thumbnails>
+                {%- for image in product.images -%}
+
+                  <div class="keen-slider__slide c-product-template__product-thumbnail number-slide{{- forloop.index }}" data-carousel-thumbnail>
+                    {% liquid
+                      comment
+                        Image size is set to 14.625rem (234px) on mobile, and 20rem (320px) on tablet in CSS.
+                        You have to change values here if you changed CSS
+                      endcomment
+                      assign mobileImageWidth = 89 | times: image.aspect_ratio | ceil
+                      assign tabletImageWidth = 100 | times: image.aspect_ratio | ceil
+                      assign imageAspectRatio = image.aspect_ratio | round: 2
+                      comment
+                        Formulas for small and big desktop calculated based on the 85 and 70 height to width aspect ratio (padding-bottom property)
+                        set in CSS in .c-product-template__product-image-container picture
+                        You have to change values here if you changed CSS
+                      endcomment
+                      assign imageSizes = "(min-width: 1100px) " | append: tabletImageWidth | append: "px, " | append: mobileImageWidth | append: "px"
+                      assign imageSrcsetSizes = "100,150" 
+                    %}
+
+                    <div class="c-product-template__product-image-container__img-wrapper">
+                      {%-
+                        render 'tool.image' with {
+                        image: image,
+                        class: 'c-product-template__product-image c-product-template__product-image--thumb',
+                        srcsetSizes: imageSrcsetSizes,
+                        sizes: imageSizes,
+                        lazy: true,
+                        width: mobileImageWidth
+                        }
+                      -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+            {% endif %}
+
+            {% comment %} Dots {% endcomment %}
+            {% comment %} {% if product.images.size > 1 and ss.show_slider_dots %}
+              <div class="c-product-template__product-dots" data-carousel-dots>
+                {% for i in (1..product.images.size) %}
+                  <div class="c-product-template__product-dot" data-carousel-dot>
+                    <div class="c-product-template__product-dot-item" style="background-color: {{ ss.slider_dots_color }};"></div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %} {% endcomment %}
+          </div>
+        </div>
+      </div>
+
+      <div class="c-product-template__product-details ">
+        {% if above_title != blank %}
+          <div class="c-product-template__product-subtitle is-desktop">
+            {{ above_title }}
+          </div>
+        {% endif %}
+
+        <h1 class="o-heading--2 c-product-template__product-title is-desktop">
+          {{- product.title -}}
+        </h1>
+
+        <div class="c-product-template__product-variant-wrapper is-desktop">
+          <div class="c-product-template__product-variant">
+            {{- product_options | strip -}}
+          </div>
+
+          {% render 'okendo-reviews-product-rating-summary', product: product %}
+        </div>
+
+        {%- render 'product-details' -%}
+
+        {%- if section.settings.display_process_afterpay -%}
+          {%- comment -%} Afterpay Popup{%- endcomment -%}
+          <div class="c-product-template__afterpay">
+            {%-
+              render 'object.afterpay' with {
+              class: 'c-product-template__afterpay-popup',
+              page: ss.afterpay-popup
+              }
+            -%}
+          </div>
+        {%- endif -%}
+
+        <div class="c-product-template__accordion-wrapper" data-accordion-container>
+          {%- if active_ingredients != blank -%}
+            <div class="c-product-template__accordion" data-accordion-slide>
+              <div class="c-product-template__accordion-title o-heading--7" data-accordion-title>
+                {{ 'products.general.active_ingredients' | t }}
+                {{- expandIcons }}
+              </div>
+              <div class="c-product-template__accordion-content" data-accordion-content>
+                {{ active_ingredients | metafield_tag }}
+              </div>
+            </div>
+          {%- endif -%}
+
+          {%- if ingredients != blank -%}
+            <div class="c-product-template__accordion" data-accordion-slide>
+              <div class="c-product-template__accordion-title o-heading--7" data-accordion-title>
+                {{ 'products.general.ingredients' | t }}
+                {{- expandIcons }}
+              </div>
+              <div class="c-product-template__accordion-content" data-accordion-content>
+                {{ ingredients }}
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {%- if section.settings.display_product_panel -%}
+    {% render 'product-panel' %}
+  {% endif %}
+</section>
+
+<script src="{{ 'sections.product-template-slider.js' | asset_url }}" defer></script>
+<script src="{{ 'sections.product-template.js' | asset_url }}" defer></script>
+
+{%- if section.settings.display_afterpay_native -%}
+  {%-
+    render 'object.afterpay-native' with {
+    align: section.settings.afterpay_native_alignment
+    }
+  -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Produt",
+  "class": "c-section c-section__product",
+  "settings": [
+    {
+      "id": "mobileImage",
+      "type": "image_picker",
+      "label": "Image Mobile",
+      "info": "Please upload in .jpg format. Recommended size 1125/890px."
+    },
+    {
+      "id": "desktopImage",
+      "type": "image_picker",
+      "label": "Image Desktop",
+      "info": "Please upload in .jpg format. Recommended size 2275/2130px."
+    },
+    {
+      "type": "checkbox",
+      "id": "first_image_smaller",
+      "label": "First image smaller",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_slider_arrows",
+      "label": "Show slider arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_slider_dots",
+      "label": "Show slider dots",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "slider_dots_color",
+      "label": "Slider dots color",
+      "default": "#A6D6DE"
+    },
+    {
+      "type": "page",
+      "id": "afterpay-popup",
+      "label": "Afterpay Popup"
+    },
+    {
+      "type": "header",
+      "content": "Afterpay"
+    },
+    {
+      "type": "checkbox",
+      "id": "display_process_afterpay",
+      "label": "Display afterpay popup (custom coded by process)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "display_afterpay_native",
+      "label": "Display afterpay block (native)"
+    },
+    {
+      "type": "select",
+      "id": "afterpay_native_alignment",
+      "label": "Afterpay native block alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Sticky Product Panel"
+    },
+    {
+      "type": "checkbox",
+      "id": "display_product_panel",
+      "label": "Display sticky product panel",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,381 @@
+{
+  "general": {
+    "accessibility": {
+      "skip_to_content": "Skip to content.",
+      "scroll_down": "Scroll Down"
+    },
+    "meta": {
+      "tags": "Tagged \"{{ tags }}\"",
+      "page": "Page {{ page }}"
+    },
+    "404": {
+      "pretitle": "404",
+      "title": "Page Not Found",
+      "subtext_html": "The page you requested does not exist.",
+      "continue_button": "Continue Shopping"
+    },
+    "header": {
+      "cart_title": "Your Cart",
+      "user_title": "Your Account",
+      "logo_title": "Skin Shark | Home",
+      "account_title": "Login \/ My Account",
+      "store_selector_title": "Select your location"
+    },
+    "newsletter": {
+      "placeholder": "Your email...",
+      "button_text": "Subscribe",
+      "success_message": "Thanks for subscribing!"
+    },
+    "read_more_buttons": {
+      "read_more": "read more",
+      "read_less": "read less"
+    },
+    "password_page": {
+      "opening_soon": "Opening Soon",
+      "spread_the_word": "Spread the word",
+      "login_form_heading": "Enter store using password",
+      "login_form_password_label": "Password",
+      "login_form_password_placeholder": "Your password",
+      "login_form_submit": "Enter",
+      "signup_form_heading": "Find out when we open",
+      "signup_form_email_label": "Email",
+      "signup_form_email_placeholder": "Your email",
+      "signup_form_submit": "Submit",
+      "signup_form_success": "We will send you an email right before we open!",
+      "admin_link_html": "Are you the store owner? <a href=\"\/admin\">Log in here<\/a>",
+      "password_link": "Enter using password",
+      "powered_by_shopify_html": "This shop will be powered by {{ shopify }}"
+    },
+    "search": {
+      "close": "Search",
+      "placeholder": "Search here",
+      "results_for": "Results for",
+      "no_results": "There were no results matching",
+      "title": "Search Results",
+      "no_results_html": "No search results found for “{{ terms }}.”",
+      "results_for_html": "Search results for “{{ terms }}”.",
+      "title_tag": "Search for products",
+      "no_results_subtitle": "Adjust your search or explore our products."
+    },
+    "about": {
+      "link": "Learn more"
+    },
+    "footer": {
+      "store_name_html": "© Skin Shark {{ date }}",
+      "store_selector_prefix": "You're in"
+    },
+    "region_selector": {
+      "select_region_title": "Select a region",
+      "select_currency_title": "Select a currency"
+    },
+    "currency": {
+      "change_currency": "Change currency"
+    },
+    "controls": {
+      "video_play_title": "Click to play"
+    }
+  },
+  "breadcrumbs": {
+    "home": "Home"
+  },
+  "gift_cards": {
+    "issued": {
+      "title": "Here's your {{ value }} gift card for {{ shop }}!",
+      "subtext": "Here's your gift card!",
+      "disabled": "Disabled",
+      "expired": "Expired on {{ expiry }}",
+      "active": "Expires on {{ expiry }}",
+      "redeem": "Use this code at checkout to redeem your gift card",
+      "remaining": "Remaining",
+      "value": "Value",
+      "shop_link": "Start shopping",
+      "print": "Print",
+      "remaining_html": "{{ balance }} left",
+      "add_to_apple_wallet": "Add to Apple Wallet",
+      "initial_value": "Gift card value: {{ value }}"
+    }
+  },
+  "customer": {
+    "account": {
+      "title": "My Account",
+      "profile": "Profile",
+      "details": "My Profile",
+      "addresses": "Addresses",
+      "orders": "Orders",
+      "return": "Return to Account Details",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "phone": "Phone",
+      "logout": "Log Out",
+      "navigation_heading": "What do you need help with?"
+    },
+    "activate_account": {
+      "title": "Activate Account",
+      "subtext": "Create your password to activate your account.",
+      "password": "Password",
+      "password_confirm": "Confirm Password",
+      "submit": "Activate Account",
+      "cancel": "Decline Invitation"
+    },
+    "addresses": {
+      "title": "Your Addresses",
+      "default": "Default Address",
+      "address": "Address",
+      "add_new": "Add an address",
+      "edit_address": "Edit address",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "company": "Company",
+      "address1": "Address Line 1",
+      "address2": "Address Line 2",
+      "city": "City",
+      "country": "Country",
+      "province": "State",
+      "zip": "Postal\/Zip Code",
+      "phone": "Phone",
+      "set_default": "Set as default address",
+      "add": "Add address",
+      "update": "Update Address",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete",
+      "delete_confirm": "Are you sure you wish to delete this address?"
+    },
+    "login": {
+      "title": "Login",
+      "email": "Email address",
+      "password": "Password",
+      "forgot_password": "Forgotten password?",
+      "sign_in": "Log In",
+      "cancel": "Return to Store",
+      "guest_title": "Continue as a guest",
+      "guest_continue": "Continue",
+      "new_customer": "Don't have an account yet? Sign up",
+      "returning_customer": "Already have an account? Sign in"
+    },
+    "orders": {
+      "title": "Order History",
+      "order_number": "Order",
+      "date": "Date",
+      "payment_status": "Payment Status",
+      "fulfillment_status": "Fulfillment Status",
+      "total": "Total",
+      "none": "You haven't placed any orders yet."
+    },
+    "order": {
+      "title": "Order {{ name }}",
+      "date": "Placed on {{ date }}",
+      "cancelled": "Order Cancelled on {{ date }}",
+      "cancelled_reason": "Reason: {{ reason }}",
+      "billing_address": "Billing Address",
+      "payment_status": "Payment Status",
+      "shipping_address": "Shipping Address",
+      "fulfillment_status": "Fulfillment Status",
+      "discount": "Discount",
+      "shipping": "Shipping",
+      "tax": "Tax",
+      "product": "Product",
+      "sku": "SKU",
+      "price": "Price",
+      "quantity": "Quantity",
+      "total": "Total",
+      "fulfilled_at": "Date fulfilled",
+      "track_shipment": "Track shipment",
+      "tracking_url": "Tracking link",
+      "tracking_company": "Carrier",
+      "tracking_number": "Tracking number",
+      "subtotal": "Subtotal"
+    },
+    "recover_password": {
+      "title": "Reset your password",
+      "email": "Email",
+      "email_placeholder": "Email",
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "subtext": "We will send you an email to reset your password.",
+      "success": "We've sent you an email with a link to update your password."
+    },
+    "reset_password": {
+      "title": "Reset account password",
+      "subtext": "Enter a new password for {{ email }}",
+      "password": "Password",
+      "password_confirm": "Confirm Password",
+      "submit": "Reset Password"
+    },
+    "register": {
+      "title": "Sign Up to the Skin Within",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "email": "Email address",
+      "password": "Password",
+      "confirm-password": "Confirm password",
+      "submit": "Sign Up Now",
+      "cancel": "Return to Store",
+      "password_mismatch": "*Passwords do not match",
+      "permission": "I want to create a Skin Within Account and I  give permission to The Skin Shark to send me email updates."
+    }
+  },
+  "collections": {
+    "collection": {
+      "price_label": "Price:",
+      "no_results": "Sorry there are no products found.",
+      "load_more": "Show Me More",
+      "product_count": "Showing {{ count }} of {{ total }}",
+      "empty": "No products were found in this collection."
+    },
+    "filters": {
+      "apply_button": "Apply Filters",
+      "refine_button": "Filter",
+      "mobile_filter_button": "Filter",
+      "sort_prefix": "Sort: ",
+      "sort_ascending_label": "Price Ascending",
+      "sort_descending_label": "Price Descending",
+      "clear_filters": "Clear all filters",
+      "facet_title_category": "Category",
+      "facet_title_type": "Product Type",
+      "facet_title_colour": "Colour",
+      "facet_title_price": "Price",
+      "facet_title_sport": "Sport",
+      "facet_title_size": "Size"
+    }
+  },
+  "products": {
+    "general": {
+      "view_product": "View Product",
+      "active_ingredients": "Active ingredients",
+      "ingredients": "Ingredients"
+    },
+    "product": {
+      "free": "Free",
+      "add": "Add to Cart",
+      "adding": "Adding...",
+      "added": "Added to Cart",
+      "all_in_cart": "All in Cart",
+      "cart_pending": "Adding...",
+      "added_to_cart": "We're preparing it for you!",
+      "buy_now": "Buy Now",
+      "in_stock": "In Stock",
+      "sold_out": "Out of Stock",
+      "error": "Unable to add product to cart",
+      "one_time": "One-time purchase",
+      "description_title": "Product Description",
+      "notify_me": "NOTIFY ME WHEN AVAILABLE",
+      "buy_now_pay_later_html": "{{ afterpay }} & {{ zip }} available",
+      "size_chart_link": "See size guide",
+      "disabled": "Product Unavailable",
+      "afterpay_html": "<span> Interest Free Payments Available with {{ afterpay }} <\/span>  "
+    },
+    "thumbnail": {
+      "cta_button_text": "View Details"
+    },
+    "back_in_stock": {
+      "success_message": "Thanks for registering to receive a back in stock notification, we'll be in touch.",
+      "failure_message": "Unfortunately something went wrong we were unable to register your notification request at this time.",
+      "buy_now_pay_later_html": "{{ afterpay }} & {{ zip }} available"
+    }
+  },
+  "contact": {
+    "form": {
+      "submit": "Submit",
+      "name": "Name",
+      "email": "Email",
+      "message": "message",
+      "form_successful": "Thank you for your enquiry. Our team will get back to you within 24 hours.",
+      "optional": "Optional",
+      "error_heading": "You did an error!"
+    }
+  },
+  "faq": {
+    "answer": {
+      "hide": "Hide answer",
+      "show": "View answer"
+    }
+  },
+  "cart": {
+    "checkout": "Checkout",
+    "upsell": {
+      "accessible_add_to_cart": "Add to cart",
+      "bundle_prefix": "Recommended",
+      "title": "Achieve optimal results & save",
+      "features_prefix": "Treats:",
+      "price_prefix": "Price:",
+      "savings_prefix": "Saving:"
+    }
+  },
+  "social": {
+    "share": {
+      "by_email": "Check out {{ title }} at: {{ url }}"
+    }
+  },
+  "articles": {
+    "written_by": "Written by",
+    "read_time_postfix": "min read",
+    "read_now_link": "Read now",
+    "learn_more": "Learn more",
+    "watch_now": "Watch Now",
+    "hero_story": "'s Story",
+    "author_prefix": "By",
+    "next_article": "Next Article",
+    "previous_article": "Previous Article"
+  },
+  "blog": {
+    "all_tags": "All",
+    "view_all": "View all articles",
+    "filter_text": "Filter: "
+  },
+  "pages": {
+    "weekly_challenge": {
+      "share_transformation": "Share Your Transformation",
+      "hashtag": "#skinsharkskinfluencer",
+      "load_more": "Load more"
+    },
+    "skin-journeys": {
+      "featured_stories": "FEATURED DIARIES",
+      "locked_content": "locked content",
+      "locked_modal": "Check back in the next few weeks to access this content",
+      "start_journey": "Click here to Start your Skin Within Journey Now!",
+      "close_modal": "Close"
+    },
+    "ask-derm": {
+      "ask_derm_placeholder": "Ask a question",
+      "ask_derm_submit": "Submit",
+      "live_pretitle": "Ask Derm",
+      "live_label": "Watch",
+      "comments": "comments"
+    }
+  },
+  "comments": {
+    "comments_title": "Comments",
+    "form_title": "Leave a comment",
+    "name_placeholder": "Name",
+    "email_placeholder": "Email",
+    "comment_placeholder": "Add a public comment",
+    "approval_notice": "*All comments are moderated before being published",
+    "submit": "Post",
+    "success": "Your comment has been published.",
+    "success_moderated": "Your comment has been sent. It will be visible once the shop owner has accepted it!",
+    "comments_count": {
+      "zero": "{{count}} comments",
+      "one": "{{count}} comment",
+      "other": "{{count}} comments"
+    }
+  },
+  "countdown": {
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds"
+  },
+  "quiz": {
+    "true": "True",
+    "false": "False"
+  },
+  "shopify": {
+    "checkout": {
+      "marketing": {
+        "accept_marketing_checkbox_label": "Hell yes I want to start my FREE Skin Within program. And while you're at it, keep me updated with great deals and fresh news hot off the press"
+      }
+    }
+  }
+}

@@ -1,0 +1,153 @@
+
+{%- liquid
+  assign ss = section.settings
+  assign mf = product.metafields.accentuate
+  assign baseImage = mf.baseImage[0].src | default: ss.baseImage
+  assign buttonText = mf.buttonText | default: ss.buttonText  
+  assign preTitle = mf.preTitle | default: ss.preTitle  
+  assign description = mf.description | default: ss.description
+  assign productHandle = mf.product | default: ss.product
+  assign backgroundImg = mf.backgroundImage | default: ss.backgroundImg
+  assign prod = all_products[productHandle]
+-%}
+
+{{ 'sections.product-and-text.css' | asset_url | stylesheet_tag }}
+{{ 'sections.product-and-text.js' | asset_url | script_tag }}
+
+<section class="c-product-and-text" data-product-and-text>
+
+  <div class="c-product-and-text__top">
+    {%- if backgroundImg != blank -%}
+      {%- render 'tool.picture' with {
+        image: backgroundImg,
+        class: 'c-product-and-text__background-image',
+        width: 1720,
+        sizes: '750,1100,1600',
+        imageSizes: '750,1100,1720',
+        lazy: true
+      } -%}
+    {%- endif -%}
+    
+    <div class="c-product-and-text__double-image">
+      {%- render 'tool.picture' with {
+        image: baseImage,
+        class: 'c-product-and-text__double-image-background',
+        width: 722,
+        sizes: '375,1600',
+        imageSizes: '203,722',
+        lazy: true
+      } -%}
+      {%- render 'tool.picture' with {
+        image: prod.featured_image,
+        class: 'c-product-and-text__double-image-overlay',
+        width: 722,
+        sizes: '375,1600',
+        imageSizes: '100,300',
+        lazy: true
+      } -%}
+    </div>
+
+    <div class="c-product-and-text__text-block">
+      {%- if preTitle != blank-%}
+        <div class="c-product-and-text__text-block-pre-title o-heading--7">
+          {{preTitle | escape}} 
+        </div>
+      {%- endif -%}
+      
+      {%- if prod.title != blank -%}
+        <h5 class="c-product-and-text__text-block-heading">
+          {{prod.title | escape}}
+        </h5>
+      {%- endif -%}
+      
+      <p class="c-product-and-text__text-block-text">
+        {{description | escape}}
+      </p>
+      
+      {%- assign productType = prod.type | downcase  -%}
+      {%- if productType == 'promotions'  -%}
+        {% capture promotionAddToCart %}
+         
+          <button
+            class="c-product-and-text__link o-btn is-tertiary 
+            {% if prod.available != true %}is-disabled{% endif %}"
+            {% if prod.available != true %}disabled{% endif %}
+            data-add-to-cart-button
+            data-add-to-cart-variant="{{prod.selected_or_first_available_variant.id}}"
+          > {{buttonText | escape }}
+          </button>
+
+        {% endcapture %}
+
+        <div class="c-product-and-text__link-wrap is-desktop">{{promotionAddToCart}}</div>
+
+      {%- else -%}
+        <a href="{{prod.url}}" class="c-product-and-text__link o-btn is-tertiary is-desktop">
+          {{buttonText | escape }}
+        </a>
+      {%- endif -%}
+      
+    </div>
+  </div>
+
+  {%- if productType == 'promotions'  -%}
+    <div class="c-product-and-text__link-wrap is-mobile">{{promotionAddToCart}}</div>
+  {%- else -%}
+    <a href="{{prod.url}}" class="c-product-and-text__link o-btn is-tertiary is-mobile">
+      {{buttonText | escape }}
+    </a>
+  {%- endif -%}
+  
+
+
+
+</section>
+
+{{ 'sections.product-and-text.js' | asset_url | script_tag }}
+
+{% schema %}
+  {
+    "name": "Product and Text",
+    "class": "c-section c-section__product-and-text",
+    "settings": [
+      {
+        "id": "buttonText",
+        "type": "text",
+        "label": "Button Text"
+      },
+      {
+        "id": "backgroundImg",
+        "type": "image_picker",
+        "label": "Background Image",
+        "info": "Please upload in .jpg format. Recommended ratio approx. 1.05/1, at least 3440/3284px"
+      },
+      {
+        "id": "product",
+        "type": "product",
+        "label": "Product"
+      },
+      {
+        "id": "preTitle",
+        "type": "text",
+        "label": "Pre Title"
+      },
+      {
+        "id": "description",
+        "type": "textarea",
+        "label": "Description"
+      },
+      {
+        "id": "baseImage",
+        "type": "image_picker",
+        "label": "Base Image",
+        "info": "Appears behind product image. Please upload in .jpg format. Recommended ratio approx. .767/1, at least 1116/1454px."
+      }
+    ],
+    "presets": [
+      {
+        "name": "Product and Text",
+        "category": "Content"
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,206 @@
+
+{{ 'sections.cart-lines.css' | asset_url | stylesheet_tag }}
+
+
+<section class="c-cart-lines" data-cart-lines data-cart-container>
+  {%- if cart.empty? -%}
+    <div class="c-cart-lines__empty">
+      <p class="o-heading--2 c-cart-lines__empty-title">
+        {{- section.settings.cartEmptyTitle | escape -}}
+      </p>
+
+      <a class="o-btn is-quaternary" href="{{ routes.root_url }}">
+        {{- section.settings.continueShoppingLabel | escape -}}
+      </a>
+    </div>
+  {%- else -%}
+    <form action="{{ routes.cart_url }}" method="post" class="c-cart-lines__list" data-cart-lines-list>
+      <div class="c-cart-lines__list-inner">
+
+        {%- for item in cart.items -%}
+          {%- liquid
+            if item.properties.isChildVariant
+              continue
+            endif
+            
+            assign isProductBundle = item.properties.isProductBundle
+            if isProductBundle != blank
+              assign bundleProduct = item.product
+              assign childProductTitles = item.properties.childTitles | split: '|'
+
+              assign totalItemPrice = 0
+              assign originalItemPrice = 0
+              for itm in cart.items
+                if itm.properties.isChildVariant == isProductBundle
+                  assign totalItemPrice = totalItemPrice | plus: itm.line_price
+                  assign originalItemPrice = originalItemPrice | plus: itm.original_line_price
+                endif
+              endfor
+
+              assign bundlePrice = totalItemPrice
+              if originalItemPrice > totalItemPrice
+                assign bundleComparePrice = originalItemPrice
+              endif
+              
+            endif
+          -%}
+
+          <div class="c-cart-lines__line" data-cart-item>
+            <div class="c-cart-lines__line-inner">
+              <span class="o-heading--5 c-cart-lines__line-title">
+                <a href="{{ item.url }}" class="c-cart-lines__line-title-text">
+                  {{- item.product.title | escape -}}
+                </a>
+              </span>
+              
+              <div class="c-cart-lines__line-image">
+                {%- render 'tool.picture' with {
+                  image: item.image,
+                  alt: item.title,
+                  width: 200,
+                  sizes: '700'
+                  imagesizes: '100,200',
+                  class: 'c-cart-lines__line-image-picture'
+                } -%}
+              </div>
+
+              <div class="c-cart-lines__line-body">
+                
+                {%- if isProductBundle == blank -%}
+                  {% unless item.product.has_only_default_variant %}
+                    {%- for option in item.options_with_values -%}
+                      <p class="c-cart-lines__line-treats-text o-paragraph--1">
+                        {{ option.name | escape }}: {{ option.value | escape }}
+                      </p>
+                    {%- endfor -%}
+                  {% endunless %}
+                {%- endif -%}
+
+
+
+                {%- if item.product.metafields.accentuate.thumbnailText != blank -%}
+                  {%- if section.settings.cartItemSubtitleTitle != blank -%}
+                    <p class="o-heading--7 c-cart-lines__line-treats-title">
+                      {{- section.settings.cartItemSubtitleTitle | escape -}}
+                    </p>
+                  {%- endif -%}
+                  <p class="c-cart-lines__line-treats-text o-paragraph--1">
+                    {{- item.product.metafields.accentuate.thumbnailText | escape -}}
+                    
+                  </p>
+                {%- endif -%}
+
+                
+                {%- if isProductBundle -%}
+                  <div class="c-cart-lines__bundle-items">
+                    {%- for title in childProductTitles -%}
+                      {% if title == '' %}{% continue %}{% endif %}
+                      <div class="c-cart-lines__bundle-item">
+                        - {{title}}
+                      </div>
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+
+                <div data-error-elem="" class="c-ajax-cart__error is-hidden"></div>
+
+
+                <div class="c-cart-lines__line-body-numbers">
+                  {%- assign productType = item.product.type | downcase  -%}
+                  {%- if productType != 'promotions' -%}
+                    {%- render 'object.cart-quantity-selector' with {
+                      item: item,
+                      index: forloop.index0
+                    } -%}
+                  {%- endif -%}
+
+                {%- assign productType = item.product.type | downcase  -%}
+                {%- assign productTypeClass = 'o-heading--7 c-cart-lines__line-price' -%}
+                {% if productType == 'promotions' %} 
+                  {%- assign productTypeClass = 'o-heading--7 c-cart-lines__line-price is-sample' -%}
+                {%- endif -%}
+                  {%- if isProductBundle -%}
+                    {%- render 'object.product-pricing' with {
+                      price: bundlePrice,
+                      comparePrice: bundleComparePrice
+                      class: productTypeClass
+                    } -%}
+                  {% else %}
+                    {%- render 'object.product-pricing' with {
+                      price: item.final_line_price,
+                      class: productTypeClass,
+                      comparePrice: item.original_line_price
+                    } -%}
+                  {%- endif -%}
+
+                  <a href="{{ item.url_to_remove }}"
+                    class="c-cart-lines__line-body-remove"
+                    data-cart-lines-remove data-cart-line="{{ forloop.index0 }}"
+                  >
+                    {%- render 'svg.close' -%}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <div class="c-cart-lines__footer">
+        <div class="c-cart-lines__footer-inner">
+          <span class="o-heading--5 c-cart-lines__footer-total">
+            {{- section.settings.subtotalText | escape -}}
+
+            <span data-currency data-money="{{ cart.total_price }}">
+              {{- cart.total_price | money -}}
+            </span>
+          </span>
+
+          <div class="c-cart-lines__footer-buttons">
+            <a class="o-btn is-quaternary c-cart-lines__footer-buttons-continue" href="{{routes.root_url}}">
+              {{- section.settings.continueShoppingLabel | escape -}}
+            </a>
+
+            <button type="submit" name="checkout" class="o-btn is-primary c-cart-lines__footer-buttons-checkout">
+              {{ 'cart.checkout' | t }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  {%- endif -%}
+</section>
+
+{{ 'sections.cart-lines.js' | asset_url | script_tag }}
+
+{% schema %}
+  {
+    "name": "Cart Lines",
+    "settings": [
+      {
+        "type": "text",
+        "label": "Cart Item Subtitle Title",
+        "default": "Treats:",
+        "id": "cartItemSubtitleTitle"
+      },
+      {
+        "type": "text",
+        "id": "cartEmptyTitle",
+        "label": "Cart Empty Title",
+        "default": "Your cart is empty"
+      },
+      {
+        "type": "text",
+        "default": "Continue Shopping",
+        "id": "continueShoppingLabel",
+        "label": "Continue Shopping Label"
+      },
+      {
+        "type": "text",
+        "id": "subtotalText",
+        "label": "Subtotal Text",
+        "default": "Subtotal: "
+      }
+    ]
+  }
+{% endschema %}

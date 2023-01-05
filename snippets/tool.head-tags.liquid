@@ -1,0 +1,95 @@
+{%- comment -%} Copyright Snippet {%- endcomment -%}
+{%- render 'tool.copyright' -%}
+
+{%- comment -%} Customer Scripts{%- endcomment -%}
+{%- if template.directory == 'customers' -%}
+  <script src="{{- 'shopify_common.js' | shopify_asset_url -}}" defer="defer"></script>
+{%- endif -%}
+
+{%- comment -%} Browser detailed Meta Information {%- endcomment -%}
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<!-- Google Tag Manager -->
+<script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-K8SVBH9');
+</script>
+<!-- End Google Tag Manager -->
+
+{% if template contains 'list-collections' %}
+  <meta name="robots" content="noindex, nofollow">
+{% endif %}
+
+{% if template contains 'search' %}
+  {% assign canonicalUrl =  shop.secure_url | append: routes.search_url %}
+{% else %}
+  {% assign canonicalUrl = canonical_url %}
+{% endif %}
+<link rel="canonical" href="{{ canonicalUrl }}">
+
+{%- comment -%} DNS Prefetching {%- endcomment -%}
+{%- render 'tool.dns-prefetching' -%}
+
+{%- comment -%}SEO Friendly page title{%- endcomment -%}
+{%- capture seo_title -%}
+  {{ page_title }}
+  {% if current_tags %}
+    {%- assign meta_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags -}}
+  {% endif %}
+  {% if current_page != 1 %}
+    &ndash; {{ 'general.meta.page' | t: page: current_page }}
+  {% endif %}
+  {% unless page_title contains shop.name %}
+    &ndash; {{ shop.name }}
+  {% endunless %}
+{%- endcapture -%}
+{%- if template contains 'password' -%}
+  {%- assign seo_title = shop.name -%}
+{%- endif -%}
+<title>{{ seo_title | strip }}</title>
+
+{%- if template contains 'index' -%}
+  {{ 'sections.home-hero.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'sections.home-hero.js' | asset_url }}" defer="defer"></script>
+  {{ 'sections.home-product-slider.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'sections.home-product-slider.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{%- comment -%}Conditionally based meta tags{%- endcomment -%}
+{%- if page_description -%}
+  <meta name="description" content="{{ page_description | escape }}">
+{%- endif -%}
+
+{%- comment -%}Social Meta Tags{%- endcomment -%}
+{%- render 'tool.social-meta-tags' -%}
+
+{%- comment -%} Customer Scripts{%- endcomment -%}
+{%- if template.directory == 'customers' -%}
+  <script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- comment -%} Favicon {%- endcomment -%}
+{%- if settings.favicon != blank -%}
+  <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png">
+{%- endif -%}
+
+<script type="text/javascript">
+  window.Asset = {{ 'layout.theme.js' | asset_url | json }};
+  window.Customer = {%- render 'json.customer' -%};
+  window.Language = window.Language || {};
+  window.Language.strings = window.Language.strings || {};
+  window.Cart = window.Cart || {};
+  window.Cart.data = window.Cart.data || {%- render 'json.cart' -%};
+  window.Currency = window.Currency || {};
+  window.Currency.currency = {{ cart.currency.iso_code | json }};
+  window.Currency.format = {{ shop[settings.native_format] | default: shop.money_format | json }};
+  window.Currency.convertedFormat = {{ settings.currency_conversion_format | json }};
+</script>
+
+{{ 'vendor.css' | asset_url | stylesheet_tag }}
+{{ 'layout.theme.css' | asset_url | stylesheet_tag }}

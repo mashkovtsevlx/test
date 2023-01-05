@@ -1,0 +1,279 @@
+{%- comment -%}
+  * it tries to get product metafield bundles, if there are none, adds on prod page bundles
+  * then loops out all bundle handles
+  * bundle lists its child variants
+  * click goes to prod page
+  * must have 3 slides or invalid
+{%- endcomment -%}
+{%- liquid
+  assign ss = section.settings
+  assign mf = product.metafields.bundleSlider
+  assign bundleHandles = mf.bundleProducts | split: '|'
+  if bundleHandles == blank
+    assign bundleHandles = ''
+    for block in section.blocks
+      assign bundleHandles = bundleHandles | append: block.settings.product
+      unless forloop.last
+        assign bundleHandles = bundleHandles | append: '|'
+      endunless
+    endfor
+    assign bundleHandles = bundleHandles | split: '|'
+  endif
+
+  assign preTitle = mf.preTitle | default: ss.preTitle
+  assign title = mf.title | default: ss.title
+-%}
+{{ 'sections.bundle-slider.css' | asset_url | stylesheet_tag }}
+
+<script>
+  window.bundleSlider = {
+    bundles: []
+  };
+  let loopBundle
+</script>
+
+{%- if bundleHandles.size < 3 -%}
+  <script>
+    console.error('Bundle slider was not renderd because it must have 3 slides, and received {{ bundleHandles.size | json }}');
+  </script>
+{%- else -%}
+  {%- for handle in bundleHandles limit: 3 -%}
+    {%- liquid
+      assign bundleIndex = forloop.index0
+      assign bundleProduct = all_products[handle]
+      assign bundleProdMf = bundleProduct.metafields.accentuate
+      assign childVariantObjs = bundleProdMf.childVariants
+      assign percentageDiscount = bundleProdMf.percentageDiscount
+
+      assign bundleChildTrackInventory = true
+
+      if bundleProdMf.childInventoryTrackingDisabled
+        assign bundleChildTrackInventory = false
+      endif
+
+
+      assign variantElems = ''
+      assign alreadyAdded = ''
+    -%}
+
+    <script>
+      window.bundleSlider.bundles[{{ bundleIndex | json }}] = {
+        bundleProduct: ({% render 'json.product', product: bundleProduct %}),
+        childVariants: [],
+        percentageDiscount: {{ percentageDiscount | json }}
+      }
+    </script>
+
+    {%- for childVariantObj in childVariantObjs -%}
+      {%- liquid
+        assign childVariantObjSplit = childVariantObj | split: ':'
+        assign productHandle = childVariantObjSplit[0]
+        assign variantId = childVariantObjSplit[1] | times: 1
+        assign filteredVariants = all_products[productHandle].variants | where: 'id', variantId
+        assign variant = filteredVariants[0]
+      -%}
+
+      <script>
+        loopBundle = window.bundleSlider.bundles[{{ bundleIndex | json }}]
+        loopBundle.childVariants.push(({% render 'json.variant', variant: variant %}))
+      </script>
+
+      {%- liquid
+        if alreadyAdded contains childVariantObj
+          continue
+        endif
+        assign alreadyAdded = alreadyAdded | append: childVariantObj
+
+        assign filteredObjs = childVariantObjs | where: childVariantObj
+        assign totalInstancesOVariant = filteredObjs.size
+      -%}
+
+      {%- capture variantElems -%}
+        {{ variantElems }}
+        <div
+          class="c-bundle-slider__bundle-variant"
+          data-bundle-variant={% render 'json.variant', variant %}
+        >
+          <div class="c-bundle-slider__bundle-variant-container">
+            <div class="c-bundle-slider__bundle-variant-count">
+              {{ totalInstancesOVariant }}
+            </div>
+            <span class="c-bundle-slider__bundle-variant-factor">+</span>
+          </div>
+
+          <p class="c-bundle-slider__bundle-variant-title">
+            {{ variant.product.title }}
+            {{ variant.title }}
+          </p>
+        </div>
+      {%- endcapture -%}
+    {%- endfor -%}
+
+    {%- capture bundleElems -%}
+      {{ bundleElems }}
+      <div
+        class="
+          c-bundle-slider__bundle-wrapper
+          {%- if forloop.index == 2 %} is-middle-bundle{% endif -%}
+        "
+        data-slider-slide
+      >
+        <div
+          class="c-bundle-slider__bundle"
+          data-bundle-product-id={{ bundleProduct.id }}
+        >
+          <h6 class="c-bundle-slider__bundle-title">
+            {{ bundleProduct.title }}
+          </h6>
+
+          <div class="c-bundle-slider__bundle-variants">
+            {{ variantElems }}
+          </div>
+
+          <a href="{{ bundleProduct.url }}" class="c-bundle-slider__bundle-image-container">
+            {% liquid
+              assign mobileImageWidth = 219 | times: bundleProduct.featured_image.aspect_ratio | ceil
+              assign tabletImageWidth = 262 | times: bundleProduct.featured_image.aspect_ratio | ceil
+              assign desktopImageWidth = 225 | times: bundleProduct.featured_image.aspect_ratio | ceil
+              assign lDesktopImageWidth = 289 | times: bundleProduct.featured_image.aspect_ratio | ceil
+              assign xlDesktopImageWidth = 327 | times: bundleProduct.featured_image.aspect_ratio | ceil
+              comment
+                Formulas for small and big desktop calculated based on the 85 and 70 height to width aspect ratio (padding-bottom property)
+                set in CSS in .c-product-template__product-image-container picture
+                You have to change values here if you changed CSS
+              endcomment
+              assign imageSizes = "(min-width: 2000px) " | append: xlDesktopImageWidth | append: "px, (min-width: 1650px) " | append: lDesktopImageWidth | append: "px, (min-width: 1350px) " | append: desktopImageWidth | append: "px, (min-width: 750px) " | append: tabletImageWidth | append: "px, " | append: mobileImageWidth | append: "px"
+              assign imageSrcsetSizes = mobileImageWidth | append: "," | append: tabletImageWidth | append: "," | append: desktopImageWidth | append: "," | append: lDesktopImageWidth | append: "," | append: xlDesktopImageWidth
+            %}
+            {%-
+              render 'tool.image' with {
+              image: bundleProduct.featured_image,
+              class: 'c-bundle-slider__bundle-image',
+              srcsetSizes: imageSrcsetSizes,
+              sizes: imageSizes,
+              lazy: true,
+              width: mobileImageWidth
+              }
+            -%}
+          </a>
+          <div class="c-bundle-slider__bundle-hover-background-container">
+            {%- liquid
+              assign hoverBg = ss.hoverBg
+              if forloop.index == 2
+                assign hoverBg = ss.hoverBgMiddle
+              endif
+            -%}
+            {%-
+              render 'tool.picture' with {
+              image: hoverBg,
+              class: 'c-bundle-slider__bundle-hover-background',
+              width: 310,
+              sizes: '750,1100,1600',
+              imageSizes: '200,250,310',
+              lazy: true
+              }
+            -%}
+          </div>
+
+          <button
+            data-add-bundle-button
+            title="Add {{ bundleProduct.title }} To Cart"
+            class="c-bundle-slider__add-cart o-btn is-primary is-disabled"
+            disabled
+          >
+            {%- comment -%} inner set in script {%- endcomment -%}
+            {{ 'products.product.error' | t }}
+          </button>
+        </div>
+      </div>
+    {%- endcapture -%}
+
+    {%- capture carouselDots -%}
+      {{- carouselDots -}}
+      <div class="c-bundle-slider__dot" data-carousel-dot data-dot-index="{{ forloop.index }}"></div>
+    {%- endcapture -%}
+  {%- endfor -%}
+
+  <section
+    class="c-bundle-slider"
+    data-bundle-slider
+    {% if bundleChildTrackInventory %}
+      data-track-child-inventory="true"
+    {% endif %}
+  >
+    {%- if preTitle != blank -%}
+      <div class="c-bundle-slider__pre-title o-heading--7" data-fade-up>
+        {{ preTitle | escape }}
+      </div>
+    {%- endif -%}
+
+    {%- if title != blank -%}
+      <h3 class="c-bundle-slider__title o-heading--4" data-fade-up>
+        {{ title | escape }}
+      </h3>
+    {%- endif -%}
+
+    <div class="c-bundle-slider__bundles" data-slides-container>
+      {{ bundleElems }}
+    </div>
+
+    {%- if bundleHandles.size > 1 -%}
+      <div class="c-bundle-slider__dots" data-carousel-dots>
+        {{- carouselDots -}}
+      </div>
+    {%- endif -%}
+  </section>
+{% endif %}
+
+<script src="{{ 'sections.bundle-slider.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Bundle Slider",
+  "class": "c-section c-section__bundle-slider",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "The style of the middle product will be emphasised. Bundle products are set in accentuate metafields"
+    },
+    {
+      "id": "preTitle",
+      "type": "text",
+      "label": "Pre Title",
+      "info": "Can be trumped by in accentuate metafields"
+    },
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title",
+      "info": "Can be trumped by in accentuate metafields"
+    },
+    {
+      "id": "hoverBg",
+      "type": "image_picker",
+      "label": "Background hover image",
+      "info": "Please upload in .png format."
+    },
+    {
+      "id": "hoverBgMiddle",
+      "type": "image_picker",
+      "label": "Background hover image middle",
+      "info": "Please upload in .png format."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "products",
+      "name": "Bundle Products",
+      "limit": 3,
+      "settings": [
+        {
+          "id": "product",
+          "type": "product",
+          "label": "Bundle Product"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,83 @@
+{%- liquid 
+
+  assign productMf = product.metafields.accentuate
+  assign childVariantObjs = productMf.childVariants
+  assign upsellProductIsBundle = productMf.childVariants
+
+  if upsellProductIsBundle
+    assign percentageDiscount = productMf.percentageDiscount | default: 0
+    assign uniqueChildVariantObjs = productMf.childVariants | uniq
+    assign totalItemPrice = 0
+
+    for childVariantObj in uniqueChildVariantObjs
+
+      assign childVariantObjSplit = childVariantObj | split: ':'
+      assign productHandle = childVariantObjSplit[0]
+      assign variantId = childVariantObjSplit[1] | times: 1   
+      assign filteredVariants = all_products[productHandle].variants | where: 'id', variantId
+      assign childVariant = filteredVariants[0]
+      assign sameChildVariantObjs = childVariantObjs | where: childVariantObj
+      assign childQty = sameChildVariantObjs.size
+      
+      assign priceToAdd = childVariant.price | times: childQty
+      assign totalItemPrice = totalItemPrice | plus: priceToAdd
+    endfor
+
+    assign discountNumber = percentageDiscount | plus: 0
+    if discountNumber > 0
+      assign discountAmount = totalItemPrice | times: discountNumber | divided_by: 100.0
+      assign bundlePrice = totalItemPrice | minus: discountAmount
+      assign bundleComparePrice = totalItemPrice
+    else 
+      assign bundlePrice = totalItemPrice
+    endif
+
+    assign price = bundlePrice
+    assign comparePrice = bundleComparePrice
+
+  else
+
+    assign price = product.price
+    assign comparePrice = product.compare_at_price
+    if comparePrice
+      assign discountAmount = comparePrice | minus: price
+    endif
+
+  endif
+
+-%}
+
+{% layout none %}
+
+
+<h5 class="o-cart-upsell-page__title">
+  {{ product.title | escape }}
+</h5>
+
+{% if productMf.thumbnailText %}
+  <div class="o-cart-upsell-page__product-text-prefix">
+    {{ 'cart.upsell.features_prefix' | t }}
+  </div>
+  <p class="o-cart-upsell-page__product-text">
+    {{ productMf.thumbnailText | escape}}
+  </p>
+{% endif %}
+
+<div class="o-cart-upsell-page__divider"></div>
+
+<div class="o-cart-upsell-page__price-and-add-button {% if discountAmount %} has-savings {% endif %}">
+
+  <div class="o-cart-upsell-page__price-container">    
+    <div class="o-cart-upsell-page__price-prefix">{{ 'cart.upsell.price_prefix' | t }}</div>
+    <div class="o-cart-upsell-page__price">{{price | money}}</div>
+  </div>
+  <button class="o-cart-upsell-page__add-to-cart" data-upsell-add-to-cart>
+    {% render 'svg.plus' %}
+  </button>
+  {% if discountAmount %}
+    <div class="o-cart-upsell-page__savings-container">
+      <div class="o-cart-upsell-page__savings-prefix">{{ 'cart.upsell.savings_prefix' | t }}</div>
+      <div class="o-cart-upsell-page__savings">{{discountAmount | money}}</div>
+    </div>
+  {% endif %}
+</div>

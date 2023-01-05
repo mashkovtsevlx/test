@@ -1,0 +1,112 @@
+{%- liquid assign ss = section.settings -%}
+
+{%- capture isSectionLocked -%}
+{%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+
+  {{ 'sections.overlay-video.css' | asset_url | stylesheet_tag }}
+
+  {%- if ss.desktopImage != blank and ss.link != blank -%}  
+    <section class="c-overlay-video 
+    {%- if ss.mobileImage == blank %} has-no-mobile-image
+    {%- endif -%}
+    " data-lity data-lity-target="{{- ss.link -}}">
+    
+      <div class="c-overlay-video__top">
+        <div class="c-overlay-video__inner">
+          <h4 class="c-overlay-video__video-title">
+            {{- ss.videoTitle | escape-}}
+          </h4>
+          <div class="c-overlay-video__play-button">
+            {%- render 'svg.play-button' -%}
+          </div>
+        </div>
+        {%- if ss.mobileImage -%}
+          {%- render 'tool.picture' with {
+            image: ss.mobileImage,
+            class: 'c-overlay-video__image is-mobile',
+            width: 375,
+            sizes: '375',
+            imageSizes: '375'
+          } -%}
+        {%- endif -%}
+
+        {%- render 'tool.picture' with {
+          image: ss.desktopImage,
+          class: 'c-overlay-video__image is-desktop',
+          width: 2000,
+          sizes: '750,1100,2000',
+          imageSizes: '2000,1100,2000',
+          lazy: true
+        } -%}
+      </div>
+
+      <div class="c-overlay-video__bottom">
+        <p class="c-overlay-video__pre-title o-heading--7">
+          {{ss.preTitle | escape}}
+        </p>
+        <h4 class="c-overlay-video__heading">
+          {{ ss.title | escape }}
+        </h4>
+        <p class="c-overlay-video__text">
+          {{ss.text | escape}}
+        </p>
+      </div>
+      
+    </section>
+  {%- endif -%}
+
+  {{ 'sections.overlay-video.js' | asset_url | script_tag }}
+
+{%- endif -%}
+
+{% schema %}
+{
+	"name": "Overlay Video",
+	"class": "c-section c-section__overlay-video",
+	"settings": [{
+			"id": "preTitle",
+			"type": "text",
+			"label": "Pre Title"
+		},
+		{
+			"id": "title",
+			"type": "text",
+			"label": "Title"
+		},
+		{
+			"id": "text",
+			"type": "textarea",
+			"label": "Text"
+		},
+		{
+			"id": "videoTitle",
+			"type": "text",
+			"label": "Video Title"
+		},
+		{
+			"id": "link",
+			"type": "url",
+			"label": "Link"
+		},
+		{
+			"id": "mobileImage",
+			"type": "image_picker",
+			"label": "Image Mobile",
+			"info": "Please upload in .jpg format. Recommended ratio approx. .766/1, at least 750/976px."
+		},
+		{
+			"id": "desktopImage",
+			"type": "image_picker",
+			"label": "Image Desktop",
+			"info": "Please upload in .jpg format. Recommended ratio approx. 2.207/1, at least 3404/1542px."
+		}
+	],
+	"presets": [{
+		"category": "Content",
+		"name": "Overlay Video Section"
+	}]
+}
+{% endschema %}

@@ -1,0 +1,32 @@
+{%- comment -%}
+  params
+  - blocks
+  - speed
+{%- endcomment -%}
+
+{{ 'sections.marquee.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'sections.marquee.js' | asset_url }}" defer></script>
+
+{%- if blocks != blank -%}
+  <section
+    class="c-marquee"
+    style="animation-duration: {{speed | json}}s;"
+  >
+    {% for i in (1..4) %}
+      <div class="c-marquee__group">
+        {%- for block in section.blocks -%}
+          {%- assign bs = block.settings -%}
+          {%- if bs.image == blank or bs.title == blank -%}
+            {%- continue -%}
+          {%- endif -%}
+          <div class="c-marquee__icon">
+            {{ bs.image }}
+          </div>
+          <div class="c-marquee__message o-heading--1">
+            {{ bs.title | escape }}
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endfor -%}
+  </section>
+{%- endif -%}

@@ -1,0 +1,22 @@
+{%- comment -%}
+  Skin Journey Logic
+
+  Version:
+    1.0.0 - 2021/12/10
+{%- endcomment -%}
+
+{%- liquid
+  
+  assign customerLevel = 0
+
+  for tag in customer.tags
+    if tag contains 'week' 
+      unless tag contains 'Mechanic'
+        assign customerLevel = tag | split: '-' | last | plus: 0
+      endunless
+    endif
+  endfor
+-%}
+{{-customerLevel-}}
+
+

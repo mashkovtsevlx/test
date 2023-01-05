@@ -1,0 +1,60 @@
+{%- comment -%}
+  Ask Derm Thumbnail
+
+  Version:
+    1.0.0 - 2022/01/24
+
+{%- endcomment -%}
+
+<div class="o-article-ask-derm-thumbnail {{class}}">
+
+  <div class="o-article-ask-derm-thumbnail__image-container o-responsive-image-container">
+    {%- render 'tool.picture' with {
+      image: article.image,
+      class: 'o-article-ask-derm-thumbnail__image o-responsive-image',
+      width: 194,
+      sizes: '375,20000',
+      imageSizes: '194,173'
+    } -%}
+  </div>
+
+  <div class="o-article-ask-derm-thumbnail__content">
+
+    {%- if pretitle != blank -%}
+      <p class="o-article-ask-derm-thumbnail__pretitle o-heading--7">
+      {{- pretitle | escape -}}
+      </p>
+    {%- endif -%}
+
+    {%- if article.title != blank and article.url != blank -%}
+      <a class="o-article-ask-derm-thumbnail__title" href="{{article.url}}">
+        {{- article.title -}}
+      </a>
+    {%- endif -%}
+
+    {%- if article.excerpt != blank -%}
+      <p class="o-article-ask-derm-thumbnail__text">
+        {{- article.excerpt | truncatewords: 10 -}}
+      </p>
+    {%- endif -%}
+
+    <a class="o-article-ask-derm-thumbnail__btn o-link has-arrow o-heading--7" href="{{article.url}}">
+      {{- watch -}}
+    </a>
+
+    <div class="o-article-ask-derm-thumbnail__comments">
+      <span class="o-article-ask-derm-thumbnail__comments-count">
+        {{- article.comments_count -}}
+      </span>
+
+      <span class="o-article-ask-derm-thumbnail__comments-text">
+        {{- comments -}}
+      </span>
+      <div class="o-article-ask-derm-thumbnail__comments-icon">
+        {% render 'svg.comment' %}
+      </div>  
+    </div>
+
+  </div>
+
+</div>

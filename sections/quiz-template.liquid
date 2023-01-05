@@ -1,0 +1,157 @@
+{%- comment -%}
+Quiz Tenplate
+
+Version:
+1.0.0 - 2022/01/15
+{%- endcomment -%}
+
+{%- liquid
+
+assign ss = section.settings
+assign quizzes = section.blocks | where: 'type', 'quiz'
+
+-%}
+
+{%- capture isSectionLocked -%}
+{%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+
+{%- if quizzes.size >= 3 -%}
+
+{{ 'sections.quiz-template.css' | asset_url | stylesheet_tag }}
+{{ 'sections.quiz-slider.js' | asset_url | script_tag }}
+{{ 'sections.quiz-template.js' | asset_url | script_tag }}
+
+<section class="c-quiz-template" data-quiz-template>
+
+  {% if ss.pretitle != blank -%}
+  <p class="c-quiz-template__pretitle">
+    {{- ss.pretitle | escape -}}
+  </p>
+  {%- endif -%}
+
+  {%- if ss.title != blank -%}
+  <h4 class="c-quiz-template__title">
+    {{- ss.title | escape -}}
+  </h4>
+  {%- endif -%}
+
+  {%- if ss.content != blank -%}
+  <div class="c-quiz-template__content">
+    {{- ss.content | escape -}}
+  </div>
+  {%- endif -%}
+
+  <div class="c-quiz-template__quiz-wrapper">
+
+
+    <div class="c-quiz-template__arrows {% if quizzes.size < 4 %} is-hidden{%- endif -%}" data-carousel-navigation>
+      <button class="c-quiz-template__arrow is-left" data-carousel-previous></button>
+      <button class="c-quiz-template__arrow is-right" data-carousel-next></button>
+    </div>
+
+
+
+    <div class="c-quiz-template__quizzes {% if quizzes.size <= 3 %} is-3 {% endif %}" data-quizzes-carousel data-quizzes-size="{{quizzes.size}}">
+
+      {%- for quiz in quizzes -%}
+        <div class="c-quiz-template__quiz" data-quiz-answer="is-{{quiz.settings.statement}}" data-index="{{forloop.index0}}">
+
+          {%- if quiz.settings.quiz-icon != blank -%}
+            <span class="c-quiz-template__quiz-icon">
+              {{- quiz.settings.quiz-icon -}}
+            </span>
+          {%- endif -%}
+
+          {%- if quiz.settings.quiz-content != blank -%}
+            <div class="c-quiz-template__quiz-content">
+              {{- quiz.settings.quiz-content -}}
+            </div>
+          {%- endif -%}
+
+          {%- if quiz.settings.quiz-answer != blank -%}
+            <div class="c-quiz-template__quiz-answer">
+              {{- quiz.settings.quiz-answer -}}
+            </div>
+          {%- endif -%}
+
+          <div class="c-quiz-template__quiz-buttons" data-quiz-buttons data-index="{{forloop.index0}}">
+            <button class="c-quiz-template__quiz-button c-quiz-template__quiz-button--true" type="button">
+              {{ 'quiz.true' | t }}
+            </button>
+            <button class="c-quiz-template__quiz-button c-quiz-template__quiz-button--false" type="button">
+              {{ 'quiz.false' | t }}
+            </button>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+{% endif %}
+
+{% schema %}
+{
+	"name": "Quiz Section",
+	"class": "c-section c-section__quiz-template",
+	"settings": [{
+			"type": "text",
+			"id": "pretitle",
+			"label": "Section Pretitle"
+		},
+		{
+			"type": "text",
+			"id": "title",
+			"label": "Section Title"
+		},
+		{
+			"type": "textarea",
+			"id": "content",
+			"label": "Section Content"
+		}
+	],
+	"blocks": [{
+		"name": "Quizzes",
+		"type": "quiz",
+		"settings": [{
+				"type": "textarea",
+				"id": "quiz-icon",
+				"label": "Category Icon SVG",
+				"info": "Please paste your SVG code here."
+			},
+			{
+				"type": "textarea",
+				"id": "quiz-content",
+				"label": "Quiz Content"
+			},
+      {
+				"type": "textarea",
+				"id": "quiz-answer",
+				"label": "Quiz Answer"
+			},
+			{
+				"type": "radio",
+				"id": "statement",
+				"label": "Quiz Statement",
+				"options": [{
+						"value": "true",
+						"label": "True"
+					},
+					{
+						"value": "false",
+						"label": "False"
+					}
+				]
+			}
+		]
+	}],
+	"presets": [{
+		"name": "Quiz Section",
+		"category": "Content"
+	}]
+}
+{% endschema %}

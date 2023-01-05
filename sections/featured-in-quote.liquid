@@ -1,0 +1,142 @@
+{%- comment -%}
+  Hero Banner with Benefits
+    Hero banner section with product images 
+
+  Version:
+    1.0.0 - 2022/02/21
+
+{%- endcomment -%}
+
+{{ 'sections.featured-in-quote.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+
+  assign ss = section.settings
+-%}
+
+{% capture company_images %}
+  <div class="c-fiq__content--company-images">
+{% endcapture %}
+{% capture company_quotes %}
+  <div class="c-fiq__content--quotes">
+{% endcapture %}
+{% capture company_names %}
+  <div class="c-fiq__content--quote-authors">
+{% endcapture %}
+
+{% for block in section.blocks %}
+  {% capture company_images %}
+    {{ company_images }}
+    <div class="c-fiq__content--company-image-wrap {% if forloop.index == 1 %}active{% endif %}" data-company-img-id="{{ forloop.index }}">
+      {%- render 'tool.picture' with {
+        image: block.settings.image,
+        class: 'c-fiq__company-image',
+        width: 320,
+        sizes: '750',
+        imageSizes: '160',
+        lazy: true
+      }
+      -%}
+    </div>
+  {% endcapture %}
+  {% capture company_quotes %}
+    {{ company_quotes }}
+    <div class="c-fiq__content--quote {% if forloop.index == 1 %}active{% endif %}" data-company-quote-id="{{ forloop.index }}">
+      {{ block.settings.quote }}
+    </div>
+  {% endcapture %}
+  {% capture company_names %}
+    {{ company_names }}
+    <div class="c-fiq__content--quote-author {% if forloop.index == 1 %}active{% endif %}" data-company-author-id="{{ forloop.index }}">
+      <p>– {{ block.settings.quote_author | escape }}</p>
+    </div>
+  {% endcapture %}
+{% endfor %}
+
+{% capture company_images %}
+  {{ company_images }}
+  </div>
+{% endcapture %}
+{% capture company_quotes %}
+  {{ company_quotes }}
+  </div>
+{% endcapture %}
+{% capture company_names %}
+  {{ company_names }}
+  </div>
+{% endcapture %}
+
+<section class="c-fiq">
+  <div class="c-fiq__bg-image-wrap">
+    {%- render 'tool.picture' with {
+      image: ss.bg_image,
+      class: 'c-fiq__bg-image',
+      width: 2400,
+      sizes: '350,500,750,1100,1440,1920',
+      imageSizes: '350,500,750,1100,1440,1920',
+      lazy: true
+    }
+    -%}
+  </div>
+  <div class="c-fiq__content">
+    <div class="c-fiq__content--above-title">
+      <p class="">
+        {{- ss.above_title | escape -}}
+      </p>
+    </div>
+    {% if company_images != blank %}
+      {{ company_images }}
+      {{ company_quotes }}
+      {{ company_names }}
+    {% endif %}
+  </div>
+  <script src="{{ 'sections.featured-in-quote.js' | asset_url }}" defer></script>
+
+</section>
+
+{% schema %}
+  {
+    "name": "Featured in quote",
+    "class": "c-section c-section__featured-in-quote",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "bg_image",
+        "label": "Background image"
+      },
+      {
+        "id": "above_title",
+        "type": "text",
+        "label": "Above title",
+        "default": "As featured in"
+      }
+    ],
+    "blocks": [{
+      "type": "company",
+      "name": "Featured company",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Company image"
+        },
+        {
+          "id": "quote",
+          "type": "richtext",
+          "label": "Quote"
+        },
+        {
+          "id": "quote_author",
+          "type": "text",
+          "label": "Quote author"
+        }
+      ]
+    }],
+    "presets": [
+      {
+        "name": "Featured in quote",
+        "category": "Content"
+      }
+    ]
+  }
+{% endschema %}

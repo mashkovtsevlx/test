@@ -1,0 +1,160 @@
+{%- liquid
+  assign s = section.settings
+  assign numOfSlides = g.title.size
+  echo 'sections.before-and-after-slider.css' | asset_url | stylesheet_tag
+-%}
+
+{%- capture isSectionLocked -%}
+  {%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+  {%- if section.blocks.size > 0 -%}
+    <section
+      class="c-before-and-after-slider {%- if s.hasBg %} has-blue-background{%- endif -%}"
+      data-before-and-after-slider
+    >
+      <div class="c-before-and-after-slider__pre-title o-heading--7" data-fade-up>
+        {{ s.preTitle | escape }}
+      </div>
+
+      <h5 class="c-before-and-after-slider__title" data-fade-up>
+        {{ s.title | escape }}
+      </h5>
+
+      <div class="c-before-and-after-slider__inner">
+        {%- if s.hasBg -%}
+          <div class="c-before-and-after-slider__blue-background"></div>
+        {%- endif -%}
+
+        <div class="c-before-and-after-slider__slides" data-slides-container>
+          {% for block in section.blocks %}
+            {%-
+              render 'before-and-after-slide' with {
+              beforeImage: block.settings.imageBefore,
+              afterImage: block.settings.imageAfter,
+              beforeSubtitle: block.settings.imageSubtitleBefore,
+              afterSubtitle: block.settings.imageSubtitleAfter,
+              title: block.settings.title,
+              text: block.settings.text,
+              subtitle: block.settings.subtitle,
+              productLeft: block.settings.productLeft,
+              productRight: block.settings.productRight
+              }
+            -%}
+          {% endfor %}
+        </div>
+      </div>
+
+      {%- if s.ctaUrl != blank -%}
+        <div class="c-before-and-after-slider__cta-container">
+          <a href="{{- s.ctaUrl -}}" class="c-before-and-after-slider__cta o-btn is-primary">
+            {{- s.ctaText -}}
+          </a>
+        </div>
+      {%- endif -%}
+    </section>
+  {%- endif -%}
+
+  <script src="{{ 'sections.before-and-after-slider.js' | asset_url }}" defer></script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Before And After Slider",
+  "class": "c-section c-section__before-and-after-slider",
+  "settings": [
+    {
+      "id": "preTitle",
+      "type": "text",
+      "label": "Pre-title"
+    },
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title"
+    },
+    {
+      "type": "paragraph",
+      "content": "Data for the before and afters is managed in Accentuate global metafields. The slider will show the first 5 Before and Afters"
+    },
+    {
+      "id": "hasBg",
+      "type": "checkbox",
+      "label": "Has blue background?"
+    },
+    {
+      "type": "text",
+      "id": "ctaText",
+      "label": "CTA Button Text",
+      "default": "View More"
+    },
+    {
+      "type": "url",
+      "id": "ctaUrl",
+      "label": "CTA Link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "imageBefore",
+          "label": "Before Image",
+          "info": "Please upload in .jpg format. Recommended ratio approx. 1/1.7, at least 810/1380px."
+        },
+        {
+          "type": "text",
+          "id": "imageSubtitleBefore",
+          "label": "Before Image Subtitle"
+        },
+        {
+          "type": "image_picker",
+          "id": "imageAfter",
+          "label": "After Image",
+          "info": "Please upload in .jpg format. Recommended ratio approx. 1/1.7, at least 810/1380px."
+        },
+        {
+          "type": "text",
+          "id": "imageSubtitleAfter",
+          "label": "After Image Subtitle"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text"
+        },
+        {
+          "type": "product",
+          "id": "productLeft",
+          "label": "First Product"
+        },
+        {
+          "type": "product",
+          "id": "productRight",
+          "label": "Second Product"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Before And After Slider Section",
+      "category": "Content"
+    }
+  ]
+}
+{% endschema %}

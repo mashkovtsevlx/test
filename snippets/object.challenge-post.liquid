@@ -1,0 +1,107 @@
+{%- comment -%}
+  Weekly Challenge Post
+
+   Weekly Challenge post with:
+   -before/after photos
+   -title
+   -user's instagram link
+   -related products 
+
+  Version:
+    1.0.0 - 2021/12/23
+{%- endcomment -%}
+
+<div class="c-challenge-post__item is-{{imageAligment}}">
+  <div class="c-challenge-post__blue-background">
+  </div>
+  
+  <div class="c-challenge-post__images">
+    {%- if beforeImage != blank -%}
+      <div class="c-challenge-post__image-container is-before">
+        {%- render 'tool.picture' with {
+          image: beforeImage,
+          class: 'c-challenge-post__image',
+          width: 606,
+          sizes: '750,1100,1600',
+          imageSizes: '265,350,606'
+        } -%}
+      </div>
+    {%- endif -%}
+
+    {%- if afterImage != blank -%}
+      <div class="c-challenge-post__image-container is-after">
+        {%- render 'tool.picture' with {
+          image: afterImage,
+          class: 'c-challenge-post__image',
+          width: 606,
+          sizes: '750,1100,1600',
+          imageSizes: '265,350,606'
+        } -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="c-challenge-post__content-container">
+      
+    {%- if title != blank -%}
+      <h5 class="c-challenge-post__title">
+        "{{- title | escape -}}"
+      </h5>
+    {%- endif -%}
+    
+    {%- if userUrl != blank and userName != blank -%}
+      <a href="{{- userUrl -}}" class="c-challenge-post__user o-heading--7">
+        @{{- userName | escape -}}
+      </a>
+    {%- endif -%}
+
+    {% if text != blank %}
+      <div class="c-challenge-post__content">
+        {{- text | escape | newline_to_br -}}
+      </div>
+    {% endif %}
+    
+
+    {%- comment -%} Related Products {%- endcomment -%}
+    <div class="c-challenge-post__related-products">
+      {%- for i in (0..1) -%}
+        {%- liquid
+          if i == 0
+            assign product = productLeft
+          else
+            assign product = productRight
+          endif
+
+          assign variant = product.first_available_variant
+
+          if variant == blank
+            continue
+          endif
+        -%}
+        <a href="{{ variant.url }}" class="c-challenge-post__related-product">
+          <div class="c-challenge-post__related-product-image-container">
+            {%- render 'tool.picture' with {
+              image: product.featured_image,
+              class: 'c-challenge-post__related-product-image',
+              width: 2000,
+              sizes: '750,1100,1600',
+              imageSizes: '354,1100,1600'
+            } -%}
+            <div class="c-challenge-post__related-product-image-icon">
+              {%- render 'svg.plus' -%}
+            </div>
+          </div>
+          
+          <div class="c-challenge-post__related-product-details">
+            <div class="c-challenge-post__related-product-title">
+              {{ product.title | escape }}
+            </div>
+            <div class="c-challenge-post__related-product-price" data-currency data-money="{{ variant.price }}">
+              {{ variant.price | money }}
+            </div>
+          </div>
+        </a>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>

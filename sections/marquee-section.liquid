@@ -1,0 +1,57 @@
+{%- liquid
+  assign ss = section.settings
+-%}
+
+{%- capture isSectionLocked -%}
+  {%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+  {% render 'marquee', blocks: section.blocks, speed: ss.marqueeSpeed %}
+{% endif %}
+
+{% schema %}
+{
+  "name": "Marquee Section",
+  "class": "c-section c-section__marquee-section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "marqueeSpeed",
+      "label": "Marquee Speed",
+      "min": 6,
+      "max": 30,
+      "step": 1,
+      "unit": "sec",
+      "default": 15
+    },
+    {
+      "type": "paragraph",
+      "content": "Note: if a marquee items doesnt have and image and icon it will be hidden. The speed will change based on the number of item, ie the more items the slower it goes. Use the speed slider to adjust."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "messages",
+      "name": "Marquee Message",
+      "settings": [
+        {
+          "id": "title",
+          "type": "text",
+          "label": "Message"
+        },
+        {
+          "id": "image",
+          "type": "textarea",
+          "label": "Separator Icon (paste SVG code)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Marquee Section"
+    }
+  ]
+}
+{% endschema %}

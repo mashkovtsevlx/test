@@ -1,0 +1,227 @@
+{%- comment -%}
+    Skin Journeys Hero with
+   - slider
+   - content
+
+  Version:
+    1.0.0 - 2022/01/06
+
+{%- endcomment -%}
+
+{%- liquid
+
+  assign ss = section.settings
+
+  assign title = ss.title | default: page.title
+
+  assign slidesArticles = section.blocks | where: 'type', 'slides'
+
+  assign learnMore = 'articles.learn_more' | t
+  assign featuredArticle  = 'pages.skin-journeys.featured_stories' | t
+
+-%}
+
+{{ 'sections.skin-journeys-hero.css' | asset_url | stylesheet_tag }}
+{{ 'sections.skin-journeys-slider.js' | asset_url | script_tag }}
+
+<section class="c-skin-journeys">
+
+  <div class="c-skin-journeys__inner">
+    
+    <div class="c-skin-journeys__wrapper">
+
+      {%- comment -%} Background image that'll be dispalyed on Desktop{%- endcomment -%}
+      <div class="c-skin-journeys__background-image-container-wrapper">
+        <div class="c-skin-journeys__background-image-container">
+          {%- render 'tool.picture' with {
+            image: ss.background-image,
+            class: 'c-skin-journeys__background-image o-responsive-image',
+            width: 867,
+            sizes: '375,2000',
+            imageSizes: '341,867'
+          } -%}
+        </div>
+      </div>
+
+      <div class="c-skin-journeys__left-container">
+
+        {%- if ss.pretitle != blank -%}
+          <h6 class="c-skin-journeys__pretitle o-heading--7">
+            {{- ss.pretitle | escape -}}
+          </h6>
+        {%- endif -%}
+          
+        {%- if title != blank -%}
+          <h1 class="c-skin-journeys__title">
+            {{- title | escape }}
+          </h1>
+        {%- endif -%}
+          
+        {%- if ss.text != blank -%}
+          <p class="c-skin-journeys__text">
+            {{- ss.text | escape -}}
+          </p>
+        {%- endif -%}
+
+      </div>
+
+      <div class="c-skin-journeys__slides" data-skin-journeys>
+
+        <div class="c-skin-journeys__navigation" data-carousel-navigation>
+          <button class="c-skin-journeys__next" data-carousel-next></button>
+        </div>
+
+        {%- comment -%} Featured Articles Slider{%- endcomment -%}
+        <div class="c-skin-journeys__slides-wrapper" data-articles-carousel>
+          {%- for slide in slidesArticles -%}
+    
+            {%- liquid
+
+              assign article = slide.settings.featured_article
+              if article != blank
+                unless article.handle contains ss.diariesBlog.handle
+                  continue
+                endunless
+              else
+                if slide.settings.featured_article_title == blank or slide.settings.featured_article_video == blank or slide.settings.featured_article_image == blank
+                  continue
+                endif
+              endif
+
+              if slide.settings.featured_article_title != blank
+                assign article_title = slide.settings.featured_article_title
+              elsif article.title != blank
+                assign article_title = article.title
+              endif
+
+            -%}
+
+          <a
+            {% if slide.settings.featured_article_video and slide.settings.featured_article_video != "" %}
+              data-lity data-lity-target="{{ slide.settings.featured_article_video }}"
+            {% else %}
+              href="{{- slide.settings.featured_article.url -}}"
+            {% endif %}
+             class="c-skin-journeys__article-wrapper">
+            <div class="c-skin-journeys__image-container o-responsive-image-container">
+              {% if slide.settings.featured_article_image != blank %}
+                {%- render 'tool.picture' with {
+                  image: slide.settings.featured_article_image,
+                  class: "c-skin-journeys__image o-responsive-image",
+                  width: 367,
+                  sizes: '375,2000',
+                  imageSizes: '253,415'
+                } -%}
+              {% elsif slide.settings.featured_article != blank %}
+                {%- render 'tool.picture' with {
+                  image: slide.settings.featured_article.image,
+                  class: "c-skin-journeys__image o-responsive-image",
+                  width: 367,
+                  sizes: '375,2000',
+                  imageSizes: '253,415'
+                } -%}
+              {% endif %}
+            </div>
+
+            <div class="c-skin-journeys__article-content">
+              <h6 class="c-skin-journeys__article-pretitle o-heading--7">
+                {{- featuredArticle -}}
+              </h6>
+
+              
+              <div class="c-skin-journeys__content-wrapper">
+                {%- if article_title != blank -%}
+                  <h4 class="c-skin-journeys__article-title">
+                    {{- article_title -}}
+                  </h4>
+                {%- endif -%}
+
+                <span class="c-skin-journeys__article-btn has-arrow">
+                  {{- slide.settings.button-label -}}
+                </span>
+              </div>
+            </div>
+          </a>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+{% schema %}
+{
+  "name": "Skin Journeys Hero",
+  "class": "c-section c-section__skin-journeys-hero",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "id": "background-image",
+      "type": "image_picker",
+      "label": "Background Image",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 1/1, at least 1190/1188px."
+    },
+    {
+      "type": "text",
+      "id": "pretitle",
+      "label": "Pre Title"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "type": "blog",
+      "id": "diariesBlog",
+      "label": "Diaries Blog"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slides",
+      "name": "Featured Articles",
+      "settings": [
+        {
+          "type": "article",
+          "id": "featured_article",
+          "label": "Featured article",
+          "info": "IMPORTANT!!! Please make sure that you add article from Diaries Blog"
+        },
+        {
+          "type": "text",
+          "id": "button-label",
+          "label": "Button Label",
+          "info": "Please add button label which will be displayed in slide",
+          "default": "Learn more"
+        },
+        {
+          "type": "video_url",
+          "id": "featured_article_video",
+          "label": "Featured article video",
+          "accept": [
+            "youtube",
+            "vimeo"
+          ]
+        },
+        {
+          "type": "image_picker",
+          "id": "featured_article_image",
+          "label": "Featured article image"
+        },
+        {
+          "type": "text",
+          "id": "featured_article_title",
+          "label": "Featured article title"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

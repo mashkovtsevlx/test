@@ -1,0 +1,14 @@
+{%- comment -%} Language Strings {%- endcomment -%}
+{%- capture keys -%}
+  products.product.free; products.product.add; products.product.adding; products.product.added;
+  products.product.all_in_cart; products.product.cart_pending; products.product.added_to_cart;
+  products.product.sold_out; products.product.error; products.product.upsell_prefix_add;
+  products.product.upsell_prefix_adding; products.product.upsell_prefix_added; products.product.notify_me;
+  products.product.disabled; general.postcode.availability_message; cart.upsell.features_prefix;
+  cart.upsell.price_prefix; cart.upsell.savings_prefix;
+{%- endcapture -%}
+{%- render 'tool.language-strings' with { keys: keys } -%}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" defer></script>
+<script src="{{ 'vendor.js' | asset_url }}" defer></script>
+<script src="{{ 'layout.theme.js' | asset_url }}" defer></script>

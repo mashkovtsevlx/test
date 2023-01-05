@@ -1,0 +1,12 @@
+{% comment %}
+  Get variant json template
+    Simple JSON Styled Product Template for fetching a specifc variant in json
+
+  Version:
+    1.0.0 - 2020/03/25
+{% endcomment %}
+{% layout none %}
+
+{%- render 'json.product' with {
+  product: product
+} -%}

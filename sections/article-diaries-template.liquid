@@ -1,0 +1,68 @@
+{%- comment -%}
+  Diaries Vlog Hero Banner
+
+  Version:
+    1.0.0 - 2021/12/10
+{%- endcomment -%}
+
+{%- liquid
+
+  assign title = article.metafields.accentuate.diary_title
+
+  assign imageDesktop = article.metafields.accentuate.desktopImage
+  assign imageMobile = article.metafields.accentuate.mobileImage
+
+  if imageMobile == blank
+    assign imageMobile = imageDesktop
+  endif
+
+  assign VideoUrl = article.metafields.accentuate.video_url 
+-%}
+
+{{ 'sections.article-diaries-template.css' | asset_url | stylesheet_tag }}
+
+<section class="c-article-diaries">
+  <div class="c-article-diaries__header-background">
+  </div>
+  <div class="c-article-diaries__inner">
+
+    {%- if article.title != blank -%}
+      <h1 class="c-article-diaries__heading">
+        {{- article.title | escape -}}
+      </h1>
+    {%- endif -%}
+    
+    <div class="c-article-diaries__banner 
+      {% if imageMobile == blank %} has-desktop-only{% endif %}" data-lity data-lity-target="{{- VideoUrl -}}">
+        {%- render 'tool.picture' with {
+          image: imageMobile,
+          class: 'c-article-diaries__banner-image is-mobile'
+          width: 750,
+          sizes: '374,750'
+        } -%}
+        {%- render 'tool.picture' with {
+          image: imageDesktop,
+          class: 'c-article-diaries__banner-image is-desktop'
+          width: 2560,
+          sizes: '374,750,1100,1650,2000'
+        } -%}
+        
+      <div class="c-article-diaries__banner-inner">
+        {%- if title -%}
+          <h4 class="c-article-diaries__banner-excerpt">
+            {{- title | escape -}}
+          </h4>
+        {%- endif -%}
+
+        <div class="c-article-diaries__banner-play-button">
+          {%- render 'svg.play-button' -%}
+        </div>
+
+      </div> 
+    </div>
+      
+    <div class="c-article-diaries__content">
+      {{- article.content -}}
+    </div>
+  </div>
+</section>

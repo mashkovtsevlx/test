@@ -1,0 +1,43 @@
+
+{{ 'sections.404-template.css' | asset_url | stylesheet_tag }}
+<section class="c-404">
+  <div class="c-404__header">
+    <div class="c-404__header-inner">
+
+      <p class="c-404__pretitle o-heading--1">
+        {{- 'general.404.pretitle' | t -}}
+      </p>
+      <h1 class="c-404__title o-heading--6">
+        {{- 'general.404.title' | t -}}
+      </h1>
+    </div>
+  </div>
+  <div class="c-404__inner">
+    <p>
+      {{- 'general.404.subtext_html' | t -}}
+    </p>
+    <a href="{{ routes.root_url }}" class="c-404__btn is-secondary o-btn">
+      {{- 'general.404.continue_button' | t -}}
+    </a>
+  </div>
+</section>
+
+
+{% schema %}
+{
+  "name": "404 Page",
+  "class": "c-section c-section__404",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Button Settings"
+    },
+    {
+      "id": "continueUrl",
+      "type": "url",
+      "label": "Continue Shopping URL",
+      "info": "If left blank the user will be directed to the store's all products collection."
+    }
+  ]
+}
+{% endschema %}

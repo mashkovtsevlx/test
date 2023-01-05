@@ -1,0 +1,40 @@
+{%- comment -%}
+   Back Button
+    - back button that will redirect you on previous page
+
+  Version:
+    1.0.0 - 2022/04/22
+
+{%- endcomment -%}
+
+{%- if section.settings.buttol-label != blank -%}
+
+{{ 'sections.back-button.css' | asset_url | stylesheet_tag }}
+{{ 'sections.back-button.js' | asset_url | script_tag }}
+
+  <section class="c-back-button">
+    <button class="c-back-button__btn o-btn is-primary" data-back-button>
+      {{- section.settings.buttol-label -}}
+    </button>
+  </section>
+{%- endif -%}
+
+{% schema %}
+  {
+    "name": "Back Button",
+    "class": "c-section c-section__back-button",
+    "settings": [
+      {
+        "id": "buttol-label",
+        "type": "text",
+        "label": "Button Label"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Back Button",
+        "category": "Content"
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,66 @@
+{% comment %}
+  Featured Text
+
+  Version:
+    1.0.0 - 21/09/24
+{% endcomment %}
+
+{%- capture content -%}
+  {%- if section.settings.pretitle != blank -%}
+    <span class="c-featured-text__subtitle o-heading--7">
+      {{- section.settings.pretitle | escape -}}
+    </span>
+  {%- endif -%}
+
+  {%- if section.settings.title != blank -%}
+    <span class="c-featured-text__title o-heading--4">
+      {{- section.settings.title | escape }}
+    </span>
+  {%- endif -%}
+
+  {%- if section.settings.subtitle != blank -%}
+    <p class="c-featured-text__text">
+      {{- section.settings.subtitle | escape | newline_to_br -}}
+    </p>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- if content != blank -%}
+
+  {{- 'sections.featured-text.css' | asset_url | stylesheet_tag -}}
+
+  <section class="c-featured-text">
+    {{ content }}
+  </section>
+  
+{%- endif -%}
+
+
+{% schema %}
+  {
+    "name": "Featured Text",
+    "settings": [
+      {
+        "type": "text",
+        "id": "pretitle",
+        "label": "Pretitle"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Title"
+      },
+      {
+        "type": "textarea",
+        "id": "subtitle",
+        "label": "Subtitle"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Featured Text",
+        "category": "Content"
+      }
+    ]
+  }
+{% endschema %}

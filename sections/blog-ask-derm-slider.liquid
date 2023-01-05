@@ -1,0 +1,83 @@
+{%- comment -%}
+  Ask a Derm Slider
+
+  Version:
+    1.0.0 - 2022/01/20
+
+{%- endcomment -%}
+
+{%- liquid
+
+  assign ss = section.settings
+
+  assign pretitle = 'pages.ask-derm.live_pretitle' | t
+  assign label = 'pages.ask-derm.live_label' | t
+  assign comments = 'pages.ask-derm.comments' | t
+
+  assign askDermBlog = blogs[section.settings.askDermBlog]
+
+-%}
+
+{%- capture isSectionLocked -%}
+{%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+
+  {{ 'sections.blog-ask-derm-slider.css' | asset_url | stylesheet_tag }}
+  {{ 'sections.blog-ask-derm-slider.js' | asset_url | script_tag }}
+
+  {%- comment -%} Articles Slider {%- endcomment -%}
+  <section class="c-ask-derm__articles-slider" data-ask-derm-articles>
+
+    <div class="c-ask-derm__articles-inner">
+
+      {%- if ss.slider-title != blank -%}
+        <h4 class="c-ask-derm__articles-title">
+          {{- ss.slider-title | escape -}}
+        </h4>
+      {%- endif -%}
+
+      <div class="c-ask-derm__articles-wrapper" data-articles-carousel>
+
+        {%- for article in askDermBlog.articles -%}
+
+        {%- render 'object.article-ask-derm-thumbnail', with {
+          class: 'c-ask-derm__article',
+          article: article,
+          pretitle: pretitle,
+          watch: label,
+          comments: comments
+        } -%}  
+        {%- endfor -%}
+      </div>
+    </div>
+    
+  </section>
+{% endif %}
+    
+
+{% schema %}
+  {
+    "name": "Ask Derm Slider",
+    "class": "c-section c-section__ask-derm-slider",
+    "settings": [
+      {
+        "type": "blog",
+        "id": "askDermBlog",
+        "label": "Ask Derm Blog"
+      },
+      {
+        "id": "slider-title",
+        "type": "text",
+        "label": "Title"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Ask Derm Slider",
+        "category": "Content"
+      }
+    ]
+  }
+{% endschema %}

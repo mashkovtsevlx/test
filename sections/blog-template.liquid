@@ -1,0 +1,173 @@
+
+{%- liquid
+  assign ss = section.settings
+  assign title = ss.title | default: blog.title
+  
+  assign blogTags = blog.all_tags
+  assign headerArticle = blog.articles[0]
+  assign headerArticleMf = headerArticle.metafields.accentuate
+
+  assign mobileImage = headerArticleMf.mobileImage
+  assign desktopImage = headerArticleMf.desktopImage
+
+  assign articleAuthor = headerArticle.metafields.accentuate.article_author | default: headerArticle.author
+  assign learnMore = 'articles.read_now_link' | t
+
+-%}
+
+{{ 'sections.blog-template.css' | asset_url | stylesheet_tag }}
+
+<section class="c-blog">
+  <div class="c-blog__header-background"></div>
+
+  <div class="c-blog__inner">
+    <h1 class="c-blog__heading">
+      {{- title | escape -}}
+    </h1>
+    
+    <a href="{{headerArticle.url}}" class="c-blog__header-article {% if mobileImage == blank %} has-desktop-only{% endif %}">
+      <div class="c-blog__header-article-image-container o-responsive-image-container">
+        {%- render 'tool.picture' with {
+          image: mobileImage,
+          class: 'c-blog__header-article-image o-responsive-image is-mobile'
+          width: 2560,
+          sizes: '374,750,1100,1650,2000'
+        } -%}
+        {%- render 'tool.picture' with {
+          image: desktopImage,
+          class: 'c-blog__header-article-image o-responsive-image is-desktop'
+          width: 750,
+          sizes: '374,750'
+        } -%}
+      </div>
+      
+      <div class="c-blog__header-article-inner">
+        <p class="c-blog__header-article-top o-heading--7">
+          {%- if headerArticle.tags.size > 0 %}
+            {%- for tag in headerArticle.tags -%}
+              <span class="c-blog__header-article-tag o-heading--7">
+                {{tag}}
+              </span>
+              <span class="divider"></span>
+            {%- endfor -%}
+          {%- endif -%}
+
+          {%- if articleAuthor != blank  -%}
+            <span class="c-blog__header-article-author">
+              {{- articleAuthor -}}
+            </span>
+          {%- endif -%}
+        </p>
+
+        <h4 class="c-blog__header-article-title">
+          {{headerArticle.title}}
+        </h4>
+
+        <span class="c-blog__header-article-cta o-link has-arrow">
+          {{- ss.buttonText | escape -}}
+        </span>
+      </div>
+    </a>
+
+
+    {%- if blogTags.size > 0 and ss.hide-categories == false %}
+      <div class="c-blog__tags o-heading--5">
+        
+        <div class="c-blog__tags-container" data-blog-tags-container>
+          <div class="c-blog__filter-btn-container">
+            <a href="/blogs/{{ blog.handle }}" class="c-blog__filter-btn is-selected" data-blog-tag-button>
+              <div class="c-blog__filter__btn-text">
+              <span class="c-blog__filter-btn-text-span o-heading--7">{{- 'blog.all_tags' | t -}}</span>
+              </div>
+            </a>
+          </div>
+
+          {%- for tag in blogTags -%}
+          <div class="c-blog__filter-btn-container">
+            <a href="/blogs/{{ blog.handle }}/tagged/{{tag | handle }}" class="c-blog__filter-btn" data-blog-tag-button>
+              <div class="c-blog__filter__btn-text">
+                <span class="c-blog__filter-btn-text-span o-heading--7">{{- tag -}}</span>
+              </div>
+            </a>
+          </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- paginate blog.articles by 9 -%}
+      <div class="c-blog__articles">
+        {%- for article in blog.articles -%}
+          {% if forloop.index == 1 %}{% continue %}{% endif %}
+          <a href="{{article.url}}" class="c-blog__article">
+            <p class="c-blog__article-tags o-heading--7">
+              {%- for tag in article.tags -%}
+                <span class="c-blog__article-tag">
+                  {{tag}}
+                </span>
+              {%- endfor -%}
+            </p>
+            <h6 class="c-blog__article-title">
+              {{article.title | escape}}
+            </h6>
+
+            <p class="c-blog__article-author o-heading--7">
+              {{ss.authorPrefix | escape}} {{article.author | escape}}
+            </p>
+            <div class="c-blog__article-image-container o-responsive-image-container">
+              {%- render 'tool.picture' with {
+                image: article.image,
+                class: 'c-blog__article-image o-responsive-image',
+                width: 339,
+                sizes: '375,1600',
+                imageSizes: '193,339'
+              } -%}
+            </div>
+
+            <span class="c-blog__article-cta o-link has-arrow">
+              {{- learnMore -}}
+            </span>
+          </a>
+        {%- endfor -%}
+      </div>
+
+      {%- render 'object.pagination' with {
+        paginate: paginate
+      } -%}
+    {%- endpaginate -%}
+  </div>
+</section>
+
+{{ 'sections.blog-template.js' | asset_url | script_tag }}
+
+{% schema %}
+  {
+    "name": "Blog Template",
+    "class": "c-section c-section__blog",
+    "settings": [
+      {
+        "id": "title",
+        "type": "text",
+        "label": "Title",
+        "default": "Our Blog"
+      },
+      {
+        "id": "authorPrefix",
+        "type": "text",
+        "label": "Author Pefix",
+        "default": "By"
+      },
+      {
+        "id": "buttonText",
+        "type": "text",
+        "label": "Button Text"
+      },
+      {
+        "type": "checkbox",
+        "id": "hide-categories",
+        "label": "Hide categories menu",
+        "default": false
+      }
+    ]
+  }
+{% endschema %}

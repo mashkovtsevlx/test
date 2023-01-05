@@ -1,0 +1,306 @@
+{%- comment -%}
+  Home Hero Banner
+    Hero banner section with  image, text, CTAs
+
+  Version:
+    1.0.0 - 2020/07/14
+{%- endcomment -%}
+
+{%- liquid
+  if template.name == 'page'
+    assign mf = page.metafields.hero-banner
+  elsif template.name == 'index'
+    assign mf = shop.metafields.hero-banner
+  endif
+
+  if mf
+    assign isDarkMode = mf['toggle_dark_mode']
+  endif
+
+  assign title = section.settings.title
+  assign subtitle = section.settings.subtitle
+  assign caveat = section.settings.caveat
+  assign ctaLink = section.settings.cta-link
+  assign ctaLabel = section.settings.cta-label
+
+  if ctaLink != blank and ctaLabel != blank
+    assign hasCta = true
+  endif
+
+  assign imageDesktop = section.settings.image--desktop
+  assign imageMobile = section.settings.image--mobile
+  if imageMobile == blank
+    assign imageMobile = imageDesktop
+  endif
+
+  assign videoDesktop = section.settings.video-desktop
+  assign videoDesktopWebm = section.settings.video-desktop-webm
+  assign videoMobile = section.settings.video-mobile
+  assign videoMobileWebm = section.settings.video-mobile-webm
+  if videoMobile == blank
+    assign videoMobile = videoDesktop
+  endif
+
+  assign classSuffix = template.suffix
+  if template contains 'collection'
+    assign classSuffix = 'science'
+  endif
+-%}
+
+{%- unless template contains 'index' -%}
+  {{ 'sections.home-hero.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'sections.home-hero.js' | asset_url }}" defer="defer"></script>
+{%- endunless -%}
+
+<section class="c-home-hero {% if isDarkMode -%}is-dark-mode{%- endif %} is-hero-{{classSuffix}}" data-home-hero>
+  {%- comment -%} Section Images or Video {%- endcomment -%}
+  <div class="c-home-hero__container">
+    {%- if videoDesktop != blank -%}
+      {%-
+        render 'tool.video' with {
+        src: videoDesktop,
+        webm: videoDesktopWebm,
+        class: 'c-home-hero__video is-desktop',
+        }
+      -%}
+    {%- endif -%}
+
+    {%- if videoMobile != blank -%}
+      {%-
+        render 'tool.video' with {
+        src: videoMobile,
+        webm: videoMobileWebm,
+        class: 'c-home-hero__video is-mobile',
+        }
+      -%}
+    {%- endif -%}
+
+    {%- if videoMobile == blank or videoDesktop == blank -%}
+      <div class="c-home-hero__image-container">
+        <picture>
+          {%- if videoMobile == blank -%}
+            <source
+              media="(max-width: 749px)"
+              srcset="
+                                							{%- if imageMobile.width >= 320 -%}{{ imageMobile | image_url: width: 320 }} 320w,{%- endif -%}
+                                							{%- if imageMobile.width >= 375 -%}{{ imageMobile | image_url: width: 375 }} 375w,{%- endif -%}
+                                							{%- if imageMobile.width >= 640 -%}{{ imageMobile | image_url: width: 640 }} 640w,{%- endif -%}
+                                							{%- if imageMobile.width >= 750 -%}{{ imageMobile | image_url: width: 750 }} 750w,{%- endif -%}
+                                							{%- if imageMobile.width >= 960 -%}{{ imageMobile | image_url: width: 960 }} 960w,{%- endif -%}
+                                							{%- if imageMobile.width >= 1500 -%}{{ imageMobile | image_url: width: 1500 }} 1500w,{%- endif -%}
+                                							{%- if imageMobile.width >= 3000 -%}{{ imageMobile | image_url: width: 3000 }} 3000w,{%- endif -%}
+                                							{{ imageMobile | image_url }} {{ imageMobile.width }}w
+              "
+            >
+          {%- endif -%}
+          {%- if videoDesktop == blank -%}
+            <source
+              media="(min-width: 750px)"
+              srcset="
+                                							{%- if imageDesktop.width >= 750 -%}{{ imageDesktop | image_url: width: 750 }} 750w,{%- endif -%}
+                                							{%- if imageDesktop.width >= 1100 -%}{{ imageDesktop | image_url: width: 1100 }} 1100w,{%- endif -%}
+                                							{%- if imageDesktop.width >= 1500 -%}{{ imageDesktop | image_url: width: 1500 }} 1500w,{%- endif -%}
+                                							{%- if imageDesktop.width >= 2200 -%}{{ imageDesktop | image_url: width: 2200 }} 2200w,{%- endif -%}
+                                							{%- if imageDesktop.width >= 3000 -%}{{ imageDesktop | image_url: width: 3000 }} 3000w,{%- endif -%}
+                                							{%- if imageDesktop.width >= 3300 -%}{{ imageDesktop | image_url: width: 3300 }} 3300w,{%- endif -%}
+                                							{{ imageDesktop | image_url }} {{ imageDesktop.width }}w
+              "
+            >
+          {%- endif -%}
+          <img
+            loading="eager"
+            fetchpriority="high"
+            class="c-home-hero__image"
+            src="{{ imageMobile | image_url }}"
+            width="{{ imageMobile.width }}"
+            height="{{ imageMobile.height }}"
+            alt="Chris standing up holding his daughter Elva"
+          >
+        </picture>
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Section Content {%- endcomment -%}
+  <div class="c-home-hero__content is-position-{{ section.settings.s-overlay-position }}">
+    {% if title != blank %}
+      <h1 class="c-home-hero__title {{section.settings.title-size}}">
+        {{
+          title
+          | replace: '(', '<span class="is-color--tertiary">' | replace: ')', '</span>'
+          | replace: '[', '<span class="is-color--octonary">' | replace: ']', '</span>'
+        }}
+      </h1>
+    {% endif %}
+
+    {%- if subtitle != blank -%}
+      <p class="c-home-hero__subtitle ">
+        {{- subtitle | escape -}}
+      </p>
+    {%- endif -%}
+
+    {%- if hasCta or section.settings.scrollDown -%}
+      <div class="c-home-hero__buttons">
+        {% if hasCta -%}
+          <a
+            href="{{ ctaLink }}"
+            title="{{ ctaLabel | escape }}"
+            class="c-home-hero__btn o-btn is-secondary"
+          >
+            {{- ctaLabel | escape -}}
+          </a>
+        {%- endif -%}
+
+        {%- if caveat != blank -%}
+          <p class="c-home-hero__caveat o-type--4">
+            {{- caveat | escape -}}
+          </p>
+        {%- endif -%}
+
+        {%- if section.settings.scrollDown -%}
+          <button
+            type="button"
+            class="c-home-hero__scroll"
+            alt="{{ 'general.accessibility.scroll_down' | t }}"
+            data-home-hero-scroll
+          >
+            {%- render 'svg.arrow-down' -%}
+          </button>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Home Hero",
+  "class": "c-section c-section__home-hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Text & Button Content"
+    },
+    {
+      "id": "title",
+      "type": "textarea",
+      "label": "Section Title",
+      "info": "Basic font color is white. If you want to change color for title use () for ocean color and [] for phosphorescence color. Also you can use <br> elements to create line breaks between the different lines"
+    },
+    {
+      "type": "select",
+      "id": "title-size",
+      "label": "Title Size",
+      "options": [
+        {
+          "value": "o-heading--1",
+          "label": "Regular"
+        },
+        {
+          "value": "o-heading--3",
+          "label": "Medium"
+        },
+        {
+          "value": "o-heading--4",
+          "label": "Small"
+        }
+      ],
+      "default": "o-heading--1"
+    },
+    {
+      "id": "subtitle",
+      "type": "textarea",
+      "label": "Subtitle"
+    },
+    {
+      "id": "cta-link",
+      "type": "url",
+      "label": "CTA Link"
+    },
+    {
+      "id": "cta-label",
+      "type": "text",
+      "label": "CTA Label",
+      "info": "Leave blank to hide the CTA button."
+    },
+    {
+      "id": "caveat",
+      "type": "textarea",
+      "label": "Caveat Text"
+    },
+    {
+      "type": "select",
+      "id": "s-overlay-position",
+      "label": "Overlay Position - Desktop",
+      "info": "Where would you like the content to be positioned on larger screens?",
+      "options": [
+        {
+          "value": "middle-left",
+          "label": "Left"
+        },
+        {
+          "value": "middle-center",
+          "label": "Centre"
+        },
+        {
+          "value": "middle-right",
+          "label": "Right"
+        }
+      ],
+      "default": "middle-center"
+    },
+    {
+      "type": "checkbox",
+      "id": "scrollDown",
+      "label": "Enable Scroll Down",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "id": "image--desktop",
+      "type": "image_picker",
+      "label": "Image - Desktop",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 1:0.7 e.g. 2000x1400px."
+    },
+    {
+      "id": "image--mobile",
+      "type": "image_picker",
+      "label": "Image - Mobile",
+      "info": "Please upload in .jpg format. Recommended ratio approx 1:2 e.g. 1500x3000px"
+    },
+    {
+      "type": "text",
+      "id": "video-desktop",
+      "info": "Videos can be uploaded via 'Settings'>'Files'>'Upload files'. Maximum file size is 20MB. Please try to keep the file size under 2MB. Videos will be muted.",
+      "label": "Video autoplay - Desktop (mp4)"
+    },
+    {
+      "type": "text",
+      "id": "video-desktop-webm",
+      "info": "Videos can be uploaded via 'Settings'>'Files'>'Upload files'. Please try to keep the file size under 2MB.",
+      "label": "Video autoplay - Desktop (webM)"
+    },
+    {
+      "type": "text",
+      "id": "video-mobile",
+      "info": "Videos can be uploaded via 'Settings'>'Files'>'Upload files'. Please try to keep the file size under 2MB.",
+      "label": "Video autoplay - Mobile (mp4)"
+    },
+    {
+      "type": "text",
+      "id": "video-mobile-webm",
+      "info": "Videos can be uploaded via 'Settings'>'Files'>'Upload files'. Please try to keep the file size under 2MB.",
+      "label": "Video autoplay - Mobile (webM)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home Hero Section",
+      "category": "Content"
+    }
+  ]
+}
+{% endschema %}

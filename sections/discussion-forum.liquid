@@ -1,0 +1,154 @@
+{%- comment -%}
+  Discussion Forum Section
+
+  Version:
+    1.0.0 - 2022/01/15
+{%- endcomment -%}
+
+{%- liquid
+
+  assign ss = section.settings
+
+-%}
+
+
+{%- capture isSectionLocked -%}
+  {%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+
+{{ 'sections.discussion-forum.css' | asset_url | stylesheet_tag }}
+
+<section class="c-discussion-forum">
+  <div class="c-discussion-forum__inner">
+
+    <div class="c-discussion-forum__content">
+      {% if ss.pretitle != blank -%}
+        <div class="c-discussion-forum__pretitle o-heading--7">
+          {{- ss.pretitle | escape -}}
+        </div>
+      {%- endif -%}
+
+      {%- if ss.title != blank -%}
+        <h4 class="c-discussion-forum__title">
+          {{- ss.title | escape -}}
+        </h4>
+      {%- endif -%}
+
+      {%- if ss.text != blank -%}
+        <p class="c-discussion-forum__text">
+          {{- ss.text | escape -}}
+        </p>
+      {%- endif -%}
+
+      {%- if ss.buttonText != blank and ss.buttonLink != blank -%}
+        <a href="{{ss.buttonLink}}" class="c-discussion-forum__cta-btn o-btn is-primary is-desktop">
+          {{- ss.buttonText | escape -}}
+        </a>
+      {%- endif -%}
+
+    </div>
+
+
+    <div class="c-discussion-forum__topics-background">
+      {% if section.blocks.size > 0 %}
+      
+        <div class="c-discussion-forum__topics">
+          {% for post in section.blocks %}
+            {%- render 'object.discussion-topic-thumbnail', with {
+              class: 'c-discussion-forum__topic',
+              pretitle: post.settings.pretitle,
+              title: post.settings.title,
+              text: post.settings.text,
+              buttonText: post.settings.buttonText,
+              buttonLink: post.settings.buttonLink
+            } -%}
+          {% endfor %}
+        </div>
+      {% endif %}
+        
+
+      {%- if ss.buttonText != blank and ss.buttonLink != blank -%}
+        <a href="{{ss.buttonLink}}" class="c-discussion-forum__cta-btn o-btn is-primary is-mobile">
+          {{- ss.buttonText | escape -}}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+{% schema %}
+  {
+    "name": "Discussion Forum",
+    "class": "c-section c-section__discussion-forum",
+    "settings": [
+      {
+        "id": "pretitle",
+        "type": "text",
+        "label": "Pretitle"
+      },
+      {
+        "id": "title",
+        "type": "text",
+        "label": "Title"
+      },
+      {
+        "id": "text",
+        "type": "textarea",
+        "label": "Text"
+      },
+      {
+        "id": "buttonText",
+        "type": "text",
+        "label": "Button Text"
+      },
+      {
+        "id": "buttonLink",
+        "type": "url",
+        "label": "Button Link"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "forum-post",
+        "name": "Forum Post",
+        "settings": [
+          {
+            "id": "pretitle",
+            "type": "text",
+            "label": "Pretitle"
+          },
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Title"
+          },
+          {
+            "id": "text",
+            "type": "textarea",
+            "label": "Text"
+          },
+          {
+            "id": "buttonText",
+            "type": "text",
+            "label": "Button Text",
+            "default": "Read More"
+          },
+          {
+            "id": "buttonLink",
+            "type": "url",
+            "label": "Post URL"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Discussion Forum",
+        "category": "Content"
+      }
+    ]
+  }
+{% endschema %}

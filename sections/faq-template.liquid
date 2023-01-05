@@ -1,0 +1,300 @@
+{%- liquid
+
+  assign ss = section.settings
+  assign title = ss.title | default: page.title
+  assign mf = page.metafields.faq
+  assign questions = mf.question 
+  assign answers = mf.answer 
+  assign categories = mf.category
+  assign blockTypes = 'product|payment|delivery|returns' | split: '|'
+-%}
+
+{{ 'sections.faq-template.css' | asset_url | stylesheet_tag }}
+
+<section class="c-faq">
+
+  <div class="c-faq__header">
+    <div class="c-faq__header-inner">
+      <div class="c-faq__header-left-container">
+        {%- if ss.preTitle -%}
+          <p class="c-faq__pre-title o-heading--7">
+            {{- ss.preTitle | escape -}}
+          </p>
+        {%- endif -%}
+       
+        {%- if title -%}
+          <h1 class="c-faq__header-heading">
+            {{- title | escape -}}
+          </h1>
+        {%- endif -%}
+        
+        {%- if ss.text -%}
+          <p class="c-faq__text">
+            {{- ss.text | escape -}}
+          </p>
+        {%- endif -%}
+      </div>
+
+      {%- if ss.image -%}
+        <div class="c-faq__image-container">
+          {%- render 'tool.picture' with {
+            image: ss.image,
+            class: 'c-faq__image',
+            width: 595,
+            sizes: '375,1600',
+            imageSizes: '341,500'
+          } -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="c-faq__inner">
+    <div class="c-faq__main-container">
+
+      <div class="c-faq__categories">
+        <h6 class="c-faq__categories-heading">{{ss.categoryHeading | escape }}</h6>
+        
+        <div class="c-faq__categories-container">
+          <button class="c-faq__category is-active" data-category="product">
+            <div class="c-faq__category-icon">{{ss.productsIcon }}</div>
+            <div class="c-faq__category-name o-heading--7">
+              {{ss.productsLabel | escape }}
+            </div>
+          </button>
+          <button class="c-faq__category" data-category="payment">
+            <div class="c-faq__category-icon">{{ss.paymentIcon }}</div>
+            <div class="c-faq__category-name o-heading--7">
+              {{ss.paymentLabel | escape }}
+            </div>
+          </button>
+          <button class="c-faq__category" data-category="delivery">
+            <div class="c-faq__category-icon">{{ss.deliveryIcon }}</div>
+            <div class="c-faq__category-name o-heading--7">
+              {{ss.deliveryLabel | escape }}
+            </div>
+          </button>
+          <button class="c-faq__category" data-category="returns">
+            <div class="c-faq__category-icon">{{ss.returnsIcon }}</div>
+            <div class="c-faq__category-name o-heading--7">
+              {{ss.returnsLabel | escape }}
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {% for blockType in blockTypes %}
+        <div class="c-faq__accordion {% if forloop.first %} is-visible {% endif %}" data-accordion-container={{blockType}} data-no-expand>
+              
+          {% for question in questions %}
+            {% assign category = categories[forloop.index0] | downcase %}
+            
+            {% if category == blockType %}
+      
+              <div class="c-faq__accordion-slide" data-accordion-slide>
+                <div class="c-faq__accordion-slide-title o-heading--6" data-accordion-title>
+
+                  <span class="c-faq__accordion-slide-title-inner">
+                    {{- question | escape  -}}
+                  </span>
+
+                  {%- render 'object.icon' with {
+                    icon: 'plus',
+                    class: 'c-faq__accordion-slide-title-icon is-plus'
+                  } -%}
+                  {%- render 'object.icon' with {
+                    icon: 'minus',
+                    class: 'c-faq__accordion-slide-title-icon is-minus'
+                  } -%}
+                </div>
+                <div class="c-faq__accordion-slide-body" data-accordion-content>
+                  {{- answers[forloop.index0] -}}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="c-faq__contact">
+      {%- if ss.image1 -%}
+        <div class="c-faq__contact-image-container is-first">
+          {%- render 'tool.picture' with {
+            image: ss.image1,
+            class: 'c-faq__image',
+            width: 452,
+            sizes: '375,1600',
+            imageSizes: '295,400'
+          } -%}
+        </div>
+      {%- endif -%}
+      
+      <div class="c-faq__contact-content">
+        {%- if ss.contactHeading -%}
+          <h4 class="c-faq__contact-heading">
+            {{- ss.contactHeading -}}
+          </h4>
+        {%- endif -%}
+        
+        {%- if ss.contactText -%}
+          <p class="c-faq__contact-text">
+            {{- ss.contactText -}}
+          </p>
+        {%- endif -%}
+
+        {%- if ss.contactPageLink and ss.buttonText -%}
+          <a href="{{ss.contactPageLink}}" class="c-faq__contact-button o-btn is-primary">
+            {{- ss.buttonText | escape -}}
+          </a>
+        {%- endif -%}
+      </div>
+
+      {%- if ss.image2 -%}
+        <div class="c-faq__contact-image-container is-second">
+          {%- render 'tool.picture' with {
+            image: ss.image2,
+            class: 'c-faq__image',
+            width: 452,
+            sizes: '375,1600',
+            imageSizes: '295,400'
+          } -%}
+        </div>
+      {%- endif -%}
+      
+    </div>
+
+  </div>
+</section>
+
+{{ 'sections.faq-template.js' | asset_url | script_tag }}
+
+{% schema %}
+{
+  "name": "FAQ Template",
+  "class": "c-section c-section__faq-template",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Banner"
+    },
+    {
+      "type": "text",
+      "id": "preTitle",
+      "label": "Pre Title"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text"
+    },
+    {
+      "id": "image",
+      "type": "image_picker",
+      "label": "Image",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 1/1, at least 1190/1188px."
+    },
+    {
+      "type": "header",
+      "content": "Categories"
+    },
+    {
+      "label": "Category Heading",
+      "type": "text",
+      "id": "categoryHeading",
+      "default": "Choose category:"
+    },
+    {
+      "label": "Delivery Label",
+      "type": "text",
+      "id": "deliveryLabel",
+      "default": "Delivery"
+    },
+    {
+      "label": "Delivery Icon",
+      "type": "textarea",
+      "id": "deliveryIcon",
+      "info": "Paste SVG code into text area."
+    },
+    {
+      "label": "Products Label",
+      "type": "text",
+      "id": "productsLabel",
+      "default": "Products"
+    },
+    {
+      "label": "Products Icon",
+      "type": "textarea",
+      "id": "productsIcon",
+      "info": "Paste SVG code into text area."
+    },
+    {
+      "label": "Payment Label",
+      "type": "text",
+      "id": "paymentLabel",
+      "default": "Payment"
+    },
+    {
+      "label": "Payment Icon",
+      "type": "textarea",
+      "id": "paymentIcon",
+      "info": "Paste SVG code into text area."
+    },
+    {
+      "label": "Returns Label",
+      "type": "text",
+      "id": "returnsLabel",
+      "default": "Returns"
+    },
+    {
+      "label": "Returns Icon",
+      "type": "textarea",
+      "id": "returnsIcon",
+      "info": "Paste SVG code into text area."
+    },
+    {
+      "type": "header",
+      "content": "Contact Us Section"
+    },
+    {
+      "label": "Heading",
+      "type": "text",
+      "id": "contactHeading",
+      "default": "Get in touch with us"
+    },
+    {
+      "label": "Text",
+      "type": "textarea",
+      "id": "contactText"
+    },
+    {
+      "label": "Button Text",
+      "type": "text",
+      "id": "buttonText",
+      "default": "Contact us"
+    },
+    {
+      "label": "Contact Page",
+      "type": "page",
+      "id": "contactPageLink"
+    },
+    {
+      "label": "Image 1",
+      "id": "image1",
+      "type": "image_picker",
+      "info": "Please upload in .jpg format. Recommended ratio approx. .753/1, at least 904/1200px."
+    },
+    {
+      "label": "Image 2",
+      "id": "image2",
+      "type": "image_picker",
+      "info": "Please upload in .jpg format. Recommended ratio approx. .872/1, at least 900/1032px."
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,182 @@
+{%- comment -%}
+
+  Text And Image Section
+
+  Version:
+    1.0.0 - 2021/12/10
+
+{%- endcomment -%}
+
+{%- liquid
+
+  assign s = section.settings
+
+-%}
+
+{%- capture isSectionLocked -%}
+  {%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+
+  {%- if s.bgImage != blank -%}
+
+  {{ 'sections.text-and-image.css' | asset_url | stylesheet_tag }}
+  {{ 'sections.text-and-image.js' | asset_url | script_tag }}
+    
+    <section class="c-text-and-image is-{{s.image_aligment}} is-{{s.imageRatio}}" data-text-and-image>
+      <div class="c-text-and-image__double-image">
+        <div class="c-text-and-image__image-container o-responsive-image-container">
+          {%- render 'tool.picture' with {
+            image: s.bgImage,
+            class: 'c-text-and-image__double-image-background o-responsive-image',
+            width: 850,
+            sizes: '375,500,750,1350,1600',
+            imageSizes: '278,404,660,520,850',
+            lazy: true
+          } -%}
+        </div>
+
+        {% if s.overlayImage %}
+        
+          <div class="c-text-and-image__double-image-overlay-container
+          {% if s.overlayShape == 'circle' %}is-circle{% endif %}" data-image>
+            {%- liquid
+              assign clz = 'c-text-and-image__double-image-overlay'
+              if s.overlayShape == 'circle'
+                assign clz = clz | append: ' is-circle'
+              endif
+              render 'tool.picture' with { image: s.overlayImage, class: clz, width: 455, sizes: '375,1600', imageSizes: '160,455', lazy: true
+            -%}
+          </div>
+
+        {% endif %}
+      </div>
+
+      <div class="c-text-and-image__content-container" data-fade-up>
+        {% if s.preTitle != blank -%}
+          <div class="c-text-and-image__pre-title o-heading--7">
+            {{- s.preTitle | escape -}}
+          </div>
+        {%- endif -%}
+
+        {%- if s.subtitle != blank -%}
+          <span class="c-text-and-image__title-subtitle o-heading--7">
+            {{ s.subtitle | escape }}
+          </span>
+        {%- endif -%}
+
+        {%- if s.title != blank -%}
+          <h4 class="c-text-and-image__title">
+            {{- s.title | escape -}}
+          </h4>
+        {%- endif -%}
+
+        {%- if s.text != blank -%}
+          <p class="c-text-and-image__text">
+            {{- s.text | escape | newline_to_br -}}
+          </p>
+        {%- endif -%}
+
+        {%- if s.buttonText != blank and s.buttonLink != blank -%}
+          <a href="{{s.buttonLink}}" class="c-text-and-image__cta-btn o-link has-arrow">
+            {{- s.buttonText | escape -}}
+          </a>
+        {%- endif -%}
+      </div>
+    </section>
+
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+  {
+    "name": "Text & Image",
+    "class": "c-section c-section__text-and-image",
+    "settings": [
+      {
+        "id": "preTitle",
+        "type": "text",
+        "label": "Pre Title"
+      },
+      {
+        "id": "title",
+        "type": "text",
+        "label": "Title"
+      },
+      {
+        "id": "subtitle",
+        "type": "text",
+        "label": "Subtitle"
+      },
+      {
+        "id": "text",
+        "type": "textarea",
+        "label": "Text"
+      },
+      {
+        "id": "buttonText",
+        "type": "text",
+        "label": "Button Text"
+      },
+      {
+        "id": "buttonLink",
+        "type": "url",
+        "label": "Button Link"
+      },
+      {
+        "id": "bgImage",
+        "type": "image_picker",
+        "label": "Background Image",
+        "info": "Please upload in .jpg format. Recommended ratio approx. 1/1, at least 1700/1700."
+      },
+      {
+        "id": "overlayImage",
+        "type": "image_picker",
+        "label": "Overlay Image",
+        "info": "Please upload in .jpg format. Recommended ratio approx. 0.94/1, at least 1142/1216px."
+      },
+      {
+        "type": "radio",
+        "id": "image_aligment",
+        "label": "Image Alignment",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ]
+      },
+      {
+        "id": "imageRatio",
+        "type": "select",
+        "label": "Image Ratio",
+        "options": [
+          {"value": "square-ratio", "label": "Square - 1:1"},
+          {"value": "rectangle-ratio", "label": "Rectangle - 5:3"}
+        ],
+        "default": "square-ratio"
+      },
+      {
+        "id": "overlayShape",
+        "type": "select",
+        "label": "Overlay Shape",
+        "options": [
+          { "value": "rectangle", "label": "Rectangle" },
+          { "value": "circle", "label": "Circle" }
+        ],
+        "default": "rectangle"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Text & Image Section",
+        "category": "Content"
+      }
+    ]
+  }
+{% endschema %}

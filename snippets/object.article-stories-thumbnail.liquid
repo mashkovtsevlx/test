@@ -1,0 +1,50 @@
+{%- comment -%}
+  Article Stories Thumbnail
+
+  Version:
+    1.0.0 - 2021/12/23
+
+{%- endcomment -%}
+
+{%- liquid
+
+  assign learnMore = 'articles.learn_more' | t
+  
+  assign authorPrefix = 'articles.author_prefix' | t
+
+  assign articleAuthor = article.metafields.accentuate.article_author | default: article.author
+
+-%}
+
+{%- if article.url -%}
+  
+  <div class="o-article-stories-thumbnail {{ class -}}">
+
+    <a class="o-article-stories-thumbnail__article" href="{{- article.url -}}">
+
+      <h6 class="o-article-stories-thumbnail__article-title">
+        {{- article.title | escape -}}
+      </h6>
+
+      <p class="o-article-stories-thumbnail__article-author o-heading--7">
+        {{ authorPrefix | escape}} {{article.author | escape}}
+      </p>
+
+      <div class="o-article-stories-thumbnail__article-image-container o-responsive-image-container">
+        {%- render 'tool.picture' with {
+          image: article.image,
+          class: 'o-article-stories-thumbnail__article-image o-responsive-image',
+          width: 339,
+          sizes: '375,1600',
+          imageSizes: '193,339'
+        } -%}
+      </div>
+      
+      <span class="o-article-stories-thumbnail__article-btn o-link has-arrow">
+        {{- learnMore -}}
+      </span>
+    </a>
+
+  </div>
+
+{%- endif -%}

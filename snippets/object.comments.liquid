@@ -1,0 +1,127 @@
+{%- comment -%}
+  Article Comments
+    Snippet for displaying and creating new article comments.
+
+  Version
+    1.0.0 - 2021/12/13
+{%- endcomment -%}
+
+{%- if blog.comments_enabled? -%}
+
+<div class="o-comments">
+  <span class="o-comments__anchor" id="comments"></span>
+
+  <div class="o-comments__heading-wrapper">
+    <h4 class="o-comments__title">
+      {{- 'comments.comments_title' | t -}}
+    </h4>
+
+    <p class="o-comments__count">
+      {{ 'comments.comments_count' | t: count: article.comments_count }}
+    </p>
+  </div>
+
+  {%- if blogs.moderated? -%}
+      <p class="o-comments__notice">{{ 'comments.approval_notice' | t }}</p>
+  {%- endif -%}
+
+  <span class="o-comments__anchor" id="comment_form"></span>
+
+  {%- form 'new_comment', article, class: 'o-comments__new-comment', id: '' -%}
+    {%- if form.posted_successfully? -%}
+      <p class="o-comments__alert o-comments__alert--success">
+        {%- if blogs.moderated? -%}
+          {{- 'comments.success_moderated' | t -}}
+        {%- else -%}
+          {{- 'comments.success' | t -}}
+        {%- endif -%}
+      </p>
+    {%- endif -%}
+
+    <span class="o-comments__anchor" id="comment_form"></span>
+
+    {%- if form.errors -%}
+      <div class="o-comments__alert o-comments__alert--error">
+        <ul class="o-comments__error-list">
+          {%- for field in form.errors -%}
+            {%- if field == 'form' -%}
+              <li class="o-comments__error-item">
+                {{- form.errors.messages[field] -}}
+              </li>
+            {%- else -%}
+              <li class="o-comments__error-item">
+                <strong>{{ form.errors.translated_fields[field] }}</strong> {{ form.errors.messages[field] }}
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+
+    <div class="o-comments__inputs-group">
+      <input
+        type="hidden"
+        name="comment[author]"
+        class="o-comments__input"
+        placeholder="{{ 'comments.name_placeholder' | t }}"
+        value="{{ form.author | escape | default: customer.name }}"
+        required>
+
+      <input
+        type="hidden"
+        name="comment[email]"
+        class="o-comments__input"
+        placeholder="{{ 'comments.email_placeholder' | t }}"
+        value="{{ form.email | escape | default: customer.email }}"
+        required>
+
+      <textarea
+        data-comment-rows
+        name="comment[body]"
+        rows="1"
+        class="o-comments__input"
+        placeholder="{{ 'comments.comment_placeholder' | t }}"
+        required>
+          {{- form.body -}}
+        </textarea>
+      </div>
+
+    <button type="submit" class="o-comments__submit o-btn is-primary">
+      {{- 'comments.submit' | t -}}
+    </button>
+  {%- endform -%}
+
+    <div class="o-comments__posted">
+      {%- if article.comments.size > 0 -%}
+        <div class="o-comments__comments-list">
+          {%- paginate article.comments by 25 -%}
+            {%- for comment in article.comments -%}
+              <div class="o-comments__comment">
+
+                <div class="o-comments__comment-wrapper">
+                  <span class="o-comments__comment-author">
+                    {{- comment.author -}}
+                  </span>
+                  <span class="o-comments__comment-date">
+                    {{ comment.created_at | date: "%b %d, %Y" }}
+                  </span>
+                </div>
+                <div class="o-comments__comment-body">
+                  {{ comment.content }}
+                </div>
+
+              </div>
+            {%- endfor -%}
+
+            {%- comment -%} Pagination {%- endcomment -%}
+            {%- render 'object.pagination' with {
+              paginate: paginate,
+              hash: '#comments'
+            }-%}
+          {%- endpaginate -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+{%- endif -%}

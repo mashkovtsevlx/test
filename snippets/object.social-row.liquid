@@ -1,0 +1,55 @@
+{% comment %}
+  Social Icon Row
+    Row of social media icons with links to their relative pages.
+    Links defined in Settings Schema
+
+  Version:
+    1.0.0 - 2021/05/18
+{% endcomment %}
+
+{%- liquid
+  assign facebook = settings.facebook_link
+  assign instagram = settings.instagram_link
+  assign youtube = settings.youtube_link
+  assign tiktok = settings.tiktok_link
+-%}
+
+{%- if facebook != blank or instagram != blank or youtube != blank or tiktok != blank -%}
+
+  <div class="o-social-row {{class}}">
+
+    {%- if facebook != blank -%}
+      <a href="{{ facebook }}" class="o-social-row__link" target="_blank">
+        {%- render 'svg.facebook' with {
+          class: 'o-social-row__icon'
+        } -%}
+      </a>
+    {%- endif -%}
+
+    {%- if instagram != blank -%}
+      <a href="{{ instagram }}" class="o-social-row__link" target="_blank">
+        {%- render 'svg.instagram' with {
+          class: 'o-social-row__icon'
+        } -%}
+      </a>
+    {%- endif -%}
+
+    {%- if youtube != blank -%}
+      <a href="{{ youtube }}" class="o-social-row__link" target="_blank">
+        {%- render 'svg.youtube' with {
+          class: 'o-social-row__icon'
+        } -%}
+      </a>
+    {%- endif -%}
+
+    {%- if tiktok != blank -%}
+      <a href="{{ tiktok }}" class="o-social-row__link" target="_blank">
+        {%- render 'svg.tiktok' with {
+          class: 'o-social-row__icon'
+        } -%}
+      </a>
+    {%- endif -%}
+
+  </div>
+
+{%- endif -%}

@@ -1,0 +1,101 @@
+{%- comment -%}
+  Article Ask Derm Template
+
+  Version:
+    1.0.0 - 2022/01/25
+{%- endcomment -%}
+
+{%- liquid
+  assign pretitle = 'pages.ask-derm.live_pretitle' | t
+
+  assign imageDesktop = article.metafields.accentuate.desktopImage
+  assign imageMobile = article.metafields.accentuate.mobileImage
+
+  if imageMobile == blank
+    assign imageMobile = imageDesktop
+  endif
+
+  assign alternativeTitle = article.metafields.accentuate.diary_title
+
+  assign VideoUrl = article.metafields.accentuate.video_url
+
+  assign askDermBlog = blogs[section.settings.askDermBlog]
+
+-%}
+
+
+{%- if imageDesktop != blank -%}
+
+{{ 'sections.article-ask-derm-template.css' | asset_url | stylesheet_tag }}
+{{ 'sections.article-ask-derm-template.js' | asset_url | script_tag }}
+  
+
+<section class="c-article-ask-derm">
+  <div class="c-article-ask-derm__header-background">
+  </div>
+  <div class="c-article-ask-derm__inner">
+
+    <div class="c-article-ask-derm__wrapper" data-lity data-lity-target="{{- VideoUrl -}}">
+      <div class="c-article-ask-derm__image-container o-responsive-image-container
+        {% if imageMobile == blank %} has-desktop-only {% endif %}">
+        
+        {%- render 'tool.picture' with {
+          image: imageMobile,
+          class: 'c-article-ask-derm__image o-responsive-image is-mobile'
+          width: 750,
+          sizes: '374,750'
+        } -%}
+        
+        {%- render 'tool.picture' with {
+          image: imageDesktop,
+          class: 'c-article-ask-derm__image o-responsive-image is-desktop'
+          width: 2560,
+          sizes: '374,750,1100,1650,2000'
+        } -%}
+      </div>
+        
+      <div class="c-article-ask-derm__content">
+
+        {%- if pretitle != blank -%}
+          <p class="c-article-ask-derm__pretitle o-heading--7">
+          {{- pretitle | escape -}}
+          </p>
+        {%- endif -%}
+ 
+        {%- if alternativeTitle != blank -%}
+          <h1 class="c-article-ask-derm__title">
+            {{- alternativeTitle | escape -}}
+          </h1>
+        {%- endif -%}
+
+        <button class="c-article-ask-derm__play-button">
+          {%- render 'svg.play-button' -%}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Article Comments {%- endcomment -%}
+  <div class="c-article-ask-derm__comments">
+
+  {%- render 'object.comments', article: article, blog: askDermBlog -%}
+  
+  </div>
+
+</section>
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Ask Derm Article",
+  "class": "c-section c-section__ask-derm-article",
+  "settings": [
+    {
+      "type": "blog",
+      "id": "askDermBlog",
+      "label": "Ask Derm Blog"
+    }
+  ]
+}
+{% endschema %}

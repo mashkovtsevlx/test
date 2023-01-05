@@ -1,0 +1,134 @@
+{% comment %}
+  Register Form
+    Simple Register Form
+
+  Dependencies:
+    styles/objects/_form.scss
+    styles/objects/_buttons.scss
+
+  Version:
+    1.0.0 - 2018/02/21
+
+{% endcomment %}
+<div class="c-register-form">
+  <p class="c-register-form__pretitle">
+    {{- 'customer.register.pretitle' | t -}}
+  </p>
+  <h3 class="o-heading is-size-3 is-light c-register-form__title">
+    {{- 'customer.register.title' | t -}}
+  </h3>
+
+  {%- form 'create_customer' -%}
+    {%- if form.errors -%}
+      <div class="o-form__errors c-register-form__form-errors">
+        {{form.errors | default_errors }}
+      </div>
+    {%- endif -%}
+
+    {% comment %}First Name{% endcomment %}
+    {%-assign input_name = 'first_name'-%}
+    <div class="o-form__input-group {%if form.errors contains input_name%}has-error{%endif%}">
+      <label class="o-form__label" for="customer[{{ input_name }}]">
+        {{ 'customer.register.' | append: input_name | t }}
+      </label>
+      <input
+        type="text"
+        placeholder="{{'customer.register.' | append: input_name | t}}"
+        name="customer[{{ input_name }}]"
+        class="
+          o-input
+          is-large
+          {%if form.errors contains input_name%}has-error{%endif%}
+        "
+        value="{%if form[input_name]%}{{ form[input_name] }}{%endif%}"
+        required
+        spellcheck="false"
+      />
+    </div>
+
+
+    {% comment %} Last Name {% endcomment %}
+    {%-assign input_name = 'last_name'-%}
+    <div class="o-form__input-group {%if form.errors contains input_name%}has-error{%endif%}">
+      <label class="o-form__label" for="customer[{{ input_name }}]">
+        {{ 'customer.register.' | append: input_name | t }}
+      </label>
+      <input
+        type="text"
+        placeholder="{{'customer.register.' | append: input_name | t}}"
+        name="customer[{{ input_name }}]"
+        class="
+          o-input
+          is-large
+          {%if form.errors contains input_name%}has-error{%endif%}
+        "
+        value="{%if form[input_name]%}{{ form[input_name] }}{%endif%}"
+        required
+        spellcheck="false"
+      />
+    </div>
+
+
+    {% comment %}Email{% endcomment %}
+    {%-assign input_name = 'email'-%}
+    <div class="o-form__input-group {%if form.errors contains input_name%}has-error{%endif%}">
+      <label class="o-form__label" for="customer[{{ input_name }}]">
+        {{ 'customer.register.' | append: input_name | t }}
+      </label>
+      <input
+        type="email"
+        placeholder="{{'customer.register.' | append: input_name | t}}"
+        name="customer[{{ input_name }}]"
+        class="
+          o-input
+          is-large
+          {%if form.errors contains input_name%}has-error{%endif%}
+        "
+        value="{%if form[input_name]%}{{ form[input_name] }}{%endif%}"
+        required
+        spellcheck="false"
+        autocomplete="off"
+        autocapitalize=-"off"
+      />
+    </div>
+
+
+    {% comment %}Password{% endcomment %}
+    {%-assign input_name = 'password'-%}
+    <div class="o-form__input-group {%if form.errors contains input_name%}has-error{%endif%}">
+      <label class="o-form__label" for="customer[{{ input_name }}]">
+        {{ 'customer.register.' | append: input_name | t }}
+      </label>
+      <input
+        type="password"
+        placeholder="{{'customer.register.' | append: input_name | t}}"
+        name="customer[{{ input_name }}]"
+        class="
+          o-input
+          is-large
+          {%if form.errors contains input_name%}has-error{%endif%}
+        "
+        value="{%if form[input_name]%}{{ form[input_name] }}{%endif%}"
+        required
+        spellcheck="false"
+        autocomplete="off"
+        autocapitalize=-"off"
+      />
+    </div>
+
+    {%- comment -%} Are we coming from the loyalty page? If so, create redirect {%- endcomment -%}
+    <div class="c-login-register__form-redirect" data-login-register-redirect>
+    </div>
+
+    <button type="submit" class="o-btn is-primary">
+      {{ 'customer.register.submit' | t}}
+    </button>
+
+    {% comment %}
+    <a href="/" class="o-btn">
+      {{ 'customer.register.cancel' | t}}
+    </a>
+    {% endcomment %}
+  {%-endform-%}
+</div>
+{%-assign form = nil-%}

@@ -1,0 +1,139 @@
+{% comment %}
+  Science Ingredients
+    Displays content on the left with some filter options and a swappable
+    image ont eh right.
+
+  Version:
+    1.0.0 - 21/09/24
+{% endcomment %}
+{{ 'sections.science-ingredients.css' | asset_url | stylesheet_tag }}
+
+<section class="c-ingredients" data-ingredients>
+  <div class="c-ingredients__right">
+    {%- if section.settings.background != blank -%}
+      {%- render 'tool.picture' with {
+        class: 'c-ingredients__right-background',
+        image: section.settings.background,
+        width: 800
+      } -%}
+    {%- endif -%}
+
+    {%- if section.settings.icon != blank -%}
+      <div class="c-ingredients__right-icon">
+        {{- section.settings.icon -}}
+      </div>
+    {%- endif -%}
+  </div>
+
+  <div class="c-ingredients__left">
+    <div class="c-ingredients__titles">
+      {%- if section.settings.pretitle != blank -%}
+        <span class="c-ingredients__titles-pre o-heading--7">
+          {{- section.settings.pretitle | escape -}}
+        </span>
+      {%- endif -%}
+
+      {%- if section.settings.title != blank -%}
+        <span class="c-ingredients__titles-main o-heading--4">
+          {{- section.settings.title | escape -}}
+        </span>
+      {%- endif -%}
+    </div>
+
+    <div class="c-ingredients__items" data-ingredients-tabs>
+      {%- for block in section.blocks -%}
+        <div class="c-ingredients__item {% if forloop.first %}is-large{% endif %}" data-ingredients-item>
+          <div class="c-ingredients__item-icon">
+            {{- block.settings.icon -}}
+          </div>
+          <span class="c-ingredients__item-title">
+            {{- block.settings.title | escape -}}
+          </span>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <div class="c-ingredients__content">
+      {%- for block in section.blocks -%}
+        <div class="c-ingredients__content-item {% if forloop.first %}is-active{% endif %}" data-ingredients-content>
+          <span class="c-ingredients__content-title o-heading--6">
+            {{- block.settings.contentTitle | escape -}}
+          </span>
+          <p class="c-ingredients__content-body">
+            {{- block.settings.content | escape | newline_to_br -}}
+          </p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{{ 'sections.science-ingredients.js' | asset_url | script_tag }}
+
+{% schema %}
+  {
+    "name": "Science Ingredients",
+    "max_blocks": 4,
+    "class": "c-section c-section__science-ingredients",
+    "settings": [
+      {
+        "type": "text",
+        "id": "pretitle",
+        "label": "Pretitle",
+        "default": "The Magic Ingredient"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Title",
+        "default": "5-Beta Scymnol"
+      },
+      {
+        "type": "image_picker",
+        "id": "background",
+        "label": "Background"
+      },
+      {
+        "type": "textarea",
+        "id": "icon",
+        "label": "Icon"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "icon",
+        "name": "Icon",
+        "settings": [
+          {
+            "type": "textarea",
+            "id": "icon",
+            "label": "Icon"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Potent"
+          },
+          {
+            "type": "text",
+            "id": "contentTitle",
+            "label": "Content Title",
+            "default": "Potentancy"
+          },
+          {
+            "type": "textarea",
+            "id": "content",
+            "label": "Content Body"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Science Ingredients",
+        "category": "Content"
+      }
+    ]
+  }
+{% endschema %}

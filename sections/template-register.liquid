@@ -1,0 +1,65 @@
+{%- comment -%}
+  Register Template
+
+  Version:
+    1.0.0 - 2019/06/24
+{%- endcomment -%}
+
+{{ 'sections.login-template.css' | asset_url | stylesheet_tag }}
+{{ 'sections.login.css' | asset_url | stylesheet_tag }}
+{{ 'sections.account-template.css' | asset_url | stylesheet_tag }}
+{{ 'sections.account-page.css' | asset_url | stylesheet_tag }}
+
+<section class="c-login-template c-account">
+  <div class="c-account__header">
+    <div class="c-account__header-inner">
+    </div>
+  </div>
+  <div class="c-account__inner">
+
+    <section class="c-login-register__form-container is-error-form">
+      {%- form 'customer_login' -%}
+        {%- if form.errors -%}
+          <div class="o-form__errors c-login-register__errors">
+            {{- form.errors | default_errors -}}
+          </div>
+        {%- endif -%}
+      {%- endform -%}
+    </section>
+  
+    {%- comment -%} Register Section {%- endcomment -%}
+    <section class="c-login-register__form-container is-register">
+      {%- render 'form.register', 
+      class: 'c-login-register__form' ,
+      copy: section.settings.copy
+      -%}
+
+      {%- comment -%} Link to login page {%- endcomment -%}
+      <div class="c-login-register__toggle-wrapper">
+        <a class="c-login-register__login-toggle" href="{{routes.account_login_url}}">
+          {{'customer.login.returning_customer' | t -}}
+        </a>
+      </div>
+    </section>
+  
+  </div>
+</section>
+
+
+{{ 'sections.account-page.js' | asset_url | script_tag }}
+
+{% schema %}
+{
+  "name": "Customer Registration",
+  "settings": [
+   
+    {
+      "type": "textarea",
+      "id": "copy",
+      "label": "Copy underneath the title",
+      "default": "To get access to your free 6-week program you must make a purchase on site first. "
+    }
+    
+  ]
+}
+{% endschema %}

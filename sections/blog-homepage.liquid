@@ -1,0 +1,203 @@
+
+{%- liquid
+  assign ss = section.settings
+  assign title = ss.title
+  
+  assign blogTags = ss.blog.all_tags
+  assign headerArticle = ss.blog.articles[0]
+  assign headerArticleMf = headerArticle.metafields.accentuate
+
+  assign mobileImage = headerArticleMf.mobileImage
+  assign desktopImage = headerArticleMf.desktopImage
+
+  assign articleAuthor = headerArticle.metafields.accentuate.article_author | default: headerArticle.author
+  assign learnMore = 'articles.read_now_link' | t
+
+-%}
+
+{{ 'sections.blog-template.css' | asset_url | stylesheet_tag }}
+
+<section class="c-blog c-blog--homepage">
+
+  <div class="c-blog__image">
+    <div class="c-blog__image-background-container o-responsive-image-container">
+      {%- render 'tool.picture' with {
+        image: ss.bgImage,
+        class: 'c-blog__image-background o-responsive-image',
+        width: 850,
+        sizes: '375,1600',
+        imageSizes: '295,850',
+        lazy: true
+      } -%}
+    </div>
+
+    {%- if ss.overlayImage != blank -%}
+      <div class="c-blog__image-overlay-container">
+        {%- render 'tool.picture' with {
+          image: ss.overlayImage,
+          class: 'c-blog__image-overlay',
+          width: 455,
+          sizes: '375,1600',
+          imageSizes: '160,455',
+          lazy: true
+        } -%}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="c-blog__inner">
+    <h4 class="c-blog__heading">
+      {{- title | escape -}}
+    </h4>
+
+    {%- if blogTags.size > 0 and ss.hide-categories == false %}
+      <div class="c-blog__tags o-heading--5">
+        
+        <div class="c-blog__tags-container" data-blog-tags-container>
+          <div class="c-blog__filter-btn-container">
+            <a href="/blogs/{{ ss.blog.handle }}" class="c-blog__filter-btn is-selected" data-blog-tag-button>
+              <div class="c-blog__filter__btn-text">
+              <span class="c-blog__filter-btn-text-span o-heading--7">{{- 'blog.all_tags' | t -}}</span>
+              </div>
+            </a>
+          </div>
+
+          {%- for tag in blogTags -%}
+            <div class="c-blog__filter-btn-container">
+              <a href="/blogs/{{ ss.blog.handle }}/tagged/{{tag | handle }}" class="c-blog__filter-btn" data-blog-tag-button>
+                <div class="c-blog__filter__btn-text">
+                  <span class="c-blog__filter-btn-text-span o-heading--7">{{- tag -}}</span>
+                </div>
+              </a>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    <div class="c-blog__articles-slider" data-home-blog-slider>
+      <div class="c-blog__articles" data-slides-container>
+
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign blogArticleHandle = block.settings.article
+            assign article = articles[blogArticleHandle]
+          -%}
+          <a href="{{article.url}}" class="c-blog__article"
+             data-slider-slide
+             data-home-blog-slider-item>
+            <p class="c-blog__article-tags o-heading--7">
+              {%- for tag in article.tags -%}
+                <span class="c-blog__article-tag">
+                {{tag}}
+              </span>
+              {%- endfor -%}
+            </p>
+            <h6 class="c-blog__article-title">
+              {{article.title | escape}}
+            </h6>
+
+            <p class="c-blog__article-author o-heading--7">
+              {{ss.authorPrefix | escape}} {{article.author | escape}}
+            </p>
+            <div class="c-blog__article-image-container o-responsive-image-container">
+              {%- render 'tool.picture' with {
+              image: article.image,
+              class: 'c-blog__article-image o-responsive-image',
+              width: 339,
+              sizes: '375,1600',
+              imageSizes: '193,339'
+              } -%}
+            </div>
+
+            <span class="c-blog__article-cta o-link has-arrow">
+              {{- learnMore -}}
+            </span>
+          </a>
+          {%- capture carouselDots -%}
+            {{- carouselDots -}}
+
+            <div class="c-blog__articles-slider__dot" data-carousel-dot data-dot-index="{{forloop.index}}"></div>
+          {%- endcapture -%}
+        {%- endfor -%}
+      </div>
+      {%- if ss.blog.size > 1 -%}
+        <div class="c-blog__articles-slider__dots" data-carousel-dots>
+          {{- carouselDots -}}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="c-blog__view-btn-container">
+      <a href="/blogs/{{ ss.blog.handle }}" class="c-blog__view-btn o-btn is-secondary">
+        {{- 'blog.view_all' | t -}}
+      </a>
+    </div>
+  </div>
+</section>
+
+{{ 'sections.blog-template.js' | asset_url | script_tag }}
+
+{% schema %}
+  {
+    "name": "Blog Template",
+    "class": "c-section c-section__blog",
+    "settings": [
+      {
+        "id": "title",
+        "type": "text",
+        "label": "Title",
+        "default": "Our Blog"
+      },
+      {
+        "id": "bgImage",
+        "type": "image_picker",
+        "label": "Background Image",
+        "info": "Please upload in .jpg format. Recommended ratio approx. 0.97/1, at least 1700/1760."
+      },
+      {
+        "id": "overlayImage",
+        "type": "image_picker",
+        "label": "Overlay Image",
+        "info": "Please upload in .jpg format. Recommended ratio approx. 0.75/1, at least 1700/1760px."
+      },
+      {
+        "type": "blog",
+        "id": "blog",
+        "label": "Blog"
+      },
+      {
+        "id": "authorPrefix",
+        "type": "text",
+        "label": "Author Pefix",
+        "default": "By"
+      },
+      {
+        "type": "checkbox",
+        "id": "hide-categories",
+        "label": "Hide categories menu",
+        "default": false
+      }
+    ],
+    "blocks": [
+      {
+        "type": "articles",
+        "name": "Articles",
+        "limit": 3,
+        "settings": [
+          {
+            "id": "article",
+            "type": "article",
+            "label": "Article"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Blog Homepage",
+        "category": "Content"
+      }
+    ]
+  }
+{% endschema %}

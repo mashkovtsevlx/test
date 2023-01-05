@@ -1,0 +1,128 @@
+<!DOCTYPE HTML>
+<html class="js-unavailable" lang="{{ shop.locale }}">
+  <head>
+    {%- render 'tool.head-tags' -%}
+    {{ content_for_header }}
+
+    {%- render 'tool.skin-within' -%}
+
+    <!-- Google Optimize Code -->
+    <script async src="https://www.googleoptimize.com/optimize.js?id=OPT-WNJS375"></script>
+    <!-- End of Google Optimize Code -->
+
+    <!-- Hotjar Tracking Code for https://www.theskinshark.com.au -->
+    <script>
+      (function(h,o,t,j,a,r){
+          h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+          h._hjSettings={hjid:2953496,hjsv:6};
+          a=o.getElementsByTagName('head')[0];
+          r=o.createElement('script');r.async=1;
+          r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+          a.appendChild(r);
+      })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    </script>
+
+    
+    {% if template == 'page.okendo-reviews' %}
+      <script src="{{ 'okendo-dedicated-reviews.js' | asset_url }}" async></script>
+    {% endif %}
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-61YFSD1TPW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-61YFSD1TPW');
+</script>
+
+
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-212969829-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-212969829-1');
+</script>
+
+    
+  </head>
+
+  
+
+  <body class="c-page c-page--{{ template.name | handle }}" data-domain="{{ shop.permanent_domain }}">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-K8SVBH9"
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"
+      ></iframe
+    ></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    {%- comment -%} Accessibility skip link {%- endcomment -%}
+    <a class="u-visually-hidden" href="#MainContent">
+      {{- 'general.accessibility.skip_to_content' | t -}}
+    </a>
+
+    {%- comment -%} Entire Page Wrapper {%- endcomment -%}
+    <div class="c-page__wrapper">
+      <main role="main" class="o-main" id="MainContent">
+        {% assign pathClass = '' %}
+        {% if request.path contains '/policies/' %}
+          {% assign pathClass = 'is-policy' %}
+        {% endif %}
+        <div class="
+            o-main__wrapper is-wrap-{{ template.name | handle }}
+            {% if
+              template == 'page.contact' or
+              template == 'collection-list' or
+              template == 'collection' or
+              template == 'page.faq' or
+              template == 'blog' or
+              template == 'page.before-and-after' or
+              request.path contains '/policies/'
+            %}
+              has-inverted-header
+            {% endif %}
+            {{ pathClass }}
+          ">
+
+          {%- liquid
+            section 'announcement-bar'
+            if template.name == 'cart'
+              render 'logo-header'
+            else
+              section 'header'
+            endif
+          -%}
+
+          {{ content_for_layout }}
+          {%- comment -%}
+            {%- unless template.name contains 'cart' -%}
+              {%- section 'cart-drawer' -%}
+            {%- endunless -%}
+          {%- endcomment -%}
+
+          {%- section 'footer' -%}
+        </div>
+      </main>
+    </div>
+    {%- render 'tool.body-end-tags' -%}
+    {%- section 'ajax-cart' -%}
+    <!-- Gorgias Chat Widget Start -->
+    <script
+      id="gorgias-chat-widget-install-v2"
+      src="https://config.gorgias.chat/gorgias-chat-bundle-loader.js?applicationId=15304"
+    >
+    </script>
+    <script id="gorgias-chat-shopify-install">
+      !function(_){_.SHOPIFY_PERMANENT_DOMAIN="{{shop.permanent_domain}}",_.SHOPIFY_CUSTOMER_ID="{{customer.id}}",_.SHOPIFY_CUSTOMER_EMAIL="{{customer.email}}"}(window||{});
+    </script>
+    <!-- Gorgias Chat Widget End -->
+  </body>
+</html>

@@ -1,0 +1,119 @@
+{%- comment -%}
+		Before and after Section with Products
+
+			Version:
+		1.0.0 - 2022/02/21
+
+{%- endcomment -%}
+
+{%- liquid
+
+assign s = section.settings
+assign beforeAndAfterBlocks = section.blocks | where: 'type', 'beforeAndAfterBlock'
+
+-%}
+
+{{ 'sections.before-and-after.css' | asset_url | stylesheet_tag }}
+{{ 'sections.before-and-after-template.js' | asset_url | script_tag }}
+
+<section class="c-before-and-after">
+	<div class="c-before-and-after__inner">
+
+		{%- for item in beforeAndAfterBlocks -%}
+			{%- render 'before-and-after-item' with {
+			imageAligment: item.settings.image_aligment,
+			beforeImage: item.settings.imageBefore,
+			afterImage: item.settings.imageAfter,
+			beforeSubtitle: item.settings.imageSubtitleBefore,
+			afterSubtitle: item.settings.imageSubtitleAfter,
+			title: item.settings.title,
+			text: item.settings.text,
+			subtitle: item.settings.subtitle,
+			productLeft: item.settings.productLeft,
+			productRight: item.settings.productRight,
+			} -%}
+		{%- endfor -%}
+
+	</div>
+
+</section>
+
+{% schema %}
+{
+	"name": "Before&After with Prods",
+	"class": "c-section c-section__before-and-after",
+	"settings": [],
+	"blocks": [{
+		"type": "beforeAndAfterBlock",
+		"name": "Before and After Block",
+		"settings": [{
+				"type": "radio",
+				"id": "image_aligment",
+				"label": "Image Alignment",
+				"options": [{
+						"value": "left",
+						"label": "Left"
+					},
+					{
+						"value": "right",
+						"label": "Right"
+					}
+				]
+			},
+			{
+				"type": "image_picker",
+				"id": "imageBefore",
+				"label": "Before Image",
+				"info": "Please upload in .jpg format. Recommended size 810/1380px."
+			},
+			{
+				"type": "text",
+				"id": "imageSubtitleBefore",
+				"label": "Before Image Subtitle"
+			},
+			{
+				"type": "image_picker",
+				"id": "imageAfter",
+				"label": "After Image",
+				"info": "Please upload in .jpg format. Recommended size 810/1380px."
+			},
+			{
+				"type": "text",
+				"id": "imageSubtitleAfter",
+				"label": "After Image Subtitle"
+			},
+			{
+				"type": "text",
+				"id": "title",
+				"label": "Title"
+			},
+			{
+				"type": "text",
+				"id": "subtitle",
+				"label": "Subtitle"
+			},
+			{
+				"type": "textarea",
+				"id": "text",
+				"label": "Text"
+			},
+			{
+				"type": "product",
+				"id": "productLeft",
+				"label": "First Product",
+				"info": "Please select a single product. Note that bundles are not valid for this field."
+			},
+			{
+				"type": "product",
+				"id": "productRight",
+				"label": "Second Product",
+				"info": "Please select a single product. Note that bundles are not valid for this field."
+			}
+		]
+	}],
+	"presets": [{
+		"name": "Before&After with Prods",
+		"category": "Content"
+	}]
+}
+{% endschema %}

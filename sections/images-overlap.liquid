@@ -1,0 +1,119 @@
+{%- comment -%}
+  Images overlap section
+
+  Version:
+    1.0.0 - 2021/02/23
+{%- endcomment -%}
+
+{%- liquid 
+  assign s = section.settings
+-%}
+
+{%- capture isSectionLocked -%}
+{%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+
+{{ 'sections.images-overlap.css' | asset_url | stylesheet_tag }}
+
+  <section class="c-images-overlap" >
+
+    <div class="c-images-overlap__left" >
+      <div class="c-images-overlap__image-bg-wrap" >
+        {%- render 'tool.picture' with {
+          image: s.bgImage-1,
+          class: 'c-images-overlap__image-bg',
+          width: 750,
+          sizes: '375,500,750,1100,1350,1650',
+          imageSizes: '295,450,700,350,450,550 '
+        } -%}
+      </div>
+      {% if s.overlayImage-1 %}
+        
+        <div class="c-images-overlap__image-ol-wrap is-left" >
+          {%- render 'tool.picture' with {
+            image: s.overlayImage-1,
+            class: 'c-images-overlap__image-ol ',
+            width: 450,
+            sizes: '375,500,750,1100,1350,1650',
+            imageSizes: '150,220,350,170,220,270 '
+          } -%}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="c-images-overlap__right" >
+        <div class="c-images-overlap__image-bg-wrap" >
+          {%- render 'tool.picture' with {
+            image: s.bgImage-2,
+            class: 'c-images-overlap__image-bg',
+            width: 750,
+            sizes: '375,500,750,1100,1350,1650',
+            imageSizes: '295,450,700,350,450,550 '
+          } -%}
+        </div>
+        {% if s.overlayImage-2 %}
+          <div class="c-images-overlap__image-ol-wrap is-right" >
+            {%- render 'tool.picture' with {
+              image: s.overlayImage-2,
+              class: 'c-images-overlap__image-ol ',
+              width: 450,
+              sizes: '375,500,750,1100,1350,1650',
+              imageSizes: '150,220,350,170,220,270 '
+            } -%}
+          </div>
+        {% endif %}
+
+    </div>
+
+  </section>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Images Overlap",
+    "class": "c-section c-section__images-overlap",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Left side"
+      },
+      
+      {
+        "id": "bgImage-1",
+        "type": "image_picker",
+        "label": "Background Image",
+        "info": "Please upload in .jpg format. Recommended ratio approx. 0.7/1, at least 1400/2020."
+      },
+      {
+        "id": "overlayImage-1",
+        "type": "image_picker",
+        "label": "Overlay Image",
+        "info": "Please upload in .jpg format. Recommended ratio approx. 0.9/1.2, at least 910/1215px."
+      },
+      {
+        "type": "header",
+        "content": "Right side"
+      },
+      {
+        "id": "bgImage-2",
+        "type": "image_picker",
+        "label": "Background Image",
+        "info": "Please upload in .jpg format. Recommended ratio approx. 0.7/1, at least 1400/2020."
+      },
+      {
+        "id": "overlayImage-2",
+        "type": "image_picker",
+        "label": "Overlay Image",
+        "info": "Please upload in .jpg format. Recommended ratio approx. 0.9/1.2, at least 910/1215px."
+      }
+    ],
+    "presets": [
+      {
+        "name": "Images Overlap",
+        "category": "Content"
+      }
+    ]
+  }
+{% endschema %}

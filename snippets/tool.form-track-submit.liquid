@@ -1,0 +1,32 @@
+
+{%- comment -%}
+  Tool Form Track Submit
+    A tool that is designed to keep track of form submissions so that multiple
+    forms on the same page don't conflict.
+
+  Params:
+    form - The submitted form object
+    type - The form parameter type, e.g. customer[] would be customer
+    id - A unique id for the form that was submitted
+
+  Outputs (HTML Comments):
+    FORM_WAS_SUBMITTED - If this form was the form that was submitted
+    FORM_NOT_SUBMITTED - If this form was not submitted
+
+  Version:
+    1.0.0 - 2020/10/21
+{%- endcomment -%}
+
+{%- liquid
+  assign wasSubmitted = false
+  if form.formId == id
+    assign wasSubmitted = true
+    echo '<!-- FORM_WAS_SUBMITTED -->'
+  else
+    echo '<!-- FORM_NOT_SUBMITTED -->'
+  endif
+-%}
+
+<input type="hidden" name="{{ type }}[formId]" value="{{ id }}"
+  data-form-submit data-submitted="{{ wasSubmitted | escape }}"
+/>

@@ -1,0 +1,134 @@
+{%- capture isSectionLocked -%}
+  {%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+  {{ 'sections.image-and-text-double.css' | asset_url | stylesheet_tag }}
+  {%- liquid
+    assign ss = section.settings
+  -%}
+  {%- if section.blocks -%}
+    <section class="c-image-text-dbl" data-image-and-text-double>
+      <p class="c-image-text-dbl__pretitle o-heading--7" data-fade-up>
+        {{ ss.preTitle | escape }}
+      </p>
+      <h4 class="c-image-text-dbl__title" data-fade-up>
+        {{ ss.title | escape }}
+      </h4>
+
+      <div class="c-image-text-dbl__main-container">
+        <div class="c-image-text-dbl__background-image-container">
+          {%-
+            render 'tool.picture' with {
+            image: ss.backgroundImg,
+            class: 'c-image-text-dbl__background-image',
+            width: 1720,
+            sizes: '750,1100,1600',
+            imageSizes: '750,1100,1720',
+            lazy: true
+            }
+          -%}
+        </div>
+
+        {%- for block in section.blocks -%}
+          {%- assign bs = block.settings -%}
+          {% if bs.image == blank or bs.title == blank or bs.text == blank %}{% continue %}{% endif %}
+
+          <div class="c-image-text-dbl__image-wrapper is-image{{forloop.index}}" data-image>
+            <div class="c-image-text-dbl__image-container">
+              {%-
+                render 'tool.picture' with {
+                image: bs.image,
+                class: 'c-image-text-dbl__image',
+                width: 2000,
+                sizes: '750,1100,1600',
+                imageSizes: '354,1100,1600',
+                lazy: true
+                }
+              -%}
+            </div>
+          </div>
+          <div class="c-image-text-dbl__text-block text-block is-block{{forloop.index}}">
+            <p class="text-block__pre-title o-heading--7">{{ bs.preTitle | escape }}</p>
+            <h5 class="text-block__heading">{{ bs.title | escape }}</h5>
+            <p class="text-block__text">{{ bs.text | escape }}</p>
+            <a href="{{bs.link}}" class="text-block__link o-link has-arrow">{{ bs.linkText | escape }}</a>
+          </div>
+        {%- endfor -%}
+      </div>
+    </section>
+  {%- endif -%}
+
+  <script src="{{ 'sections.image-and-text-double.js' | asset_url }}" defer></script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Image and Text Double",
+  "class": "c-section c-section__image-and-text-double",
+  "settings": [
+    {
+      "id": "preTitle",
+      "type": "text",
+      "label": "Pre Title"
+    },
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Title"
+    },
+    {
+      "id": "backgroundImg",
+      "type": "image_picker",
+      "label": "Background Image",
+      "info": "Please upload image in .jpg format. Recommended ratio approx. 1.05/1, at least 3440/3285px."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "imageAndText",
+      "name": "Image and Text",
+      "limit": 2,
+      "settings": [
+        {
+          "id": "preTitle",
+          "type": "text",
+          "label": "Pre-title"
+        },
+        {
+          "id": "title",
+          "type": "text",
+          "label": "Title"
+        },
+        {
+          "id": "text",
+          "type": "textarea",
+          "label": "Text"
+        },
+        {
+          "id": "linkText",
+          "type": "text",
+          "label": "Link Text"
+        },
+        {
+          "id": "link",
+          "type": "url",
+          "label": "Link"
+        },
+        {
+          "id": "image",
+          "type": "image_picker",
+          "label": "Image",
+          "info": "Please upload in .jpg format. Recommended ratio approx. 1.127/1, at least 1690/1500px."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image and Text Double Section",
+      "category": "Content"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,138 @@
+{%- comment -%}
+  Weekly Challenge hero banner
+
+  Version:
+    1.0.0 - 2021/12/23
+{%- endcomment -%}
+
+{%- liquid
+
+  assign ss = section.settings
+
+  assign title = ss.title | default: page.title
+  assign content = ss.content  | escape
+
+  assign image = ss.image
+  assign mobileImage = image
+  if ss.image-mobile != blank
+    assign mobileImage = ss.image-mobile
+  endif
+
+  assign shareTransformation = 'pages.weekly_challenge.share_transformation' | t
+  assign hashtag = 'pages.weekly_challenge.hashtag' | t
+
+-%}
+
+{%- capture isSectionLocked -%}
+  {%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+
+{{ 'sections.weekly-challenge-hero.css' | asset_url | stylesheet_tag }}
+
+<section class="c-weekly-challenge-hero">
+  <div class="c-weekly-challenge-hero__header-background">
+  </div>
+
+  <div class="c-weekly-challenge-hero__inner">
+
+    <div class="c-weekly-challenge-hero__heading">
+
+      {%- if title != blank -%}
+        <h1 class="c-weekly-challenge-hero__title">
+          {{- title -}}
+        </h1>
+      {%- endif -%}
+
+      {%- if content -%}
+        <div class="c-weekly-challenge-hero__content is-desktop">
+          {{- content -}}
+        </div>
+      {%- endif -%}
+       
+    </div>
+    <div class="c-weekly-challenge-hero__images">
+      <div class="c-weekly-challenge-hero__image-wrapper">
+        <div class="c-weekly-challenge-hero__image-container o-responsive-image-container">
+          {%- render 'tool.picture' with {
+            image: image,
+            class: 'c-weekly-challenge-hero__image o-responsive-image is-desktop',
+            width: 1000,
+            sizes: '750,1350,1650',
+            imageSizes: '550,650,800'
+          } -%}
+
+          {%- render 'tool.picture' with {
+            image: mobileImage,
+            class: 'c-weekly-challenge-hero__image o-responsive-image is-mobile',
+            width: 375,
+            sizes: '375,500,750',
+            imageSizes: '341,450,700'
+          } -%}
+        </div>
+        <div class="c-weekly-challenge-hero__image-overlay">
+
+          <div class="c-weekly-challenge-hero__image-overlay-content">
+          {%- if shareTransformation != blank -%}
+            <h4 class="c-weekly-challenge-hero__image-overlay-title">
+              {{- shareTransformation-}}
+            </h4>
+          {%- endif -%}
+
+          {%- if hashtag != blank -%}
+            <h6 class="c-weekly-challenge-hero__image-overlay-subtitle">
+              {{- hashtag -}}
+            </h6>
+          {%- endif -%}
+        </div>
+          
+        </div>
+      </div>
+    </div>
+
+    {%- if content -%}
+      <div class="c-weekly-challenge-hero__content is-mobile">
+        {{- content -}}
+      </div>
+      {%- endif -%}
+  </div>
+
+</section>
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Weekly Challenge Hero",
+  "class": "c-section c-section__weekly-challenge-hero",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Banner"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    },
+    {
+      "type": "textarea",
+      "id": "content",
+      "label": "Content"
+    },
+    {
+      "id": "image",
+      "type": "image_picker",
+      "label": "Image (desktop)",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 1/1, at least 1190/1188px."
+    },
+    {
+      "id": "image-mobile",
+      "type": "image_picker",
+      "label": "Image (mobile)",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 1/1.3, at least 1500/2200px."
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,35 @@
+{%- comment -%}
+  Article Comments Section 
+
+  Version
+    1.0.0 - 2022/01/05
+{%- endcomment -%}
+
+{%- liquid
+
+  assign diariesBlog = blogs[section.settings.diariesBlog]
+
+-%}
+
+{{ 'sections.article-diaries-comments.css' | asset_url | stylesheet_tag }}
+
+<section class="c-article-diaries-comments">
+
+{%- comment -%} Article Comments {%- endcomment -%}
+  {%- render 'object.comments', article: article, blog: diariesBlog -%}
+
+</section>
+
+{% schema %}
+{
+  "name": "Dieries Article Comments",
+  "class": "c-section c-section__diaries-article-comments",
+  "settings": [
+    {
+      "type": "blog",
+      "id": "diariesBlog",
+      "label": "Diaries Blog"
+    }
+  ]
+}
+{% endschema %}

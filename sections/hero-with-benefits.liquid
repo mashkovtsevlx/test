@@ -1,0 +1,71 @@
+{%- comment -%}
+  Hero Banner with Benefits
+    Hero banner section with product images 
+
+  Version:
+    1.0.0 - 2022/02/21
+
+{%- endcomment -%}
+
+{{ 'sections.hero-with-benefits.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+
+  assign s = section.settings
+-%}
+
+{% capture benefits %}
+  <div class="c-hero-with-benefits__benefits">
+    {% for block in section.blocks %}
+      <div class="c-hero-with-benefits__benefits-item">
+        {%- render 'object.icon' with {
+          icon: 'check-w',
+          class: 'c-hero-with-benefits__benefits-item-icon',
+          width: 20,
+          height: 16
+        } -%}
+
+        {{ block.settings.benefit }}
+      </div>  
+    {% endfor %}
+  </div>
+{% endcapture %}
+
+<section class="c-hero-with-benefits">
+  <div class="c-hero-with-benefits__header">
+    <div class="c-hero-with-benefits__header-inner">
+
+      <h1 class="c-hero-with-benefits__header-heading">
+        {{- s.title | default: page.title | escape -}}
+      </h1>
+
+      {% if benefits != blank %}
+        {{ benefits }}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Hero with Benefits",
+    "class": "c-section c-section__hero-with-benefits",
+    "settings": [
+      {
+        "id": "title",
+        "type": "text",
+        "label": "Title"
+      }
+    ],
+    "blocks": [{
+      "type": "blocks",
+      "name": "Benefit",
+      "settings": [{
+        "type": "text",
+        "id": "benefit",
+        "label": "Benefit"
+      }
+      ]
+    }]
+  }
+{% endschema %}

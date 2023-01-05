@@ -1,0 +1,48 @@
+{%- comment -%}
+  Read more content
+    Reusable snippet performing the necessary checks for any read more/less
+    object.
+
+
+  Version:
+    1.0.0 - 2020/11/28
+{%- endcomment -%}
+
+{%- liquid 
+  assign contentSize = content | split: ' '
+  assign contentSize = contentSize.size
+-%}
+
+{%- if content.size > truncateCount -%}
+  {%- capture readMore -%}
+    <br/>
+    {%- render 'read-more-buttons' -%}
+  {%- endcapture -%}
+  <div class="{{ class }}-container o-read-more" data-read-more-container>
+    {%- if content contains '<p' -%}
+      <div class="{{ class }} o-read-more__content is-full">
+        {{- content -}}
+        {{- readMore -}}
+      </div>
+    {%- else -%}
+      <p class="{{ class }} o-read-more__content is-full">
+        {{- content -}}
+        {{- readMore -}}
+      </p>
+    {%- endif -%}
+    <p class="{{ class }} o-read-more__content is-less">
+      {{- content | strip_html | truncatewords: truncateCount, '... ' -}}
+      {{- readMore -}}
+    </p>
+  </div>
+{%- else -%}
+  {%- if content contains '<p' -%}
+    <div class="{{ class }}">
+      {{- content -}}
+    </div>
+  {%- else -%}
+    <p class="{{ class }}">
+      {{- content -}}
+    </p>
+  {%- endif -%}
+{%- endif -%}

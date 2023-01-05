@@ -1,0 +1,42 @@
+{% comment %}
+  Cart Shipping Bar
+
+  Params:
+    threshold - Threshold for the percentage bar (string in dollars)
+    notMet - Title to show when the threshold hasn't been met.
+    met - Title to show when the threshold has been met.
+    class - Class to add to the container.
+
+  Version:
+    1.0.0 - 2021/09/14
+{% endcomment %}
+{%- liquid
+  assign val = settings.shippingBarThreshold | times: 100
+  assign valRemaining = val | minus: cart.total_price
+  assign percComplete = cart.total_price | times: 100 | divided_by: val | at_most: 100
+
+  assign title = settings.shippingBarNotMet
+  if valRemaining <= 0
+    assign title = settings.shippingBarMet
+  endif
+
+  assign strMoney = valRemaining | money_with_currency
+  assign title = title | replace: '%amount%', strMoney
+-%}
+<div class="{{ class }} o-shipping-progress" data-shipping-bar>
+  <p class="o-heading--7 o-shipping-progress__title" data-shipping-bar-title>
+    {{- title | escape -}}
+  </p>
+
+  <div class="o-shipping-progress__bar">
+    <div class="o-shipping-progress__bar-inner" style="width:{{ percComplete }}%" data-shipping-bar-bar></div>
+  </div>
+
+  <script type="application/json" data-shipping-bar-data>
+    {
+      "shippingBarNotMet": {{- settings.shippingBarNotMet | json -}},
+      "shippingBarMet": {{- settings.shippingBarMet | json -}},
+      "shippingBarThreshold": {{- settings.shippingBarThreshold | json -}}
+    }
+  </script>
+</div>

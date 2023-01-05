@@ -1,0 +1,43 @@
+{%- comment -%}
+  Afterpay/Klarna
+  Afterpay and Klarna object
+
+  Params:
+    class - Class to be appended to afterpay object
+    page - PageDrop of page to have popup for, if blank no popup will be used.ll
+
+  Version:
+    1.0.0 - 2021/06/07
+{%- endcomment -%}
+
+{%- capture afterpay -%}
+  <a href="#afterpay-popup" class="o-afterpay__afterpay o-afterpay__link" data-lity>
+    {%-
+      render 'svg.afterpay' with {
+      class: 'o-afterpay__svg'
+      }
+    -%}
+  </a>
+{%- endcapture -%}
+
+{%- capture klarna -%}
+  <a href="#afterpay-popup" class="o-afterpay__klarna o-afterpay__link" data-lity>
+    {%-
+      render 'svg.klarna' with {
+      class: 'o-afterpay__svg'
+      }
+    -%}
+  </a>
+{%- endcapture -%}
+
+<div class="o-afterpay {{ class }}">
+  <p class="o-afterpay__text o-heading--7">
+    {{- 'products.product.afterpay_html' | t: afterpay: afterpay, klarna: klarna -}}
+  </p>
+
+  {%- if page.content != blank -%}
+    <div id="afterpay-popup" class="o-afterpay__popup lity-hide">
+      {{- page.content -}}
+    </div>
+  {%- endif -%}
+</div>

@@ -1,0 +1,154 @@
+{%- liquid  assign s = section.settings -%}
+
+{%- capture isSectionLocked -%}
+{%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+
+  {{ 'sections.featured-articles-slider.css' | asset_url | stylesheet_tag }}
+
+  {%- if section.blocks.size > 0 and s.bgImage != blank -%}
+    <section class="c-featured-articles-slider" data-featured-articles-slider>
+      
+      <div class="c-featured-articles-slider__double-image">
+        <div class="c-featured-articles-slider__double-image-background-container o-responsive-image-container">
+          {%- render 'tool.picture' with {
+            image: s.bgImage,
+            class: 'c-featured-articles-slider__double-image-background o-responsive-image',
+            width: 850,
+            sizes: '375,1600',
+            imageSizes: '295,850',
+            lazy: true
+          } -%}
+        </div>
+
+        {%- if s.overlayImage != blank -%}
+          <div class="c-featured-articles-slider__double-image-overlay-container">
+            {%- render 'tool.picture' with {
+              image: s.overlayImage,
+              class: 'c-featured-articles-slider__double-image-overlay',
+              width: 455,
+              sizes: '375,1600',
+              imageSizes: '160,455',
+              lazy: true
+            } -%}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="c-featured-articles-slider__content-container">
+
+        <div class="c-featured-articles-slider__title o-heading--7" data-fade-up>
+          {{s.title}}
+        </div>
+        <div class="c-featured-articles-slider__slides" data-slides-container>
+          
+          {%- comment -%} Slide loop {%- endcomment -%}
+          {%- for block in section.blocks -%}
+            {%- liquid 
+              assign blogArticleHandle = block.settings.article
+              assign article = articles[blogArticleHandle]
+            -%}
+            
+            <a href="/blogs/{{blogArticleHandle}}" class="c-featured-articles-slider__article" data-slide-index='{{forloop.index0}}'>
+
+              <h5 class="c-featured-articles-slider__article-title o-heading--6" data-fade-up>
+                {{article.title | escape}}
+              </h5>
+
+              <div class="c-featured-articles-slider__article-image-container o-responsive-image-container">
+                {%- render 'tool.picture' with {
+                  image: article.image,
+                  class: 'c-featured-articles-slider__article-image o-responsive-image',
+                  width: 339,
+                  sizes: '375,1600',
+                  imageSizes: '193,339',
+                  lazy: true
+                } -%}
+              </div>
+            </a>
+
+            {%- capture carouselDots -%}
+              {{- carouselDots -}}
+
+              <div class="c-featured-articles-slider__dot {% if forloop.index == 1 %} is-active{% endif %}" data-carousel-dot data-dot-index='{{forloop.index}}'></div>
+            {%- endcapture -%}
+          {%- endfor -%}
+        </div>
+
+        {%- if section.blocks.size > 1 -%}
+          <div class="c-featured-articles-slider__dots" data-carousel-dots>
+            {{- carouselDots -}}
+          </div>    
+        {%- endif -%}
+        {% if s.blog and s.buttonText %}
+          <a href={{s.blog.url}} class="c-featured-articles-slider__view-all-btn o-btn is-secondary">
+            {{s.buttonText}}
+          </a>
+        {% endif %}
+
+      </div>
+
+    </section>
+  {%- endif -%}
+
+  {{ 'sections.featured-articles-slider.js' | asset_url | script_tag }}
+{% endif %}
+    
+{% schema %}
+  {
+    "name": "Featured Articles Slider",
+    "class": "c-section c-section__featured-articles-slider",
+    "settings": [
+      {
+        "id": "title",
+        "type": "text",
+        "label": "Title",
+        "default": "Our Blog"
+      },
+      {
+        "id": "blog",
+        "type": "blog",
+        "label": "Featured Blog"
+      },
+      {
+        "id": "buttonText",
+        "type": "text",
+        "label": "Button Text"
+      },
+      {
+        "id": "bgImage",
+        "type": "image_picker",
+        "label": "Background Image",
+        "info": "Please upload in .jpg format. Recommended ratio approx. 0.97/1, at least 1700/1760."
+      },
+      {
+        "id": "overlayImage",
+        "type": "image_picker",
+        "label": "Overlay Image",
+        "info": "Please upload in .jpg format. Recommended ratio approx. 0.75/1, at least 1700/1760px."
+      }
+    ],
+    "blocks": [
+      {
+        "type": "articles",
+        "name": "Articles",
+        "limit": 3,
+        "settings": [
+          {
+            "id": "article",
+            "type": "article",
+            "label": "Article"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Featured Articles Slider Section",
+        "category": "Content"
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,60 @@
+{%- comment -%}
+  Contact Form
+    Simple Contact Form
+
+  Params
+    - namePlaceholder
+    - emailPlaceholder
+    - messagePlaceholder
+
+  Version:
+    1.0.0 - 2020/09/07
+{%- endcomment -%}
+
+{%- form 'contact', class: 'c-contact__form', id: 'contact-us' -%}
+
+  {%- if form.posted_successfully? -%}
+    {%- comment -%} Success Messaging {%- endcomment -%}
+    <p class="c-contact__form-success">
+      {{- 'contact.form.form_successful' | t -}}
+    </p>
+  {%- else -%}
+  
+    {%- if form.errors != blank -%}
+      <div class="c-contact__form-errors" data-contact-errors>
+        {{- form.errors | default_errors -}}
+      </div>
+    {%- endif -%}
+    <input 
+      type="text" 
+      name="contact[name]"
+      class="c-contact__form-field o-input"
+      required
+      data-contact-input
+      placeholder="{{- 'contact.form.name' | t -}}"
+    >
+    <input 
+      type="text" 
+      name="contact[email]"
+      class="c-contact__form-field o-input"
+      required
+      data-contact-input
+      placeholder="{{- 'contact.form.email' | t -}}"
+    >
+    <textarea
+      type="textarea"
+      name="contact[message]"
+      class="c-contact__form-field o-input is-textarea"
+      required
+      data-contact-input
+      placeholder="{{- 'contact.form.message' | t -}}"
+      value="{%- if form[message] -%}{{- form[message] -}}{%- endif -%}"
+    ></textarea>
+
+    <button type="submit" class="c-contact__form-submit o-btn is-tertiary">
+      {{- 'contact.form.submit' | t -}}
+    </button>
+    
+  {%- endif -%}
+{%- endform -%}
+

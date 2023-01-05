@@ -1,0 +1,114 @@
+{% comment %}
+  Featured Articles Grid
+
+  Version:
+    1.0.0 - 2021/10/01
+{% endcomment %}
+
+{%- liquid
+  assign blog = blogs[section.settings.blog]
+  assign articleAuthor = article.metafields.accentuate.article_author | default: article.author
+-%}
+
+{%- capture isSectionLocked -%}
+  {%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+  {{ 'sections.featured-articles-grid.css' | asset_url | stylesheet_tag }}
+  <section class="c-featured-articles-grid">
+    <div class="c-featured-articles-grid__top">
+      {%- if section.settings.pretitle != blank -%}
+        <p class="c-featured-articles-grid__subtitle o-heading--7">
+          {{- section.settings.pretitle | escape -}}
+        </p>
+      {%- endif -%}
+
+      {%- if section.settings.title != blank -%}
+        <h4 class="c-featured-articles-grid__title o-heading--4">
+          {{- section.settings.title | escape }}
+        </h4>
+      {%- endif -%}
+    </div>
+    <div class="c-featured-articles-grid__inner">
+      <div class="c-featured-articles-grid__articles">
+        {%- for article in blog.articles limit: 3 -%}
+          <a href="{{ article.url }}" class="c-featured-articles-grid__article">
+            <p class="c-featured-articles-grid__article-tags o-heading--7">
+              {%- for tag in article.tags -%}
+                <span class="c-featured-articles-grid__article-tag">
+                  {{- tag | escape -}}
+                </span>
+              {%- endfor -%}
+            </p>
+            <h5 class="c-featured-articles-grid__article-title">
+              {{ article.title | escape }}
+            </h5>
+
+            {%- comment -%} Article Stories Author {%- endcomment -%}
+            {%- if articleAuthor != blank -%}
+              <p class="c-featured-articles-grid__article-author o-heading--7">
+                {{- articleAuthor | escape -}}
+              </p>
+            {%- endif -%}
+
+            <div class="c-featured-articles-grid__article-image-container">
+              {%-
+                render 'tool.picture' with {
+                image: article.image,
+                class: 'c-featured-articles-grid__article-image',
+                width: 339,
+                sizes: '375',
+                imageSizes: '193'
+                }
+              -%}
+            </div>
+
+            {%- if section.settings.buttonText != blank -%}
+              <span class="c-featured-articles-grid__article-cta o-link has-arrow">
+                {{- section.settings.buttonText | escape -}}
+              </span>
+            {%- endif -%}
+          </a>
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+
+  {{ 'sections.featured-articles-grid.js' | asset_url | script_tag }}
+{% endif %}
+
+{% schema %}
+{
+  "name": "Featured Articles Grid",
+  "settings": [
+    {
+      "type": "text",
+      "id": "pretitle",
+      "label": "Pretitle"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Keep Reading"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog"
+    },
+    {
+      "type": "text",
+      "id": "buttonText",
+      "label": "Button Text"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Articles Grid",
+      "category": "Content"
+    }
+  ]
+}
+{% endschema %}

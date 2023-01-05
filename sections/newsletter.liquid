@@ -1,0 +1,118 @@
+{%- comment -%}
+  Newsletter Section
+  - Displays a heading and customer sign up form
+
+  Version:
+    1.0.0 - 2021/02/23
+{%- endcomment -%}
+
+{{ 'sections.newsletter.css' | asset_url | stylesheet_tag }}
+
+{%- liquid 
+  assign s = section.settings 
+-%}
+
+<section class="c-newsletter
+  {%- if s.mobileImage == blank %} has-no-mobile-image
+  {%- endif -%}
+">
+  <div class="c-newsletter__main-container">
+    
+    <div class="c-newsletter__inner-container">
+      <div class="c-newsletter__inner">
+        
+        <div class="c-newsletter__inner-content">
+          {%- comment -%} Heading {%- endcomment -%}
+          <h4 class="c-newsletter__title">
+            {{- s.title | escape -}}
+          </h4>
+
+          <p class="c-newsletter__text">
+            {{s.text | escape}}
+          </p>
+
+          {%- comment -%} Newsletter Form {%- endcomment -%}
+          {%- render 'form.newsletter' with {
+            prefix: 'c-newsletter', 
+            placeholder: s.email-placeholder,
+            success: s.success
+          } -%}
+        </div>
+      </div>
+    </div>
+    <div class="c-newsletter__image-container">
+      {%- if s.mobileImage -%}      
+        {%- render 'tool.picture' with {
+          image: s.mobileImage,
+          class: 'c-newsletter__image is-mobile',
+          width: 375,
+          sizes: '375',
+          imageSizes: '375',
+          lazy: true
+        } -%}
+      {%- endif -%}
+    
+      {%- render 'tool.picture' with {
+        image: s.desktopImage,
+        class: 'c-newsletter__image is-desktop',
+        width: 2000,
+        sizes: '750,1100,2000',
+        imageSizes: '2000,1100,2000',
+        lazy: true
+      } -%}
+    </div>
+
+  </div>
+</section>
+
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "class": "c-section c-section__newsletter",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Don't Miss Out"
+    },
+    {
+      "id": "text",
+      "type": "textarea",
+      "label": "Text"
+    },
+    {
+      "id": "email-placeholder",
+      "type": "text",
+      "label": "Email Placeholder",
+      "default":"Your email address"
+    },
+    {
+      "id": "success",
+      "type": "textarea",
+      "label": "Success message",
+      "default":"Thanks for subscribing!"
+    },
+    {
+      "id": "mobileImage",
+      "type": "image_picker",
+      "label": "Image Mobile",
+      "info": "Please upload in .jpg format. Recommended ratio approx. .824/1, at least 750/910px."
+    },
+    {
+      "id": "desktopImage",
+      "type": "image_picker",
+      "label": "Image Desktop",
+      "info": "Please upload in .jpg format. Recommended ratio approx. 2.02/1, at least 3440/1700px."
+    }
+  ],
+  "presets": [
+    {
+      "category": "Content",
+      "name":"Newsletter Section"
+    }
+  ]
+}
+{% endschema %}
+

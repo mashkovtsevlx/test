@@ -1,0 +1,98 @@
+
+{%- capture isSectionLocked -%}
+{%- render 'tool.is-section-locked' -%}
+{%- endcapture -%}
+
+{% if isSectionLocked == 'false' %}
+
+  {{ 'sections.video.css' | asset_url | stylesheet_tag }}
+
+  {%- liquid  assign ss = section.settings -%}
+
+  {%- if ss.desktopImage != blank and ss.link != blank -%}  
+    <section class="c-video" data-lity data-lity-target="{{- ss.link -}}">
+
+      <div class="c-video__inner">
+
+        <div class="c-video__image-container o-responsive-image-container
+          {%- if ss.mobileImage == blank %} has-no-mobile-image{%- endif -%}">
+            
+          {%- if ss.mobileImage -%}
+            {%- render 'tool.picture' with {
+              image: ss.mobileImage,
+              class: 'c-video__image o-responsive-image is-mobile',
+              width: 375,
+              sizes: '375',
+              imageSizes: '375',
+              lazy: true
+            } -%}
+          {%- endif -%}
+  
+          {%- render 'tool.picture' with {
+            image: ss.desktopImage,
+            class: 'c-video__image o-responsive-image is-desktop',
+            width: 2000,
+            sizes: '750,1100,2000',
+            imageSizes: '2000,1100,2000',
+            lazy: true
+          } -%}
+        </div>
+
+        <div class="c-video__content">
+          {%- if ss.title != blank -%}
+            <h5 class="c-video__title o-heading--3">
+              {{- ss.title | escape-}}
+            </h5>
+          {%- endif -%}
+        
+          <div class="c-video__play-button">
+            {%- render 'svg.play-button' -%}
+          </div>
+        </div>
+        
+      </div> 
+
+    </section>
+  {%- endif -%}
+
+  {{ 'sections.video.js' | asset_url | script_tag }}
+
+{%- endif -%}
+
+{% schema %}
+  {
+    "name": "Video",
+    "class": "c-section c-section__video",
+    "settings": [
+      {
+        "id": "title",
+        "type": "text",
+        "label": "Title"
+      },
+      {
+        "id": "link",
+        "type": "url",
+        "label": "Link"
+      },
+      {
+        "id": "mobileImage",
+        "type": "image_picker",
+        "label": "Image Mobile",
+        "info": "Please upload in .jpg format. Recommended ratio approx. 1/0.383, at least 4000/1532px."
+      },
+      {
+        "id": "desktopImage",
+        "type": "image_picker",
+        "label": "Image Desktop",
+        "info": "Please upload in .jpg format. Recommended ratio approx. 1/0.383, at least 4000/1532px."
+      }
+    ],
+    
+    "presets": [
+      {
+        "name": "Video Section",
+        "category": "Content"
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,51 @@
+{%- comment -%}
+  Social Video Thumbnail
+
+  Version:
+    1.0.0 - 2022/01/13
+{%- endcomment -%}
+
+{%- liquid
+  assign authorPrefix = 'articles.author_prefix' | t
+-%}
+
+{%- if image != blank and url != blank -%}
+  <div class="o-social-video-thumbnail {{ class }}">
+    <a class="o-social-video-thumbnail__article" data-lity data-lity-target="{{url}}">
+      <div class="o-social-video-thumbnail__image-wrapper">
+        <div class="o-social-video-thumbnail__image-container o-responsive-image-container">
+          {%-
+            render 'tool.image' with {
+            image: image,
+            class: 'o-social-video-thumbnail__image o-responsive-image',
+            srcsetSizes: "240,280,320,400,510",
+            sizes: "(min-width: 2000px) 510px, (min-width: 1350px) calc((86vw - 192px) / 3), (min-width: 1100px) calc((86vw - 80px) / 3), (min-width: 750px) calc((100vw - 160px) / 3), calc(100vw - 80px)",
+            lazy: true,
+            width: 300
+            }
+          -%}
+        </div>
+        <button class="o-social-video-thumbnail__play-button">
+          {%- render 'svg.play-button' -%}
+        </button>
+      </div>
+
+      <div class="o-social-video-thumbnail__content">
+        <div class="o-social-video-thumbnail__pretitle-wrapper">
+          <p class="o-social-video-thumbnail__pretitle o-heading--7">
+            {{- pretitle | escape -}}
+          </p>
+        </div>
+
+        <h6 class="o-social-video-thumbnail__title">
+          {{- title | escape -}}
+        </h6>
+
+        <p class="o-social-video-thumbnail__author o-heading--7">
+          {{ authorPrefix | escape }}
+          {{ author | escape }}
+        </p>
+      </div>
+    </a>
+  </div>
+{%- endif -%}

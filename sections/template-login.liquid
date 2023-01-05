@@ -1,0 +1,49 @@
+{%- comment -%}
+  Login Template
+
+  Version:
+    1.0.0 - 2019/06/24
+{%- endcomment -%}
+
+{{ 'sections.login-template.css' | asset_url | stylesheet_tag }}
+{{ 'sections.login.css' | asset_url | stylesheet_tag }}
+{{ 'sections.account-template.css' | asset_url | stylesheet_tag }}
+{{ 'sections.account-page.css' | asset_url | stylesheet_tag }}
+
+<section class="c-login-template c-account">
+  <div class="c-account__header">
+    <div class="c-account__header-inner">
+    </div>
+  </div>
+  <div class="c-account__inner">
+
+    <section class="c-login-register__form-container is-error-form">
+      {%- form 'customer_login' -%}
+        {%- if form.errors -%}
+          <div class="o-form__errors c-login-register__errors">
+            {{- form.errors | default_errors -}}
+          </div>
+        {%- endif -%}
+      {%- endform -%}
+    </section>
+
+    {%- comment -%} Login Section {%- endcomment -%}
+    <section class="c-login-register__form-container is-login">
+      {%- render 'form.login', class: 'c-login-register__form' -%}
+  
+      {%- comment %} Reset Password Form {%- endcomment -%}
+      {%- render 'form.reset-password', class: 'c-login-register__form' -%}
+
+      {%- comment -%} Toggle login/register (mobile-only) {%- endcomment -%}
+      <div class="c-login-register__toggle-wrapper" data-login-toggle>
+        <a class="c-login-register__login-toggle" href="{{ routes.account_register_url }}">
+          {{'customer.login.new_customer' | t -}}
+        </a>
+      </div>
+    </section>
+  
+  </div>
+</section>
+
+{{ 'sections.login.js' | asset_url | script_tag }}
+{{ 'sections.account-page.js' | asset_url | script_tag }}

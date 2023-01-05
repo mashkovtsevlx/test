@@ -1,0 +1,52 @@
+{% comment %}
+  List Collections
+    Section to control the template of the list collection page.
+
+  Version:
+    1.0.0 - 2022/04/12
+{% endcomment %}
+
+{{ 'sections.collection-list.css' | asset_url | stylesheet_tag }}
+
+<div class="c-collection-list">
+
+  <div class="c-collection-list__header">
+    <div class="c-collection-list__header-inner">
+      <h1 class="c-collection-list__title">
+        {{- page_title -}}
+      </h1>
+    </div>
+  </div>
+
+  <div class="c-collection-list__inner">
+    
+    <div class="c-collection-list__container">
+      {%- comment -%}Looping through collections{%- endcomment -%}
+      {%- for collection in collections -%}
+        {%- if collection.image != blank -%}
+          {%- assign image = collection.image -%}
+        {%- else -%}
+          {%- assign product = collection.products | first -%}
+          {%- assign image = product.images | first -%}
+        {%- endif -%}
+
+        <div class="c-collection-list__item">
+          <div class = "c-collection-list__item-inner">
+            <a href="{{ collection.url }}" class="c-collection-list__image-container">
+              {%- render 'tool.picture' with: {
+                image: image,
+                class: 'c-collection-list__image',
+                width: 500
+              } -%}
+            </a>
+            <a href="{{ collection.url }}" class="c-collection-list__collection-title">
+              {{- collection.title -}}
+            </a>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+    
+  </div>
+
+</div>

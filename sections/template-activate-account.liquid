@@ -1,0 +1,57 @@
+{% comment %}
+  Activate Account Template
+
+  Version:
+    1.0.0 - 2019/03/19
+{% endcomment %}
+{% comment %}
+  Activate Account Template
+
+  Version:
+    1.0.0 - 2019/03/19
+{% endcomment %}
+
+{{ 'sections.account-template.css' | asset_url | stylesheet_tag }}
+{{ 'sections.login-template.css' | asset_url | stylesheet_tag }}
+
+<section class="c-activate-account-template c-account">
+  
+  <div class="c-account__header">
+    <div class="c-account__header-inner">
+      <h1 class="c-account__header-heading">
+        {{ 'customer.activate_account.title' | t }}
+      </h1>
+    </div>
+  </div>
+  <div class="c-account__inner">
+
+    <p class="c-account__text o-heading--7">
+      {{ 'customer.activate_account.subtext' | t }}
+    </p>
+
+    {% form 'activate_customer_password', class: 'o-form c-activate-account-template__form' %}
+      {{ form.errors | default_errors }}
+    <input type="hidden" name="return_to" value="/pages/join-community?logged=now&skin_within_registered=true"> 
+
+      <div class="o-form__input-group ">
+        <input type="password"
+          name="customer[password]"
+          class="o-input c-login-register__input"
+          placeholder="{{ 'customer.activate_account.password' | t }}"
+        />
+      </div>
+
+      <div class="o-form__input-group ">
+        <input type="password" class="o-input c-login-register__input"
+          name="customer[password_confirmation]"
+          placeholder="{{ 'customer.activate_account.password_confirm' | t }}"
+        />
+      </div>
+
+      <div class="c-activate-account-template__form-btns o-btn-group">
+        <input type="submit" class="c-activate-account-template__form-btn o-btn is-primary" value="{{ 'customer.activate_account.submit' | t }}">
+        <!--<input type="submit" class="c-activate-account-template__form-btn o-btn is-secondary" name="decline" value="{{ 'customer.activate_account.cancel' | t }}">-->
+      </div>
+    {% endform %}
+  </div>
+</section>

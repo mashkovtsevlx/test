@@ -1,0 +1,86 @@
+{%- comment -%}
+  Props
+  - link
+{%- endcomment -%}
+
+{%- liquid
+  assign prod = link.object
+  assign mf = prod.metafields.accentuate
+-%}
+
+
+<a href="{{prod.url}}" class="c-nav-product is-mobile">
+  <div class="c-nav-product__inner">
+    <div class="c-nav-product__image-container">
+      {%- render 'tool.picture' with {
+        image: prod.featured_image,
+        class: 'c-nav-product__image',
+        width: 496,
+        sizes: '750,1100,1600',
+        imageSizes: '354,1100,496'
+      } -%}
+      <div class="c-nav-product__image-background">
+        {%- render 'tool.picture' with {
+          image: mobileImage,
+          class: 'c-nav-product__image',
+          width: 92
+        } -%}
+      </div>
+    </div>
+    <div class="c-nav-product__content">
+        
+      <h2 class="c-nav-product__title">
+        {{ prod.title | escape}}
+      </h2>
+
+      <p class="c-nav-product__text">
+        {{ mf.thumbnailText | escape }}
+      </p>
+    </div>
+    
+    <div class="c-nav-product__right-arrow">
+      {%- render 'svg.chevron-right' -%}
+    </div>
+  </div>
+</a>
+
+
+<a href="{{prod.url}}"  class="c-nav-product is-desktop">
+  
+  <div class="c-nav-product__hover-background-container">
+  </div>
+  <div class="c-nav-product__inner">
+    <h2 class="c-nav-product__title">
+      {{ prod.title }}
+    </h2>
+    <div class="c-nav-product__image-container">
+      {% if desktopImage != blank %}
+        
+        {%- render 'tool.picture' with {
+          image: desktopImage,
+          class: 'c-nav-product__image-background-hover',
+          width: 310,
+          sizes: '750,1100,1600',
+          imageSizes: '1,250,310'
+        } -%}
+
+      {% endif %}
+
+      {%- render 'tool.picture' with {
+        image: prod.featured_image,
+        class: 'c-nav-product__image',
+        width: 496,
+        sizes: '750,1100,1600',
+        imageSizes: '354,1100,496'
+      } -%}
+    </div>
+
+    <div class="c-nav-product__cta">
+      {{ 'products.thumbnail.cta_button_text' | t }}
+    </div>
+
+    <p class="c-nav-product__text">
+      {{ mf.thumbnailText | escape }}
+    </p>
+  </div>
+</a>

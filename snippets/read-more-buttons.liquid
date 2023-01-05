@@ -1,0 +1,14 @@
+{%- comment -%}
+  Read More Buttons
+    Reusable read more/less buttons to use for content toggles.
+
+  Version:
+    1.0.0 - 2020/11/28
+{%- endcomment -%}
+
+<a href="#" class="o-read-more__btn is-more o-link o-heading--7 {{ class }}" data-read-more-toggle>
+  {{- 'general.read_more_buttons.read_more' | t -}}
+</a>
+<a href="#" class="o-read-more__btn is-less o-link o-heading--7 {{ class }}" data-read-more-toggle>
+  {{- 'general.read_more_buttons.read_less' | t -}}
+</a>

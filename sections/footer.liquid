@@ -1,0 +1,138 @@
+{%- comment -%}
+  Footer Template
+
+  Version:
+    1.0.0 2021/05/19
+{%- endcomment -%}
+
+{%- liquid
+  assign ss = section.settings
+  assign menu = linklists[ss.menu]
+  assign socialMenu = linklists[ss.socialMenu]
+  assign date = 'now' | date: "%Y" | escape
+  assign links = section.blocks
+  assign newsletterTitle = ss.newsletter-title
+  assign logoAlt = 'general.header.logo_title' | t
+-%}
+
+<footer class="c-footer">
+  <div class="c-footer__inner">
+    <div class="c-footer__upper">
+      {%- comment -%} Footer Logo/Tagline {%- endcomment -%}
+      <a href="{{ routes.root_url }}" class="c-footer__logo">
+        {%- render 'object.icon' with {
+          icon: 'logo-footer',
+          class: 'c-footer__logo-icon',
+          width: 98,
+          height: 79,
+          alt: logoAlt
+        } -%}
+      </a>
+
+      <div class="c-footer__newsletter-form-container">
+        {%- comment -%} Newsletter Form {%- endcomment -%}
+        {%- if newsletterTitle != blank -%}
+          <h6 class="c-footer__newsletter-title">
+            {{- newsletterTitle | escape -}}
+          </h6>
+        {%- endif -%}
+        
+        {%- render 'form.newsletter' with {
+          prefix: 'c-footer__newsletter', 
+          placeholder: ss.email-placeholder,
+          success: ss.success
+        } -%}
+
+        {%- render 'object.social-row' with{
+          class: 'c-footer__social-area'
+        }  -%}
+      </div>
+
+      <div class="c-footer__navigation">
+        {%- render 'footer-menu', links: menu.links -%}
+        {%- render 'footer-menu', links: socialMenu.links -%}
+        {%- render 'footer-menu', blocks: links, class: 'is-links' -%}
+      </div>
+
+    </div>
+  
+    <div class="c-footer__lower">
+      <p class="c-footer__copyright">
+        {{- 'general.footer.store_name_html' | t: date: date -}}
+      </p>
+      <a href="https://processcreative.com.au" target="_blank" class="c-footer__process-link">
+        Site by Process
+      </a>
+    </div>
+
+</footer>
+
+{% schema %}
+  {
+    "name": "Footer",
+    "class": "c-section c-section__footer",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Footer Navigation"
+      },
+      {
+        "id": "menu",
+        "type": "link_list",
+        "label": "Footer Menu",
+        "info": "Please select the navigation menu for all devices."
+      },
+      {
+        "id": "socialMenu",
+        "type": "link_list",
+        "label": "Social Media Links",
+        "info": "Please select the social media menu (created in the admin navigation)."
+      },
+      {
+        "type": "header",
+        "content": "Newsletter Title"
+      },
+      {
+        "id": "newsletter-title",
+        "type": "text",
+        "label": "Newsletter Title",
+        "default": "Subscribe to our newsletter"
+      },
+      {
+        "id": "email-placeholder",
+        "type": "text",
+        "label": "Email Placeholder",
+        "default":"Your email address"
+      },
+      {
+        "id": "success",
+        "type": "textarea",
+        "label": "Success message",
+        "default":"Thanks for subscribing!"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "bottom-link",
+        "name": "Bottom Link",
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "Links displayed at the very bottom of the page."
+          },
+          {
+            "id": "title",
+            "type": "text",
+            "label": "Link Text"
+          },
+          {
+            "id": "url",
+            "type": "url",
+            "label": "Link URL"
+          }
+        ]
+      }
+      
+    ]
+  }
+{% endschema %}

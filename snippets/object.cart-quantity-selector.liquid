@@ -1,0 +1,30 @@
+{% comment %}
+  Cart Quantity Selector
+    Quantity Selector, specifically for the cart.
+
+  Version:
+    1.0.0 - 2021/09/08
+{% endcomment %}
+{%- liquid
+  if item.variant.inventory_policy == 'deny' and item.variant.inventory_management == 'shopify'
+    assign quantityMax = item.variant.inventory_quantity
+  endif
+-%}
+<div class="o-cart-quantity" data-cart-quantity data-cart-line="{{ index }}" data-current-quantity="{{item.quantity}}">
+
+  
+  <button type="button" class="o-cart-quantity__button is-minus"  data-cart-quantity-minus>
+    {%- render 'svg.minus' -%}
+  </button>
+
+  <input
+    type="number" name="updates[]" value="{{ item.quantity }}"
+    class="o-cart-quantity__number o-heading--7"
+    data-cart-quantity-number
+    min="0" {% if quantityMax > 0 %}max="{{ quantityMax }}"{% endif %}
+  />
+
+  <button type="button" class="o-cart-quantity__button is-plus" data-cart-quantity-plus>
+    {%- render 'svg.plus' -%}
+  </button>
+</div>
